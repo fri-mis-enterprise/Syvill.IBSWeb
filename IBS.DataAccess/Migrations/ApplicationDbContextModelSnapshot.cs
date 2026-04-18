@@ -17,7 +17,7 @@ namespace IBS.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -4630,10 +4630,6 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_filpride");
 
-                    b.Property<bool>("IsMobility")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_mobility");
-
                     b.HasKey("BankAccountId")
                         .HasName("pk_filpride_bank_accounts");
 
@@ -4838,10 +4834,6 @@ namespace IBS.DataAccess.Migrations
                     b.Property<bool>("IsFilpride")
                         .HasColumnType("boolean")
                         .HasColumnName("is_filpride");
-
-                    b.Property<bool>("IsMobility")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_mobility");
 
                     b.Property<bool>("RequiresPriceAdjustment")
                         .HasColumnType("boolean")
@@ -5114,10 +5106,6 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_filpride");
 
-                    b.Property<bool>("IsMobility")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_mobility");
-
                     b.Property<int>("SupplierId")
                         .HasColumnType("integer")
                         .HasColumnName("supplier_id");
@@ -5175,10 +5163,6 @@ namespace IBS.DataAccess.Migrations
                     b.Property<bool>("IsFilpride")
                         .HasColumnType("boolean")
                         .HasColumnName("is_filpride");
-
-                    b.Property<bool>("IsMobility")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_mobility");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -5271,10 +5255,6 @@ namespace IBS.DataAccess.Migrations
                     b.Property<bool>("IsFilpride")
                         .HasColumnType("boolean")
                         .HasColumnName("is_filpride");
-
-                    b.Property<bool>("IsMobility")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_mobility");
 
                     b.Property<string>("ProofOfExemptionFileName")
                         .HasMaxLength(200)
