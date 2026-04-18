@@ -1,6 +1,4 @@
 using IBS.DataAccess.Data;
-using IBS.DataAccess.Repository.Bienes;
-using IBS.DataAccess.Repository.Bienes.IRepository;
 using IBS.DataAccess.Repository.Filpride;
 using IBS.DataAccess.Repository.Filpride.IRepository;
 using IBS.DataAccess.Repository.IRepository;
@@ -8,13 +6,10 @@ using IBS.DataAccess.Repository.MasterFile;
 using IBS.DataAccess.Repository.MasterFile.IRepository;
 using IBS.Models.Enums;
 using IBS.Models.Filpride.MasterFile;
-using IBS.Utility.Constants;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using IProductRepository = IBS.DataAccess.Repository.MasterFile.IRepository.IProductRepository;
-using ProductRepository = IBS.DataAccess.Repository.MasterFile.ProductRepository;
 
 namespace IBS.DataAccess.Repository
 {
@@ -133,12 +128,6 @@ namespace IBS.DataAccess.Repository
 
         #endregion
 
-        #region --Bienes
-
-        public IPlacementRepository BienesPlacement { get; private set; }
-
-        #endregion
-
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -196,12 +185,6 @@ namespace IBS.DataAccess.Repository
             #endregion
 
             #endregion
-
-            #region --Bienes
-
-            BienesPlacement = new PlacementRepository(_db);
-
-            #endregion
         }
 
         public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -223,7 +206,6 @@ namespace IBS.DataAccess.Repository
             Expression propertyAccess = companyName switch
             {
                 nameof(Filpride) => Expression.Property(param, "IsFilpride"),
-                nameof(Bienes) => Expression.Property(param, "IsBienes"),
                 _ => Expression.Constant(false)
             };
 
@@ -392,32 +374,6 @@ namespace IBS.DataAccess.Repository
                 {
                     Value = p.ProductId.ToString(),
                     Text = p.ProductCode + " " + p.ProductName
-                })
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<List<SelectListItem>> GetCashierListAsyncByUsernameAsync(CancellationToken cancellationToken = default)
-        {
-            return await _db.ApplicationUsers
-                .OrderBy(p => p.Id)
-                .Where(p => p.Department == SD.Department_StationCashier)
-                .Select(p => new SelectListItem
-                {
-                    Value = p.UserName!.ToString(),
-                    Text = p.UserName.ToString()
-                })
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<List<SelectListItem>> GetCashierListAsyncByStationAsync(CancellationToken cancellationToken = default)
-        {
-            return await _db.ApplicationUsers
-                .OrderBy(p => p.Id)
-                .Where(p => p.Department == SD.Department_StationCashier)
-                .Select(p => new SelectListItem
-                {
-                    Value = p.StationAccess!.ToString(),
-                    Text = p.UserName!.ToString()
                 })
                 .ToListAsync(cancellationToken);
         }

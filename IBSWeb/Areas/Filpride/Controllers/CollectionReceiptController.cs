@@ -29,7 +29,6 @@ using IBS.Models.Filpride.MasterFile;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_Finance, SD.Department_RCD)]
     public class CollectionReceiptController : Controller
     {

@@ -20,7 +20,6 @@ using System.Security.Claims;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
     public class DebitMemoController : Controller
     {

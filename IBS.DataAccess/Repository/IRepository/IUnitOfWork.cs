@@ -1,4 +1,3 @@
-using IBS.DataAccess.Repository.Bienes.IRepository;
 using IBS.DataAccess.Repository.Filpride.IRepository;
 using IBS.DataAccess.Repository.MasterFile.IRepository;
 using IBS.Models.Enums;
@@ -8,7 +7,7 @@ namespace IBS.DataAccess.Repository.IRepository
 {
     public interface IUnitOfWork : IDisposable
     {
-        MasterFile.IRepository.IProductRepository Product { get; }
+        IProductRepository Product { get; }
 
         ICompanyRepository Company { get; }
 
@@ -27,10 +26,6 @@ namespace IBS.DataAccess.Repository.IRepository
         Task<List<SelectListItem>> GetCompanyListAsyncByName(CancellationToken cancellationToken = default);
 
         Task<List<SelectListItem>> GetCompanyListAsyncById(CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetCashierListAsyncByUsernameAsync(CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetCashierListAsyncByStationAsync(CancellationToken cancellationToken = default);
 
         #region--Filpride
 
@@ -113,12 +108,6 @@ namespace IBS.DataAccess.Repository.IRepository
         IAuthorityToLoadRepository FilprideAuthorityToLoad { get; }
 
         #endregion
-
-        #endregion
-
-        #region --Bienes
-
-        IPlacementRepository BienesPlacement { get; }
 
         #endregion
 

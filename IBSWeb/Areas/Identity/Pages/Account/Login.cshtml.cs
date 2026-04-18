@@ -58,13 +58,6 @@ namespace IBSWeb.Areas.Identity.Pages.Account
         [TempData]
         public string ErrorMessage { get; set; }
 
-        public List<SelectListItem> Stations { get; set; }
-
-        public List<SelectListItem> Companies { get; set; }
-
-        public List<SelectListItem> Users { get; set; }
-        public List<SelectListItem> StationAccess { get; set; }
-
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -92,13 +85,6 @@ namespace IBSWeb.Areas.Identity.Pages.Account
             /// </summary>
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
-
-            [Required]
-            [Display(Name = "Company")]
-            public string Company { get; set; }
-
-            [Display(Name = "Station")]
-            public string StationCode { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -146,27 +132,6 @@ namespace IBSWeb.Areas.Identity.Pages.Account
                 {
                     // User is guaranteed to exist and be active at this point
                     user = await _signInManager.UserManager.FindByNameAsync(Input.Username);
-
-                    // Remove existing dynamic claims
-                    var existingClaims = await _signInManager.UserManager.GetClaimsAsync(user);
-
-                    if (existingClaims.Any())
-                    {
-                        await _signInManager.UserManager.RemoveClaimsAsync(user, existingClaims);
-                    }
-
-                    // Add fresh dynamic claims based on user input
-                    var newClaims = new List<Claim>
-                    {
-                        new Claim("Company", Input.Company)
-                    };
-
-                    if (!string.IsNullOrEmpty(Input.StationCode))
-                    {
-                        newClaims.Add(new Claim("StationCode", Input.StationCode));
-                    }
-
-                    await _signInManager.UserManager.AddClaimsAsync(user, newClaims);
 
                     // Fetch updated claims and roles
                     var updatedClaims = await _signInManager.UserManager.GetClaimsAsync(user);
@@ -216,9 +181,6 @@ namespace IBSWeb.Areas.Identity.Pages.Account
         private async Task LoadPageData(string returnUrl)
         {
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            Companies = await _unitOfWork.GetCompanyListAsyncByName();
-            Users = await _unitOfWork.GetCashierListAsyncByUsernameAsync();
-            StationAccess = await _unitOfWork.GetCashierListAsyncByStationAsync();
             ReturnUrl = returnUrl;
         }
 

@@ -24,7 +24,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     [DepartmentAuthorize(
         SD.Department_Accounting,
         SD.Department_RCD,

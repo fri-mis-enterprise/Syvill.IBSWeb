@@ -26,7 +26,6 @@ using DateTime = System.DateTime;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class AccountsPayableReportController : Controller
     {
         private readonly ApplicationDbContext _dbContext;

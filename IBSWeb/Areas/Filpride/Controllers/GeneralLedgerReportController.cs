@@ -22,7 +22,6 @@ using System.Text;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class GeneralLedgerReportController : Controller
     {
         private readonly ApplicationDbContext _dbContext;

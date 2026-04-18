@@ -59,14 +59,6 @@
                             <span asp-validation-for="Input.Role" class="text-danger"></span>
                         </div>
 
-                        <div id="station-div" class="mb-3">
-                            <label asp-for="Input.StationAccess" class="form-label">Station<span class="text-danger">*</span></label>
-                            <select asp-for="Input.StationAccess" asp-items="@Model.Input.MobilityStations" class="form-select js-select2">
-                                <option value="" selected disabled>Select Station</option>
-                            </select>
-                            <span asp-validation-for="Input.StationAccess" class="text-danger"></span>
-                        </div>
-
                         <div class="mb-3">
                             <label asp-for="Input.Password" class="form-label">Password<span class="text-danger">*</span></label>
                             <input asp-for="Input.Password" class="form-control" autocomplete="new-password" placeholder="Enter password" />

@@ -19,7 +19,6 @@ using QuestPDF.Infrastructure;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class InventoryReportController : Controller
     {
         private readonly ApplicationDbContext _dbContext;

@@ -23,7 +23,6 @@ using Color = System.Drawing.Color;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class AccountsReceivableReport : Controller
     {
         private readonly ApplicationDbContext _dbContext;

@@ -103,6 +103,8 @@ if (builder.Environment.IsProduction())
 
 var app = builder.Build();
 
+await ApplicationDbSeeder.SeedAsync(app.Services);
+
 app.MapPost("/jobs/start-of-the-month-service",
     async (StartOfTheMonthService service) =>
     {

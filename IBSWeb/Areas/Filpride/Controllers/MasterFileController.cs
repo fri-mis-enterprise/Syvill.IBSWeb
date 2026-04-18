@@ -17,7 +17,6 @@ using System.Security.Claims;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class MasterFileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

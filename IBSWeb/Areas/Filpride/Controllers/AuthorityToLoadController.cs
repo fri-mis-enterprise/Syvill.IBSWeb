@@ -17,7 +17,6 @@ using System.Security.Claims;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class AuthorityToLoadController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

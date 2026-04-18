@@ -19,7 +19,6 @@ using QuestPDF.Fluent;
 namespace IBSWeb.Areas.Filpride.Controllers
 {
     [Area(nameof(Filpride))]
-    [CompanyAuthorize(nameof(Filpride))]
     public class FinancialReportController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
