@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
 using IBS.Models;
+using IBS.Models.MasterFile;
 
 namespace IBSWeb.Areas.Identity.Pages.Account
 {

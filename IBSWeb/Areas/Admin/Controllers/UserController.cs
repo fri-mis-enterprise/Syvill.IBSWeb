@@ -1,6 +1,5 @@
 using IBS.DataAccess.Data;
 using IBS.Models;
-using IBS.Models.Filpride.Books;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using IBS.Utility.Helpers;
 using System.ComponentModel.DataAnnotations;
+using IBS.Models.Common;
+using IBS.Models.MasterFile;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {

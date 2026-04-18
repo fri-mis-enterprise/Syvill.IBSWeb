@@ -1,7 +1,6 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
-using IBS.Models.Filpride.Books;
-using IBS.Models.Filpride.MasterFile;
+using IBS.Models.MasterFile;
 using IBS.Utility.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;

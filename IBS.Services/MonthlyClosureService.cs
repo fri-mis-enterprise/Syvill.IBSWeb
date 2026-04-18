@@ -1,8 +1,8 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
+using IBS.Models.Books;
 using IBS.Models.Enums;
 using IBS.Models.Filpride;
-using IBS.Models.Filpride.Books;
 using IBS.Utility.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

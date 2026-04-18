@@ -1,16 +1,17 @@
 using IBS.DataAccess.Data;
 using IBS.Models;
 using IBS.Models.Enums;
-using IBS.Models.Filpride.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using IBS.Models.MasterFile;
+using IBS.Models.ViewModels;
 
 namespace IBSWeb.Areas.User.Controllers
 {
-    [Area("User")]
+    [Area(nameof(User))]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

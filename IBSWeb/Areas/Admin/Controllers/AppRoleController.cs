@@ -1,5 +1,6 @@
 using System.Linq.Dynamic.Core;
 using IBS.Models;
+using IBS.Models.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

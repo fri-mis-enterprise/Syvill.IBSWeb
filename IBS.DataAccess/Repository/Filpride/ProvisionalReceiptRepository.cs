@@ -2,9 +2,9 @@ using System.Globalization;
 using System.Linq.Expressions;
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
+using IBS.Models.AccountsReceivable;
+using IBS.Models.Books;
 using IBS.Models.Enums;
-using IBS.Models.Filpride.AccountsReceivable;
-using IBS.Models.Filpride.Books;
 using IBS.Utility.Helpers;
 using Microsoft.EntityFrameworkCore;
 

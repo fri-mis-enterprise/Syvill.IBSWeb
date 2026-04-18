@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using IBS.Models;
+using IBS.Models.MasterFile;
 
 namespace IBSWeb.Areas.Identity.Pages.Account.Manage
 {

@@ -49,13 +49,4 @@
     <ProjectReference Include="..\IBS.Utility\IBS.Utility.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Areas\Bienes\Views\Placement\Create.cshtml" />
-    <_ContentIncludedByDefault Remove="Areas\Bienes\Views\Placement\Edit.cshtml" />
-    <_ContentIncludedByDefault Remove="Areas\Bienes\Views\Placement\Index.cshtml" />
-    <_ContentIncludedByDefault Remove="Areas\Bienes\Views\Placement\Preview.cshtml" />
-    <_ContentIncludedByDefault Remove="Areas\Bienes\Views\_ViewImports.cshtml" />
-    <_ContentIncludedByDefault Remove="Areas\Bienes\Views\_ViewStart.cshtml" />
-  </ItemGroup>
-
 </Project>

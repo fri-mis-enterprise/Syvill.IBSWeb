@@ -1,11 +1,11 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
 using IBS.Models.Enums;
-using IBS.Models.Filpride.MasterFile;
 using IBS.Utility.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {

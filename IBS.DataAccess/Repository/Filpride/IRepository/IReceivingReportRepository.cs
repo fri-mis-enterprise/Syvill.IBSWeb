@@ -1,6 +1,6 @@
 using IBS.DataAccess.Repository.IRepository;
-using IBS.Models.Filpride.AccountsPayable;
-using IBS.Models.Filpride.Integrated;
+using IBS.Models.AccountsPayable;
+using IBS.Models.AccountsReceivable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {

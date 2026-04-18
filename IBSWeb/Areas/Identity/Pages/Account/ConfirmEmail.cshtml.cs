@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using IBS.Models;
+using IBS.Models.MasterFile;
 
 namespace IBSWeb.Areas.Identity.Pages.Account
 {

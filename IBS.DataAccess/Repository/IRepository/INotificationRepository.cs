@@ -1,4 +1,5 @@
 using IBS.Models;
+using IBS.Models.Common;
 
 namespace IBS.DataAccess.Repository.IRepository
 {

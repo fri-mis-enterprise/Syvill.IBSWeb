@@ -2,15 +2,14 @@ using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
 using IBS.Models.Enums;
 using IBS.Models.Filpride;
-using IBS.Models.Filpride.AccountsReceivable;
-using IBS.Models.Filpride.Books;
-using IBS.Models.Filpride.Integrated;
 using IBS.Utility.Constants;
 using IBS.Utility.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using IBS.DTOs;
-using IBS.Models.Filpride.MasterFile;
+using IBS.Models.AccountsReceivable;
+using IBS.Models.Books;
+using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {

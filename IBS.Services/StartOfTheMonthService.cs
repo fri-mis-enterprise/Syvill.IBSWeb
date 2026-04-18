@@ -1,7 +1,7 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
+using IBS.Models.AccountsPayable;
 using IBS.Models.Enums;
-using IBS.Models.Filpride.AccountsPayable;
 using IBS.Utility.Constants;
 using IBS.Utility.Helpers;
 using Microsoft.EntityFrameworkCore;

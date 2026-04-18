@@ -1,7 +1,7 @@
-using IBS.Models.Filpride.MasterFile;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using IBS.Models.Enums;
+using IBS.Models.MasterFile;
 
 namespace IBS.Models.Filpride
 {

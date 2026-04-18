@@ -1,5 +1,5 @@
 using IBS.DataAccess.Repository.IRepository;
-using IBS.Models.Filpride.AccountsReceivable;
+using IBS.Models.AccountsReceivable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {

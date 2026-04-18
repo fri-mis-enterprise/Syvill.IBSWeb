@@ -1,4 +1,5 @@
 using IBS.Models;
+using IBS.Models.MasterFile;
 using IBS.Utility.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

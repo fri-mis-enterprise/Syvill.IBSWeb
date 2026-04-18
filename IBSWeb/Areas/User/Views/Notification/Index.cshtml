@@ -1,4 +1,4 @@
-﻿@model List<UserNotification>
+﻿@model List<IBS.Models.Common.UserNotification>
 @{
     ViewData["Title"] = "Notifications";
 }
@@ -34,7 +34,7 @@ else
              data-date="@item.Notification.CreatedDate"
              data-requires-response="@item.RequiresResponse.ToString().ToLower()"
              data-notification-id="@item.UserNotificationId">
-        
+
             <div class="notification-content">
                 <p class="notification-message mb-1">
                     @if (!item.IsRead)

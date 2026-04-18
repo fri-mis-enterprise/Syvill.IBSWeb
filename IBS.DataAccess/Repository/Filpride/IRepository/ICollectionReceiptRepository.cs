@@ -1,9 +1,8 @@
 using IBS.DataAccess.Repository.IRepository;
 using IBS.DTOs;
+using IBS.Models.AccountsReceivable;
 using IBS.Models.Filpride;
-using IBS.Models.Filpride.AccountsReceivable;
-using IBS.Models.Filpride.Integrated;
-using IBS.Models.Filpride.MasterFile;
+using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {

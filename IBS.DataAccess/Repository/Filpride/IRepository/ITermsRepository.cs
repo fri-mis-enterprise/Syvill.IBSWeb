@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using IBS.DataAccess.Repository.IRepository;
-using IBS.Models.Filpride.MasterFile;
+using IBS.Models.MasterFile;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository

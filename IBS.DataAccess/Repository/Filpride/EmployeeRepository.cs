@@ -1,6 +1,6 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
-using IBS.Models.Filpride.MasterFile;
+using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {

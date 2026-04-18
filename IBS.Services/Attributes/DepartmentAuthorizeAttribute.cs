@@ -1,5 +1,6 @@
 using IBS.DataAccess.Data;
 using IBS.Models;
+using IBS.Models.MasterFile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,19 @@ namespace IBS.Services.Attributes
             {
                 var user = userManager.GetUserAsync(context.HttpContext.User).Result;
 
-                // Assuming "Department" is a property in your ApplicationUser model
+                if (user == null)
+                {
+                    context.Result = new ForbidResult();
+                    return;
+                }
+
+                if (context.HttpContext.User.IsInRole("Admin"))
+                {
+                    return;
+                }
+
                 var userDepartment = dbContext.ApplicationUsers
-                    .Where(u => u.Id == user!.Id)
+                    .Where(u => u.Id == user.Id)
                     .Select(u => u.Department)
                     .FirstOrDefault();
 

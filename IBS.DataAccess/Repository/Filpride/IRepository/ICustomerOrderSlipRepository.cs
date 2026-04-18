@@ -1,6 +1,6 @@
 using IBS.DataAccess.Repository.IRepository;
-using IBS.Models.Filpride.Integrated;
-using IBS.Models.Filpride.ViewModels;
+using IBS.Models.AccountsReceivable;
+using IBS.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository

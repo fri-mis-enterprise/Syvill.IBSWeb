@@ -1,7 +1,7 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
-using IBS.Models;
 using IBS.Models.Enums;
+using IBS.Models.MasterFile;
 using IBS.Utility.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -74,26 +74,6 @@ namespace IBS.Services
 
                 // Append the previous status and timestamp to the remarks
                 cos.Remarks = $"Previous status: [{previousStatus}] updated to Expired on {today}. {cos.Remarks}";
-            }
-
-            await _dbContext.SaveChangesAsync();
-        }
-
-        private async Task LockPlacement(DateTime today)
-        {
-            var placements = await _dbContext.BienesPlacements
-                .Where(p => p.LockedDate <= today && !p.IsLocked)
-                .ToListAsync();
-
-            if (placements.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var placement in placements)
-            {
-                placement.IsLocked = true;
-                placement.Status = nameof(PlacementStatus.Locked);
             }
 
             await _dbContext.SaveChangesAsync();

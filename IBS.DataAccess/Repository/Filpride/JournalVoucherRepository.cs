@@ -1,10 +1,10 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
 using IBS.Models.Enums;
-using IBS.Models.Filpride.AccountsPayable;
-using IBS.Models.Filpride.Books;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using IBS.Models.AccountsPayable;
+using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {

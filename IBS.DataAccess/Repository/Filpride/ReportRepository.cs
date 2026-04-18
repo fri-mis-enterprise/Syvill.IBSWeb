@@ -1,11 +1,11 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
+using IBS.Models.AccountsPayable;
+using IBS.Models.AccountsReceivable;
+using IBS.Models.Books;
+using IBS.Models.Common;
 using IBS.Models.Enums;
-using IBS.Models.Filpride.AccountsPayable;
-using IBS.Models.Filpride.AccountsReceivable;
-using IBS.Models.Filpride.Books;
-using IBS.Models.Filpride.Integrated;
-using IBS.Models.Filpride.ViewModels;
+using IBS.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride

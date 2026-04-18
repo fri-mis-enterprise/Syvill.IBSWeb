@@ -1,8 +1,8 @@
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.Filpride.IRepository;
-using IBS.Models.Filpride.Integrated;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using IBS.Models.AccountsPayable;
 using IBS.Utility.Helpers;
 
 namespace IBS.DataAccess.Repository.Filpride

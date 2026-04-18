@@ -3,6 +3,7 @@ using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.Models;
+using IBS.Models.MasterFile;
 using IBS.Services;
 using IBS.Utility;
 using IBSWeb.Hubs;

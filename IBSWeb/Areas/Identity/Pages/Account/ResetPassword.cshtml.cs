@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using IBS.Models;
+using IBS.Models.MasterFile;
 
 namespace IBSWeb.Areas.Identity.Pages.Account
 {

@@ -1,5 +1,5 @@
 using IBS.DataAccess.Repository.IRepository;
-using IBS.Models.Filpride.Books;
+using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
