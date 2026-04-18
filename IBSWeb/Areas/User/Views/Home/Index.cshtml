@@ -1,0 +1,271 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IBS.Models.Filpride.ViewModels.DashboardCountViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    var department = ViewBag.GetUserDepartment;
+    ViewData["Title"] = "Dashboard";
+    var selectedCompany = string.Empty;
+    var selectedStation = string.Empty;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        selectedCompany = User.Claims.FirstOrDefault(c => c.Type == "Company")?.Value;
+        selectedStation = User.Claims.FirstOrDefault(c => c.Type == "StationCode")?.Value;
+    }
+}
+
+<div class="container">
+    <div class="row justify-content-center my-5">
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4 text-primary fw-bold">Welcome to Our Integrated Business System</h1>
+            <p class="fs-5 text-muted">Effortlessly manage and optimize your business tasks.</p>
+            @if (!User.Identity!.IsAuthenticated)
+            {
+                <a class="btn btn-primary btn-lg px-4 py-3 mt-4" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="">
+                    Login <i class="bi bi-box-arrow-in-right ms-2"></i>
+                </a>
+            }
+            else
+            {
+                if (selectedCompany == "Filpride")
+                {
+                    <div class="mt-5">
+                        <h2 class="fw-semibold text-secondary mb-4">Tasks Overview</h2>
+                        <div class="row g-4">
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CustomerOrderSlip", new { area = "Filpride", filterType = "ForCNCApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-check-circle me-2 text-primary"></i>CNC Approval
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.CNCApprovalCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CustomerOrderSlip", new { area = "Filpride", filterType = "ForAppointSupplier" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-person-check me-2 text-primary"></i>Supplier Appointment
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.SupplierAppointmentCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CustomerOrderSlip", new { area = "Filpride", filterType = "ForATLBooking" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-calendar-check me-2 text-primary"></i>ATL Booking
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.ATLBookingCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CustomerOrderSlip", new { area = "Filpride", filterType = "ForOMApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-check-circle me-2 text-primary"></i>OM Approval (Customer Order Slip)
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.OMApprovalCOSCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "DeliveryReceipt", new { area = "Filpride", filterType = "ForOMApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-check-circle me-2 text-primary"></i>OM Approval (Delivery Receipt)
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.OMApprovalDRCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "PurchaseOrder", new { area = "Filpride", filterType = "ForOMApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-check-circle me-2 text-primary"></i>OM Approval (Purchase Order)
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.OMApprovalPOCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CustomerOrderSlip", new { area = "Filpride", filterType = "ForFMApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-check-circle me-2 text-primary"></i>FM Approval
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.FMApprovalCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CustomerOrderSlip", new { area = "Filpride", filterType = "ForDR" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-receipt me-2 text-primary"></i>For DR
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.DRCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "DeliveryReceipt", new { area = "Filpride", filterType = "InTransit" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-arrow-right-circle me-2 text-primary"></i>Pending Delivery
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.InTransitCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "DeliveryReceipt", new { area = "Filpride", filterType = "RecordLiftingDate" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-calendar-plus me-2 text-primary"></i>Record Lifting Date
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.RecordLiftingDateCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "DeliveryReceipt", new { area = "Filpride", filterType = "ForInvoice" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-file-earmark-text me-2 text-primary"></i>For Invoicing
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.ForInvoiceCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "ReceivingReport", new { area = "Filpride", filterType = "RecordSupplierDetails" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-file-earmark-text me-2 text-primary"></i>Record Supplier Details
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.RecordSupplierDetails.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @* Accounting - For Approval Cards (Filpride/Mobility with Accounting role) *@
+                if ((selectedCompany == "Filpride")
+                    && (User.IsInRole("Admin") || User.IsInRole("AccountingManager") || User.IsInRole("ManagementAccountingManager")))
+                {
+                    <div class="mt-5">
+                        <h2 class="fw-semibold text-secondary mb-4">Accounting</h2>
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CheckVoucherNonTradeInvoice", new { area = "Filpride", filterType = "ForApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-receipt me-2 text-primary"></i>CV Approval
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.CheckVoucherNonTradeInvoiceForApprovalCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="@Url.Action("Index", "JournalVoucher", new { area = "Filpride", filterType = "ForApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-file-earmark-text me-2 text-primary"></i>JV Approval
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.JournalVoucherForApprovalCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+
+                            @* <div class="col-md-4">
+                                <a href="@Url.Action("Index", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride", filterType = "ForApproval" })" class="text-decoration-none">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-dark fw-semibold">
+                                                <i class="bi bi-cash-stack me-2 text-primary"></i>CV Payroll for Approval
+                                            </h5>
+                                            <p class="card-text display-6 text-primary fw-bold">@Model.CheckVoucherNonTradePayrollInvoiceForApprovalCount.ToString("N0")</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div> *@
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: #fff;
+        border-radius: 0.75rem;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .card-text {
+        font-size: 2rem;
+    }
+
+</style>

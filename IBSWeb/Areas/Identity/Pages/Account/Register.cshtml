@@ -1,0 +1,117 @@
+﻿@page
+@using IBS.Utility.Constants
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg rounded-4 border-0">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Create Account</h2>
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Username" class="form-label">Username<span class="text-danger">*</span></label>
+                            <input asp-for="Input.Username" class="form-control" autocomplete="off" placeholder="Enter username" />
+                            <span asp-validation-for="Input.Username" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Name" class="form-label">Full Name<span class="text-danger">*</span></label>
+                            <input asp-for="Input.Name" class="form-control" autocomplete="off" placeholder="Enter full name" />
+                            <span asp-validation-for="Input.Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Department" class="form-label">Department<span class="text-danger">*</span></label>
+                            <select id="departmentSelect" asp-for="Input.Department" class="form-select js-select2">
+                                <option value="" selected>Select department</option>
+                                <option value="@SD.Department_Accounting">@SD.Department_Accounting</option>
+                                <option value="@SD.Department_CreditAndCollection">@SD.Department_CreditAndCollection</option>
+                                <option value="@SD.Department_Engineering">@SD.Department_Engineering</option>
+                                <option value="@SD.Department_Finance">@SD.Department_Finance</option>
+                                <option value="@SD.Department_HRAndAdminOrLegal">@SD.Department_HRAndAdminOrLegal</option>
+                                <option value="@SD.Department_Logistics">@SD.Department_Logistics</option>
+                                <option value="@SD.Department_ManagementAccounting">@SD.Department_ManagementAccounting</option>
+                                <option value="@SD.Department_Marketing">@SD.Department_Marketing</option>
+                                <option value="@SD.Department_MIS">@SD.Department_MIS</option>
+                                <option value="@SD.Department_Operation">@SD.Department_Operation</option>
+                                <option value="@SD.Department_RCD">@SD.Department_RCD</option>
+                                <option value="@SD.Department_RetailAdmin">@SD.Department_RetailAdmin</option>
+                                <option value="@SD.Department_RetailAudit">@SD.Department_RetailAudit</option>
+                                <option value="@SD.Department_SiteDevAndSiteAcquisition">@SD.Department_SiteDevAndSiteAcquisition</option>
+                                <option value="@SD.Department_StationCashier">@SD.Department_StationCashier</option>
+                                <option value="@SD.Department_TradeAndSupply">@SD.Department_TradeAndSupply</option>
+                                <option value="@SD.Department_TrainingAndCompliance">@SD.Department_TrainingAndCompliance</option>
+                            </select>
+                            <span asp-validation-for="Input.Department" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Role" class="form-label">Role<span class="text-danger">*</span></label>
+                            <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select js-select2">
+                                <option value="" selected>Select role</option>
+                            </select>
+                            <span asp-validation-for="Input.Role" class="text-danger"></span>
+                        </div>
+
+                        <div id="station-div" class="mb-3">
+                            <label asp-for="Input.StationAccess" class="form-label">Station<span class="text-danger">*</span></label>
+                            <select asp-for="Input.StationAccess" asp-items="@Model.Input.MobilityStations" class="form-select js-select2">
+                                <option value="" selected disabled>Select Station</option>
+                            </select>
+                            <span asp-validation-for="Input.StationAccess" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Password" class="form-label">Password<span class="text-danger">*</span></label>
+                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" placeholder="Enter password" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.ConfirmPassword" class="form-label">Confirm Password<span class="text-danger">*</span></label>
+                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" placeholder="Confirm password" />
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">Register</button>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none">Already have an account? Login here.</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            const stationDiv = $('#station-div');
+
+            function toggleStation() {
+                const department = $('#departmentSelect').val();
+                const role = $('select[name="Input.Role"]').val();
+
+                if (department === 'Station Cashier' && role === 'Cashier') {
+                    stationDiv.show();
+                } else {
+                    stationDiv.hide();
+                }
+            }
+
+            toggleStation();
+            $('#departmentSelect, select[name="Input.Role"]').on('change', toggleStation);
+        });
+    </script>
+}
