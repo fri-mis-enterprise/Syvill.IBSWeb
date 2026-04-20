@@ -22,7 +22,7 @@ namespace IBS.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideAuthorityToLoad", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.AuthorityToLoad", b =>
                 {
                     b.Property<int>("AuthorityToLoadId")
                         .ValueGeneratedOnAdd()
@@ -115,22 +115,22 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("valid_until");
 
                     b.HasKey("AuthorityToLoadId")
-                        .HasName("pk_filpride_authority_to_loads");
+                        .HasName("pk_authority_to_loads");
 
                     b.HasIndex("CustomerOrderSlipId")
-                        .HasDatabaseName("ix_filpride_authority_to_loads_customer_order_slip_id");
+                        .HasDatabaseName("ix_authority_to_loads_customer_order_slip_id");
 
                     b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_filpride_authority_to_loads_supplier_id");
+                        .HasDatabaseName("ix_authority_to_loads_supplier_id");
 
                     b.HasIndex("AuthorityToLoadNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_authority_to_loads_authority_to_load_no_company");
+                        .HasDatabaseName("ix_authority_to_loads_authority_to_load_no_company");
 
-                    b.ToTable("filpride_authority_to_loads", (string)null);
+                    b.ToTable("authority_to_loads", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideBookAtlDetail", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.BookAtlDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,21 +158,21 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("unserved_quantity");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_book_atl_details");
+                        .HasName("pk_book_atl_details");
 
                     b.HasIndex("AppointedId")
-                        .HasDatabaseName("ix_filpride_book_atl_details_appointed_id");
+                        .HasDatabaseName("ix_book_atl_details_appointed_id");
 
                     b.HasIndex("AuthorityToLoadId")
-                        .HasDatabaseName("ix_filpride_book_atl_details_authority_to_load_id");
+                        .HasDatabaseName("ix_book_atl_details_authority_to_load_id");
 
                     b.HasIndex("CustomerOrderSlipId")
-                        .HasDatabaseName("ix_filpride_book_atl_details_customer_order_slip_id");
+                        .HasDatabaseName("ix_book_atl_details_customer_order_slip_id");
 
-                    b.ToTable("filpride_book_atl_details", (string)null);
+                    b.ToTable("book_atl_details", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideCVTradePayment", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.CVTradePayment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -200,15 +200,15 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("document_type");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_cv_trade_payments");
+                        .HasName("pk_cv_trade_payments");
 
                     b.HasIndex("CheckVoucherId")
-                        .HasDatabaseName("ix_filpride_cv_trade_payments_check_voucher_id");
+                        .HasDatabaseName("ix_cv_trade_payments_check_voucher_id");
 
-                    b.ToTable("filpride_cv_trade_payments", (string)null);
+                    b.ToTable("cv_trade_payments", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideCheckVoucherDetail", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.CheckVoucherDetail", b =>
                 {
                     b.Property<int>("CheckVoucherDetailId")
                         .ValueGeneratedOnAdd()
@@ -284,12 +284,12 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("transaction_no");
 
                     b.HasKey("CheckVoucherDetailId")
-                        .HasName("pk_filpride_check_voucher_details");
+                        .HasName("pk_check_voucher_details");
 
                     b.HasIndex("CheckVoucherHeaderId")
-                        .HasDatabaseName("ix_filpride_check_voucher_details_check_voucher_header_id");
+                        .HasDatabaseName("ix_check_voucher_details_check_voucher_header_id");
 
-                    b.ToTable("filpride_check_voucher_details", (string)null);
+                    b.ToTable("check_voucher_details", (string)null);
                 });
 
             modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", b =>
@@ -543,82 +543,22 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("CheckVoucherHeaderId")
-                        .HasName("pk_filpride_check_voucher_headers");
+                        .HasName("pk_check_voucher_headers");
 
                     b.HasIndex("BankId")
-                        .HasDatabaseName("ix_filpride_check_voucher_headers_bank_id");
+                        .HasDatabaseName("ix_check_voucher_headers_bank_id");
 
                     b.HasIndex("EmployeeId")
-                        .HasDatabaseName("ix_filpride_check_voucher_headers_employee_id");
+                        .HasDatabaseName("ix_check_voucher_headers_employee_id");
 
                     b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_filpride_check_voucher_headers_supplier_id");
+                        .HasDatabaseName("ix_check_voucher_headers_supplier_id");
 
                     b.HasIndex("CheckVoucherHeaderNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_check_voucher_headers_check_voucher_header_no_comp");
+                        .HasDatabaseName("ix_check_voucher_headers_check_voucher_header_no_company");
 
-                    b.ToTable("filpride_check_voucher_headers", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideJournalVoucherDetail", b =>
-                {
-                    b.Property<int>("JournalVoucherDetailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("journal_voucher_detail_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("JournalVoucherDetailId"));
-
-                    b.Property<string>("AccountName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("account_name");
-
-                    b.Property<string>("AccountNo")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("account_no");
-
-                    b.Property<decimal>("Credit")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("credit");
-
-                    b.Property<decimal>("Debit")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("debit");
-
-                    b.Property<int>("JournalVoucherHeaderId")
-                        .HasColumnType("integer")
-                        .HasColumnName("journal_voucher_header_id");
-
-                    b.Property<int?>("SubAccountId")
-                        .HasColumnType("integer")
-                        .HasColumnName("sub_account_id");
-
-                    b.Property<string>("SubAccountName")
-                        .HasColumnType("varchar(200)")
-                        .HasColumnName("sub_account_name");
-
-                    b.Property<int?>("SubAccountType")
-                        .HasColumnType("integer")
-                        .HasColumnName("sub_account_type");
-
-                    b.Property<string>("TransactionNo")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)")
-                        .HasColumnName("transaction_no");
-
-                    b.HasKey("JournalVoucherDetailId")
-                        .HasName("pk_filpride_journal_voucher_details");
-
-                    b.HasIndex("JournalVoucherHeaderId")
-                        .HasDatabaseName("ix_filpride_journal_voucher_details_journal_voucher_header_id");
-
-                    b.ToTable("filpride_journal_voucher_details", (string)null);
+                    b.ToTable("check_voucher_headers", (string)null);
                 });
 
             modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideJournalVoucherHeader", b =>
@@ -744,98 +684,16 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("JournalVoucherHeaderId")
-                        .HasName("pk_filpride_journal_voucher_headers");
+                        .HasName("pk_journal_voucher_headers");
 
                     b.HasIndex("CVId")
-                        .HasDatabaseName("ix_filpride_journal_voucher_headers_cv_id");
+                        .HasDatabaseName("ix_journal_voucher_headers_cv_id");
 
                     b.HasIndex("JournalVoucherHeaderNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_journal_voucher_headers_journal_voucher_header_no_");
+                        .HasDatabaseName("ix_journal_voucher_headers_journal_voucher_header_no_company");
 
-                    b.ToTable("filpride_journal_voucher_headers", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideMultipleCheckVoucherPayment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("amount_paid");
-
-                    b.Property<int>("CheckVoucherHeaderInvoiceId")
-                        .HasColumnType("integer")
-                        .HasColumnName("check_voucher_header_invoice_id");
-
-                    b.Property<int>("CheckVoucherHeaderPaymentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("check_voucher_header_payment_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_filpride_multiple_check_voucher_payments");
-
-                    b.HasIndex("CheckVoucherHeaderInvoiceId")
-                        .HasDatabaseName("ix_filpride_multiple_check_voucher_payments_check_voucher_head");
-
-                    b.HasIndex("CheckVoucherHeaderPaymentId")
-                        .HasDatabaseName("ix_filpride_multiple_check_voucher_payments_check_voucher_head1");
-
-                    b.ToTable("filpride_multiple_check_voucher_payments", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilpridePOActualPrice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AppliedVolume")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("applied_volume");
-
-                    b.Property<string>("ApprovedBy")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("approved_by");
-
-                    b.Property<DateTime?>("ApprovedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("approved_date");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_approved");
-
-                    b.Property<int>("PurchaseOrderId")
-                        .HasColumnType("integer")
-                        .HasColumnName("purchase_order_id");
-
-                    b.Property<DateTime>("TriggeredDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("triggered_date");
-
-                    b.Property<decimal>("TriggeredPrice")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("triggered_price");
-
-                    b.Property<decimal>("TriggeredVolume")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("triggered_volume");
-
-                    b.HasKey("Id")
-                        .HasName("pk_filpride_po_actual_prices");
-
-                    b.HasIndex("PurchaseOrderId")
-                        .HasDatabaseName("ix_filpride_po_actual_prices_purchase_order_id");
-
-                    b.ToTable("filpride_po_actual_prices", (string)null);
+                    b.ToTable("journal_voucher_headers", (string)null);
                 });
 
             modelBuilder.Entity("IBS.Models.AccountsPayable.FilpridePurchaseOrder", b =>
@@ -1052,28 +910,234 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("PurchaseOrderId")
-                        .HasName("pk_filpride_purchase_orders");
+                        .HasName("pk_purchase_orders");
 
                     b.HasIndex("CustomerId")
-                        .HasDatabaseName("ix_filpride_purchase_orders_customer_id");
+                        .HasDatabaseName("ix_purchase_orders_customer_id");
 
                     b.HasIndex("PickUpPointId")
-                        .HasDatabaseName("ix_filpride_purchase_orders_pick_up_point_id");
+                        .HasDatabaseName("ix_purchase_orders_pick_up_point_id");
 
                     b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_filpride_purchase_orders_product_id");
+                        .HasDatabaseName("ix_purchase_orders_product_id");
 
                     b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_filpride_purchase_orders_supplier_id");
+                        .HasDatabaseName("ix_purchase_orders_supplier_id");
 
                     b.HasIndex("PurchaseOrderNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_purchase_orders_purchase_order_no_company");
+                        .HasDatabaseName("ix_purchase_orders_purchase_order_no_company");
 
-                    b.ToTable("filpride_purchase_orders", (string)null);
+                    b.ToTable("purchase_orders", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideReceivingReport", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.JournalVoucherDetail", b =>
+                {
+                    b.Property<int>("JournalVoucherDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("journal_voucher_detail_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("JournalVoucherDetailId"));
+
+                    b.Property<string>("AccountName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("account_name");
+
+                    b.Property<string>("AccountNo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("account_no");
+
+                    b.Property<decimal>("Credit")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("credit");
+
+                    b.Property<decimal>("Debit")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("debit");
+
+                    b.Property<int>("JournalVoucherHeaderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("journal_voucher_header_id");
+
+                    b.Property<int?>("SubAccountId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sub_account_id");
+
+                    b.Property<string>("SubAccountName")
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("sub_account_name");
+
+                    b.Property<int?>("SubAccountType")
+                        .HasColumnType("integer")
+                        .HasColumnName("sub_account_type");
+
+                    b.Property<string>("TransactionNo")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)")
+                        .HasColumnName("transaction_no");
+
+                    b.HasKey("JournalVoucherDetailId")
+                        .HasName("pk_journal_voucher_details");
+
+                    b.HasIndex("JournalVoucherHeaderId")
+                        .HasDatabaseName("ix_journal_voucher_details_journal_voucher_header_id");
+
+                    b.ToTable("journal_voucher_details", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsPayable.JvAmortizationSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("end_date");
+
+                    b.Property<string>("ExpenseAccount")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("expense_account");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<int>("JvFrequency")
+                        .HasColumnType("integer")
+                        .HasColumnName("jv_frequency");
+
+                    b.Property<int>("JvId")
+                        .HasColumnType("integer")
+                        .HasColumnName("jv_id");
+
+                    b.Property<DateOnly?>("LastRunDate")
+                        .HasColumnType("date")
+                        .HasColumnName("last_run_date");
+
+                    b.Property<DateOnly?>("NextRunDate")
+                        .HasColumnType("date")
+                        .HasColumnName("next_run_date");
+
+                    b.Property<int>("OccurrenceRemaining")
+                        .HasColumnType("integer")
+                        .HasColumnName("occurrence_remaining");
+
+                    b.Property<int>("OccurrenceTotal")
+                        .HasColumnType("integer")
+                        .HasColumnName("occurrence_total");
+
+                    b.Property<string>("PrepaidAccount")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("prepaid_account");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("start_date");
+
+                    b.HasKey("Id")
+                        .HasName("pk_jv_amortization_settings");
+
+                    b.HasIndex("JvId")
+                        .HasDatabaseName("ix_jv_amortization_settings_jv_id");
+
+                    b.ToTable("jv_amortization_settings", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsPayable.MultipleCheckVoucherPayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("amount_paid");
+
+                    b.Property<int>("CheckVoucherHeaderInvoiceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("check_voucher_header_invoice_id");
+
+                    b.Property<int>("CheckVoucherHeaderPaymentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("check_voucher_header_payment_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_multiple_check_voucher_payments");
+
+                    b.HasIndex("CheckVoucherHeaderInvoiceId")
+                        .HasDatabaseName("ix_multiple_check_voucher_payments_check_voucher_header_invoic");
+
+                    b.HasIndex("CheckVoucherHeaderPaymentId")
+                        .HasDatabaseName("ix_multiple_check_voucher_payments_check_voucher_header_paymen");
+
+                    b.ToTable("multiple_check_voucher_payments", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsPayable.POActualPrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AppliedVolume")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("applied_volume");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("approved_by");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("approved_date");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_approved");
+
+                    b.Property<int>("PurchaseOrderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("purchase_order_id");
+
+                    b.Property<DateTime>("TriggeredDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("triggered_date");
+
+                    b.Property<decimal>("TriggeredPrice")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("triggered_price");
+
+                    b.Property<decimal>("TriggeredVolume")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("triggered_volume");
+
+                    b.HasKey("Id")
+                        .HasName("pk_po_actual_prices");
+
+                    b.HasIndex("PurchaseOrderId")
+                        .HasDatabaseName("ix_po_actual_prices_purchase_order_id");
+
+                    b.ToTable("po_actual_prices", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsPayable.ReceivingReport", b =>
                 {
                     b.Property<int>("ReceivingReportId")
                         .ValueGeneratedOnAdd()
@@ -1263,86 +1327,22 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("withdrawal_certificate");
 
                     b.HasKey("ReceivingReportId")
-                        .HasName("pk_filpride_receiving_reports");
+                        .HasName("pk_receiving_reports");
 
                     b.HasIndex("DeliveryReceiptId")
-                        .HasDatabaseName("ix_filpride_receiving_reports_delivery_receipt_id");
+                        .HasDatabaseName("ix_receiving_reports_delivery_receipt_id");
 
                     b.HasIndex("POId")
-                        .HasDatabaseName("ix_filpride_receiving_reports_po_id");
+                        .HasDatabaseName("ix_receiving_reports_po_id");
 
                     b.HasIndex("ReceivingReportNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_receiving_reports_receiving_report_no_company");
+                        .HasDatabaseName("ix_receiving_reports_receiving_report_no_company");
 
-                    b.ToTable("filpride_receiving_reports", (string)null);
+                    b.ToTable("receiving_reports", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.JvAmortizationSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date")
-                        .HasColumnName("end_date");
-
-                    b.Property<string>("ExpenseAccount")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("expense_account");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<int>("JvFrequency")
-                        .HasColumnType("integer")
-                        .HasColumnName("jv_frequency");
-
-                    b.Property<int>("JvId")
-                        .HasColumnType("integer")
-                        .HasColumnName("jv_id");
-
-                    b.Property<DateOnly?>("LastRunDate")
-                        .HasColumnType("date")
-                        .HasColumnName("last_run_date");
-
-                    b.Property<DateOnly?>("NextRunDate")
-                        .HasColumnType("date")
-                        .HasColumnName("next_run_date");
-
-                    b.Property<int>("OccurrenceRemaining")
-                        .HasColumnType("integer")
-                        .HasColumnName("occurrence_remaining");
-
-                    b.Property<int>("OccurrenceTotal")
-                        .HasColumnType("integer")
-                        .HasColumnName("occurrence_total");
-
-                    b.Property<string>("PrepaidAccount")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("prepaid_account");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date")
-                        .HasColumnName("start_date");
-
-                    b.HasKey("Id")
-                        .HasName("pk_jv_amortization_settings");
-
-                    b.HasIndex("JvId")
-                        .HasDatabaseName("ix_jv_amortization_settings_jv_id");
-
-                    b.ToTable("jv_amortization_settings", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCOSAppointedSupplier", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.COSAppointedSupplier", b =>
                 {
                     b.Property<int>("SequenceId")
                         .ValueGeneratedOnAdd()
@@ -1385,21 +1385,21 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("unserved_quantity");
 
                     b.HasKey("SequenceId")
-                        .HasName("pk_filpride_cos_appointed_suppliers");
+                        .HasName("pk_cos_appointed_suppliers");
 
                     b.HasIndex("CustomerOrderSlipId")
-                        .HasDatabaseName("ix_filpride_cos_appointed_suppliers_customer_order_slip_id");
+                        .HasDatabaseName("ix_cos_appointed_suppliers_customer_order_slip_id");
 
                     b.HasIndex("PurchaseOrderId")
-                        .HasDatabaseName("ix_filpride_cos_appointed_suppliers_purchase_order_id");
+                        .HasDatabaseName("ix_cos_appointed_suppliers_purchase_order_id");
 
                     b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_filpride_cos_appointed_suppliers_supplier_id");
+                        .HasDatabaseName("ix_cos_appointed_suppliers_supplier_id");
 
-                    b.ToTable("filpride_cos_appointed_suppliers", (string)null);
+                    b.ToTable("cos_appointed_suppliers", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCollectionReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CollectionReceipt", b =>
                 {
                     b.Property<int>("CollectionReceiptId")
                         .ValueGeneratedOnAdd()
@@ -1646,28 +1646,28 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("wvat");
 
                     b.HasKey("CollectionReceiptId")
-                        .HasName("pk_filpride_collection_receipts");
+                        .HasName("pk_collection_receipts");
 
                     b.HasIndex("BankId")
-                        .HasDatabaseName("ix_filpride_collection_receipts_bank_id");
+                        .HasDatabaseName("ix_collection_receipts_bank_id");
 
                     b.HasIndex("CustomerId")
-                        .HasDatabaseName("ix_filpride_collection_receipts_customer_id");
+                        .HasDatabaseName("ix_collection_receipts_customer_id");
 
                     b.HasIndex("SalesInvoiceId")
-                        .HasDatabaseName("ix_filpride_collection_receipts_sales_invoice_id");
+                        .HasDatabaseName("ix_collection_receipts_sales_invoice_id");
 
                     b.HasIndex("ServiceInvoiceId")
-                        .HasDatabaseName("ix_filpride_collection_receipts_service_invoice_id");
+                        .HasDatabaseName("ix_collection_receipts_service_invoice_id");
 
                     b.HasIndex("CollectionReceiptNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_collection_receipts_collection_receipt_no_company");
+                        .HasDatabaseName("ix_collection_receipts_collection_receipt_no_company");
 
-                    b.ToTable("filpride_collection_receipts", (string)null);
+                    b.ToTable("collection_receipts", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCollectionReceiptDetail", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CollectionReceiptDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1701,21 +1701,21 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("invoice_no");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_collection_receipt_details");
+                        .HasName("pk_collection_receipt_details");
 
                     b.HasIndex("CollectionReceiptId")
-                        .HasDatabaseName("ix_filpride_collection_receipt_details_collection_receipt_id");
+                        .HasDatabaseName("ix_collection_receipt_details_collection_receipt_id");
 
                     b.HasIndex("CollectionReceiptNo")
-                        .HasDatabaseName("ix_filpride_collection_receipt_details_collection_receipt_no");
+                        .HasDatabaseName("ix_collection_receipt_details_collection_receipt_no");
 
                     b.HasIndex("InvoiceNo")
-                        .HasDatabaseName("ix_filpride_collection_receipt_details_invoice_no");
+                        .HasDatabaseName("ix_collection_receipt_details_invoice_no");
 
-                    b.ToTable("filpride_collection_receipt_details", (string)null);
+                    b.ToTable("collection_receipt_details", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCreditMemo", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CreditMemo", b =>
                 {
                     b.Property<int>("CreditMemoId")
                         .ValueGeneratedOnAdd()
@@ -1852,22 +1852,22 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("CreditMemoId")
-                        .HasName("pk_filpride_credit_memos");
+                        .HasName("pk_credit_memos");
 
                     b.HasIndex("SalesInvoiceId")
-                        .HasDatabaseName("ix_filpride_credit_memos_sales_invoice_id");
+                        .HasDatabaseName("ix_credit_memos_sales_invoice_id");
 
                     b.HasIndex("ServiceInvoiceId")
-                        .HasDatabaseName("ix_filpride_credit_memos_service_invoice_id");
+                        .HasDatabaseName("ix_credit_memos_service_invoice_id");
 
                     b.HasIndex("CreditMemoNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_credit_memos_credit_memo_no_company");
+                        .HasDatabaseName("ix_credit_memos_credit_memo_no_company");
 
-                    b.ToTable("filpride_credit_memos", (string)null);
+                    b.ToTable("credit_memos", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CustomerOrderSlip", b =>
                 {
                     b.Property<int>("CustomerOrderSlipId")
                         .ValueGeneratedOnAdd()
@@ -2221,7 +2221,7 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("filpride_customer_order_slips", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideDebitMemo", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.DebitMemo", b =>
                 {
                     b.Property<int>("DebitMemoId")
                         .ValueGeneratedOnAdd()
@@ -2359,22 +2359,22 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("DebitMemoId")
-                        .HasName("pk_filpride_debit_memos");
+                        .HasName("pk_debit_memos");
 
                     b.HasIndex("SalesInvoiceId")
-                        .HasDatabaseName("ix_filpride_debit_memos_sales_invoice_id");
+                        .HasDatabaseName("ix_debit_memos_sales_invoice_id");
 
                     b.HasIndex("ServiceInvoiceId")
-                        .HasDatabaseName("ix_filpride_debit_memos_service_invoice_id");
+                        .HasDatabaseName("ix_debit_memos_service_invoice_id");
 
                     b.HasIndex("DebitMemoNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_debit_memos_debit_memo_no_company");
+                        .HasDatabaseName("ix_debit_memos_debit_memo_no_company");
 
-                    b.ToTable("filpride_debit_memos", (string)null);
+                    b.ToTable("debit_memos", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideDeliveryReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.DeliveryReceipt", b =>
                 {
                     b.Property<int>("DeliveryReceiptId")
                         .ValueGeneratedOnAdd()
@@ -2623,7 +2623,7 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("filpride_delivery_receipts", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideProvisionalReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.ProvisionalReceipt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2803,22 +2803,22 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("wvat");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_provisional_receipts");
+                        .HasName("pk_provisional_receipts");
 
                     b.HasIndex("BankId")
-                        .HasDatabaseName("ix_filpride_provisional_receipts_bank_id");
+                        .HasDatabaseName("ix_provisional_receipts_bank_id");
 
                     b.HasIndex("EmployeeId")
-                        .HasDatabaseName("ix_filpride_provisional_receipts_employee_id");
+                        .HasDatabaseName("ix_provisional_receipts_employee_id");
 
                     b.HasIndex("SeriesNumber", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_provisional_receipts_series_number_company");
+                        .HasDatabaseName("ix_provisional_receipts_series_number_company");
 
-                    b.ToTable("filpride_provisional_receipts", (string)null);
+                    b.ToTable("provisional_receipts", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideSalesInvoice", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.SalesInvoice", b =>
                 {
                     b.Property<int>("SalesInvoiceId")
                         .ValueGeneratedOnAdd()
@@ -2999,31 +2999,31 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("SalesInvoiceId")
-                        .HasName("pk_filpride_sales_invoices");
+                        .HasName("pk_sales_invoices");
 
                     b.HasIndex("CustomerId")
-                        .HasDatabaseName("ix_filpride_sales_invoices_customer_id");
+                        .HasDatabaseName("ix_sales_invoices_customer_id");
 
                     b.HasIndex("CustomerOrderSlipId")
-                        .HasDatabaseName("ix_filpride_sales_invoices_customer_order_slip_id");
+                        .HasDatabaseName("ix_sales_invoices_customer_order_slip_id");
 
                     b.HasIndex("DeliveryReceiptId")
-                        .HasDatabaseName("ix_filpride_sales_invoices_delivery_receipt_id");
+                        .HasDatabaseName("ix_sales_invoices_delivery_receipt_id");
 
                     b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_filpride_sales_invoices_product_id");
+                        .HasDatabaseName("ix_sales_invoices_product_id");
 
                     b.HasIndex("PurchaseOrderId")
-                        .HasDatabaseName("ix_filpride_sales_invoices_purchase_order_id");
+                        .HasDatabaseName("ix_sales_invoices_purchase_order_id");
 
                     b.HasIndex("SalesInvoiceNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_sales_invoices_sales_invoice_no_company");
+                        .HasDatabaseName("ix_sales_invoices_sales_invoice_no_company");
 
-                    b.ToTable("filpride_sales_invoices", (string)null);
+                    b.ToTable("sales_invoices", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideServiceInvoice", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.ServiceInvoice", b =>
                 {
                     b.Property<int>("ServiceInvoiceId")
                         .ValueGeneratedOnAdd()
@@ -3212,25 +3212,25 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("voided_date");
 
                     b.HasKey("ServiceInvoiceId")
-                        .HasName("pk_filpride_service_invoices");
+                        .HasName("pk_service_invoices");
 
                     b.HasIndex("CustomerId")
-                        .HasDatabaseName("ix_filpride_service_invoices_customer_id");
+                        .HasDatabaseName("ix_service_invoices_customer_id");
 
                     b.HasIndex("DeliveryReceiptId")
-                        .HasDatabaseName("ix_filpride_service_invoices_delivery_receipt_id");
+                        .HasDatabaseName("ix_service_invoices_delivery_receipt_id");
 
                     b.HasIndex("ServiceId")
-                        .HasDatabaseName("ix_filpride_service_invoices_service_id");
+                        .HasDatabaseName("ix_service_invoices_service_id");
 
                     b.HasIndex("ServiceInvoiceNo", "Company")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_service_invoices_service_invoice_no_company");
+                        .HasDatabaseName("ix_service_invoices_service_invoice_no_company");
 
-                    b.ToTable("filpride_service_invoices", (string)null);
+                    b.ToTable("service_invoices", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideCashReceiptBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.CashReceiptBook", b =>
                 {
                     b.Property<int>("CashReceiptBookId")
                         .ValueGeneratedOnAdd()
@@ -3293,12 +3293,12 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("ref_no");
 
                     b.HasKey("CashReceiptBookId")
-                        .HasName("pk_filpride_cash_receipt_books");
+                        .HasName("pk_cash_receipt_books");
 
-                    b.ToTable("filpride_cash_receipt_books", (string)null);
+                    b.ToTable("cash_receipt_books", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideDisbursementBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.DisbursementBook", b =>
                 {
                     b.Property<int>("DisbursementBookId")
                         .ValueGeneratedOnAdd()
@@ -3372,12 +3372,49 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("payee");
 
                     b.HasKey("DisbursementBookId")
-                        .HasName("pk_filpride_disbursement_books");
+                        .HasName("pk_disbursement_books");
 
-                    b.ToTable("filpride_disbursement_books", (string)null);
+                    b.ToTable("disbursement_books", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideGLPeriodBalance", b =>
+            modelBuilder.Entity("IBS.Models.Books.FilprideSalesLockedRecordsQueue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DeliveryReceiptId")
+                        .HasColumnType("integer")
+                        .HasColumnName("delivery_receipt_id");
+
+                    b.Property<DateOnly>("LockedDate")
+                        .HasColumnType("date")
+                        .HasColumnName("locked_date");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("price");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("quantity");
+
+                    b.HasKey("Id")
+                        .HasName("pk_sales_locked_records_queues");
+
+                    b.HasIndex("DeliveryReceiptId")
+                        .HasDatabaseName("ix_sales_locked_records_queues_delivery_receipt_id");
+
+                    b.HasIndex("LockedDate")
+                        .HasDatabaseName("ix_sales_locked_records_queues_locked_date");
+
+                    b.ToTable("sales_locked_records_queues", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.Books.GLPeriodBalance", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3450,15 +3487,15 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("period_start_date");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_gl_period_balances");
+                        .HasName("pk_gl_period_balances");
 
                     b.HasIndex("AccountId")
-                        .HasDatabaseName("ix_filpride_gl_period_balances_account_id");
+                        .HasDatabaseName("ix_gl_period_balances_account_id");
 
-                    b.ToTable("filpride_gl_period_balances", (string)null);
+                    b.ToTable("gl_period_balances", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideGLSubAccountBalance", b =>
+            modelBuilder.Entity("IBS.Models.Books.GLSubAccountBalance", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3528,15 +3565,15 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("sub_account_type");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_gl_sub_account_balances");
+                        .HasName("pk_gl_sub_account_balances");
 
                     b.HasIndex("AccountId")
-                        .HasDatabaseName("ix_filpride_gl_sub_account_balances_account_id");
+                        .HasDatabaseName("ix_gl_sub_account_balances_account_id");
 
-                    b.ToTable("filpride_gl_sub_account_balances", (string)null);
+                    b.ToTable("gl_sub_account_balances", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideGeneralLedgerBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.GeneralLedgerBook", b =>
                 {
                     b.Property<int>("GeneralLedgerBookId")
                         .ValueGeneratedOnAdd()
@@ -3617,15 +3654,15 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("sub_account_type");
 
                     b.HasKey("GeneralLedgerBookId")
-                        .HasName("pk_filpride_general_ledger_books");
+                        .HasName("pk_general_ledger_books");
 
                     b.HasIndex("AccountId")
-                        .HasDatabaseName("ix_filpride_general_ledger_books_account_id");
+                        .HasDatabaseName("ix_general_ledger_books_account_id");
 
-                    b.ToTable("filpride_general_ledger_books", (string)null);
+                    b.ToTable("general_ledger_books", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideInventory", b =>
+            modelBuilder.Entity("IBS.Models.Books.Inventory", b =>
                 {
                     b.Property<int>("InventoryId")
                         .ValueGeneratedOnAdd()
@@ -3702,18 +3739,18 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("validated_date");
 
                     b.HasKey("InventoryId")
-                        .HasName("pk_filpride_inventories");
+                        .HasName("pk_inventories");
 
                     b.HasIndex("POId")
-                        .HasDatabaseName("ix_filpride_inventories_po_id");
+                        .HasDatabaseName("ix_inventories_po_id");
 
                     b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_filpride_inventories_product_id");
+                        .HasDatabaseName("ix_inventories_product_id");
 
-                    b.ToTable("filpride_inventories", (string)null);
+                    b.ToTable("inventories", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideJournalBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.JournalBook", b =>
                 {
                     b.Property<int>("JournalBookId")
                         .ValueGeneratedOnAdd()
@@ -3763,12 +3800,12 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("reference");
 
                     b.HasKey("JournalBookId")
-                        .HasName("pk_filpride_journal_books");
+                        .HasName("pk_journal_books");
 
-                    b.ToTable("filpride_journal_books", (string)null);
+                    b.ToTable("journal_books", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideMonthlyNibit", b =>
+            modelBuilder.Entity("IBS.Models.Books.MonthlyNibit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3810,21 +3847,21 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("year");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_monthly_nibits");
+                        .HasName("pk_monthly_nibits");
 
                     b.HasIndex("Company")
-                        .HasDatabaseName("ix_filpride_monthly_nibits_company");
+                        .HasDatabaseName("ix_monthly_nibits_company");
 
                     b.HasIndex("Month")
-                        .HasDatabaseName("ix_filpride_monthly_nibits_month");
+                        .HasDatabaseName("ix_monthly_nibits_month");
 
                     b.HasIndex("Year")
-                        .HasDatabaseName("ix_filpride_monthly_nibits_year");
+                        .HasDatabaseName("ix_monthly_nibits_year");
 
-                    b.ToTable("filpride_monthly_nibits", (string)null);
+                    b.ToTable("monthly_nibits", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilpridePurchaseBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.PurchaseBook", b =>
                 {
                     b.Property<int>("PurchaseBookId")
                         .ValueGeneratedOnAdd()
@@ -3905,12 +3942,12 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("wht_amount");
 
                     b.HasKey("PurchaseBookId")
-                        .HasName("pk_filpride_purchase_books");
+                        .HasName("pk_purchase_books");
 
-                    b.ToTable("filpride_purchase_books", (string)null);
+                    b.ToTable("purchase_books", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilpridePurchaseLockedRecordsQueue", b =>
+            modelBuilder.Entity("IBS.Models.Books.PurchaseLockedRecordsQueue", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3936,18 +3973,18 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("receiving_report_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_purchase_locked_records_queues");
+                        .HasName("pk_purchase_locked_records_queues");
 
                     b.HasIndex("LockedDate")
-                        .HasDatabaseName("ix_filpride_purchase_locked_records_queues_locked_date");
+                        .HasDatabaseName("ix_purchase_locked_records_queues_locked_date");
 
                     b.HasIndex("ReceivingReportId")
-                        .HasDatabaseName("ix_filpride_purchase_locked_records_queues_receiving_report_id");
+                        .HasDatabaseName("ix_purchase_locked_records_queues_receiving_report_id");
 
-                    b.ToTable("filpride_purchase_locked_records_queues", (string)null);
+                    b.ToTable("purchase_locked_records_queues", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideSalesBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.SalesBook", b =>
                 {
                     b.Property<int>("SalesBookId")
                         .ValueGeneratedOnAdd()
@@ -4035,46 +4072,9 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("zero_rated");
 
                     b.HasKey("SalesBookId")
-                        .HasName("pk_filpride_sales_books");
+                        .HasName("pk_sales_books");
 
-                    b.ToTable("filpride_sales_books", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.Books.FilprideSalesLockedRecordsQueue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DeliveryReceiptId")
-                        .HasColumnType("integer")
-                        .HasColumnName("delivery_receipt_id");
-
-                    b.Property<DateOnly>("LockedDate")
-                        .HasColumnType("date")
-                        .HasColumnName("locked_date");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("price");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("quantity");
-
-                    b.HasKey("Id")
-                        .HasName("pk_filpride_sales_locked_records_queues");
-
-                    b.HasIndex("DeliveryReceiptId")
-                        .HasDatabaseName("ix_filpride_sales_locked_records_queues_delivery_receipt_id");
-
-                    b.HasIndex("LockedDate")
-                        .HasDatabaseName("ix_filpride_sales_locked_records_queues_locked_date");
-
-                    b.ToTable("filpride_sales_locked_records_queues", (string)null);
+                    b.ToTable("sales_books", (string)null);
                 });
 
             modelBuilder.Entity("IBS.Models.Common.AppSetting", b =>
@@ -4098,7 +4098,7 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("app_settings", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Common.FilprideAuditTrail", b =>
+            modelBuilder.Entity("IBS.Models.Common.AuditTrail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4135,9 +4135,9 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("username");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_audit_trails");
+                        .HasName("pk_audit_trails");
 
-                    b.ToTable("filpride_audit_trails", (string)null);
+                    b.ToTable("audit_trails", (string)null);
                 });
 
             modelBuilder.Entity("IBS.Models.Common.HubConnection", b =>
@@ -4306,91 +4306,6 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("user_notifications", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.Filpride.FilprideFreight", b =>
-                {
-                    b.Property<int>("FreightId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("freight_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FreightId"));
-
-                    b.Property<int>("ClusterCode")
-                        .HasColumnType("integer")
-                        .HasColumnName("cluster_code");
-
-                    b.Property<decimal>("Freight")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("freight");
-
-                    b.Property<int>("PickUpPointId")
-                        .HasColumnType("integer")
-                        .HasColumnName("pick_up_point_id");
-
-                    b.HasKey("FreightId")
-                        .HasName("pk_filpride_freights");
-
-                    b.HasIndex("PickUpPointId")
-                        .HasDatabaseName("ix_filpride_freights_pick_up_point_id");
-
-                    b.ToTable("filpride_freights", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.Filpride.FilprideOffsettings", b =>
-                {
-                    b.Property<int>("OffSettingId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("off_setting_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OffSettingId"));
-
-                    b.Property<string>("AccountNo")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("account_no");
-
-                    b.Property<string>("AccountTitle")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("account_title");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("amount");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("company");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_removed");
-
-                    b.Property<string>("Reference")
-                        .HasColumnType("text")
-                        .HasColumnName("reference");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("source");
-
-                    b.HasKey("OffSettingId")
-                        .HasName("pk_filpride_offsettings");
-
-                    b.ToTable("filpride_offsettings", (string)null);
-                });
-
             modelBuilder.Entity("IBS.Models.MasterFile.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -4502,74 +4417,7 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.Company", b =>
-                {
-                    b.Property<int>("CompanyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("company_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CompanyId"));
-
-                    b.Property<string>("BusinessStyle")
-                        .IsRequired()
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("business_style");
-
-                    b.Property<string>("CompanyAddress")
-                        .IsRequired()
-                        .HasColumnType("varchar(200)")
-                        .HasColumnName("company_address");
-
-                    b.Property<string>("CompanyCode")
-                        .HasColumnType("varchar(3)")
-                        .HasColumnName("company_code");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("company_name");
-
-                    b.Property<string>("CompanyTin")
-                        .IsRequired()
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("company_tin");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<string>("EditedBy")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("edited_by");
-
-                    b.Property<DateTime>("EditedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("edited_date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.HasKey("CompanyId")
-                        .HasName("pk_companies");
-
-                    b.HasIndex("CompanyCode")
-                        .IsUnique()
-                        .HasDatabaseName("ix_companies_company_code");
-
-                    b.HasIndex("CompanyName")
-                        .IsUnique()
-                        .HasDatabaseName("ix_companies_company_name");
-
-                    b.ToTable("companies", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideBankAccount", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.BankAccount", b =>
                 {
                     b.Property<int>("BankAccountId")
                         .ValueGeneratedOnAdd()
@@ -4626,12 +4474,12 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("is_filpride");
 
                     b.HasKey("BankAccountId")
-                        .HasName("pk_filpride_bank_accounts");
+                        .HasName("pk_bank_accounts");
 
-                    b.ToTable("filpride_bank_accounts", (string)null);
+                    b.ToTable("bank_accounts", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideChartOfAccount", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.ChartOfAccount", b =>
                 {
                     b.Property<int>("AccountId")
                         .ValueGeneratedOnAdd()
@@ -4702,22 +4550,89 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("parent_account_id");
 
                     b.HasKey("AccountId")
-                        .HasName("pk_filpride_chart_of_accounts");
+                        .HasName("pk_chart_of_accounts");
 
                     b.HasIndex("AccountName")
-                        .HasDatabaseName("ix_filpride_chart_of_accounts_account_name");
+                        .HasDatabaseName("ix_chart_of_accounts_account_name");
 
                     b.HasIndex("AccountNumber")
                         .IsUnique()
-                        .HasDatabaseName("ix_filpride_chart_of_accounts_account_number");
+                        .HasDatabaseName("ix_chart_of_accounts_account_number");
 
                     b.HasIndex("ParentAccountId")
-                        .HasDatabaseName("ix_filpride_chart_of_accounts_parent_account_id");
+                        .HasDatabaseName("ix_chart_of_accounts_parent_account_id");
 
-                    b.ToTable("filpride_chart_of_accounts", (string)null);
+                    b.ToTable("chart_of_accounts", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideCustomer", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Company", b =>
+                {
+                    b.Property<int>("CompanyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("company_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CompanyId"));
+
+                    b.Property<string>("BusinessStyle")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("business_style");
+
+                    b.Property<string>("CompanyAddress")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("company_address");
+
+                    b.Property<string>("CompanyCode")
+                        .HasColumnType("varchar(3)")
+                        .HasColumnName("company_code");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("company_name");
+
+                    b.Property<string>("CompanyTin")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("company_tin");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<string>("EditedBy")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("edited_by");
+
+                    b.Property<DateTime>("EditedDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("edited_date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.HasKey("CompanyId")
+                        .HasName("pk_companies");
+
+                    b.HasIndex("CompanyCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_companies_company_code");
+
+                    b.HasIndex("CompanyName")
+                        .IsUnique()
+                        .HasDatabaseName("ix_companies_company_name");
+
+                    b.ToTable("companies", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.MasterFile.Customer", b =>
                 {
                     b.Property<int>("CustomerId")
                         .ValueGeneratedOnAdd()
@@ -4870,21 +4785,21 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("zip_code");
 
                     b.HasKey("CustomerId")
-                        .HasName("pk_filpride_customers");
+                        .HasName("pk_customers");
 
                     b.HasIndex("CommissioneeId")
-                        .HasDatabaseName("ix_filpride_customers_commissionee_id");
+                        .HasDatabaseName("ix_customers_commissionee_id");
 
                     b.HasIndex("CustomerCode")
-                        .HasDatabaseName("ix_filpride_customers_customer_code");
+                        .HasDatabaseName("ix_customers_customer_code");
 
                     b.HasIndex("CustomerName")
-                        .HasDatabaseName("ix_filpride_customers_customer_name");
+                        .HasDatabaseName("ix_customers_customer_name");
 
-                    b.ToTable("filpride_customers", (string)null);
+                    b.ToTable("customers", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideCustomerBranch", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.CustomerBranch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -4916,15 +4831,15 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("customer_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_filpride_customer_branches");
+                        .HasName("pk_customer_branches");
 
                     b.HasIndex("CustomerId")
-                        .HasDatabaseName("ix_filpride_customer_branches_customer_id");
+                        .HasDatabaseName("ix_customer_branches_customer_id");
 
-                    b.ToTable("filpride_customer_branches", (string)null);
+                    b.ToTable("customer_branches", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideEmployee", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
                         .ValueGeneratedOnAdd()
@@ -5054,15 +4969,15 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("tin_no");
 
                     b.HasKey("EmployeeId")
-                        .HasName("pk_filpride_employees");
+                        .HasName("pk_employees");
 
                     b.HasIndex("EmployeeNumber")
-                        .HasDatabaseName("ix_filpride_employees_employee_number");
+                        .HasDatabaseName("ix_employees_employee_number");
 
-                    b.ToTable("filpride_employees", (string)null);
+                    b.ToTable("employees", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilpridePickUpPoint", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.PickUpPoint", b =>
                 {
                     b.Property<int>("PickUpPointId")
                         .ValueGeneratedOnAdd()
@@ -5106,18 +5021,76 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("supplier_id");
 
                     b.HasKey("PickUpPointId")
-                        .HasName("pk_filpride_pick_up_points");
+                        .HasName("pk_pick_up_points");
 
                     b.HasIndex("Company")
-                        .HasDatabaseName("ix_filpride_pick_up_points_company");
+                        .HasDatabaseName("ix_pick_up_points_company");
 
                     b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_filpride_pick_up_points_supplier_id");
+                        .HasDatabaseName("ix_pick_up_points_supplier_id");
 
-                    b.ToTable("filpride_pick_up_points", (string)null);
+                    b.ToTable("pick_up_points", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideService", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Product", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("product_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductId"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<string>("EditedBy")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("edited_by");
+
+                    b.Property<DateTime?>("EditedDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("edited_date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("product_code");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("product_name");
+
+                    b.Property<string>("ProductUnit")
+                        .IsRequired()
+                        .HasColumnType("varchar(2)")
+                        .HasColumnName("product_unit");
+
+                    b.HasKey("ProductId")
+                        .HasName("pk_products");
+
+                    b.HasIndex("ProductCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_product_code");
+
+                    b.HasIndex("ProductName")
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_product_name");
+
+                    b.ToTable("products", (string)null);
+                });
+
+            modelBuilder.Entity("IBS.Models.MasterFile.Service", b =>
                 {
                     b.Property<int>("ServiceId")
                         .ValueGeneratedOnAdd()
@@ -5185,12 +5158,12 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("unearned_title");
 
                     b.HasKey("ServiceId")
-                        .HasName("pk_filpride_services");
+                        .HasName("pk_services");
 
-                    b.ToTable("filpride_services", (string)null);
+                    b.ToTable("services", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideSupplier", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Supplier", b =>
                 {
                     b.Property<int>("SupplierId")
                         .ValueGeneratedOnAdd()
@@ -5351,18 +5324,18 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("zip_code");
 
                     b.HasKey("SupplierId")
-                        .HasName("pk_filpride_suppliers");
+                        .HasName("pk_suppliers");
 
                     b.HasIndex("SupplierCode")
-                        .HasDatabaseName("ix_filpride_suppliers_supplier_code");
+                        .HasDatabaseName("ix_suppliers_supplier_code");
 
                     b.HasIndex("SupplierName")
-                        .HasDatabaseName("ix_filpride_suppliers_supplier_name");
+                        .HasDatabaseName("ix_suppliers_supplier_name");
 
-                    b.ToTable("filpride_suppliers", (string)null);
+                    b.ToTable("suppliers", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideTerms", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Terms", b =>
                 {
                     b.Property<string>("TermsCode")
                         .HasMaxLength(10)
@@ -5398,67 +5371,9 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("number_of_months");
 
                     b.HasKey("TermsCode")
-                        .HasName("pk_filpride_terms");
+                        .HasName("pk_terms");
 
-                    b.ToTable("filpride_terms", (string)null);
-                });
-
-            modelBuilder.Entity("IBS.Models.MasterFile.Product", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("product_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductId"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<string>("EditedBy")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("edited_by");
-
-                    b.Property<DateTime?>("EditedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("edited_date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("ProductCode")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("product_code");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("product_name");
-
-                    b.Property<string>("ProductUnit")
-                        .IsRequired()
-                        .HasColumnType("varchar(2)")
-                        .HasColumnName("product_unit");
-
-                    b.HasKey("ProductId")
-                        .HasName("pk_products");
-
-                    b.HasIndex("ProductCode")
-                        .IsUnique()
-                        .HasDatabaseName("ix_products_product_code");
-
-                    b.HasIndex("ProductName")
-                        .IsUnique()
-                        .HasDatabaseName("ix_products_product_name");
-
-                    b.ToTable("products", (string)null);
+                    b.ToTable("terms", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -5629,46 +5544,46 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideAuthorityToLoad", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.AuthorityToLoad", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", "CustomerOrderSlip")
+                    b.HasOne("IBS.Models.AccountsReceivable.CustomerOrderSlip", "CustomerOrderSlip")
                         .WithMany()
                         .HasForeignKey("CustomerOrderSlipId")
-                        .HasConstraintName("fk_filpride_authority_to_loads_filpride_customer_order_slips_c");
+                        .HasConstraintName("fk_authority_to_loads_filpride_customer_order_slips_customer_o");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Supplier")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_authority_to_loads_filpride_suppliers_supplier_id");
+                        .HasConstraintName("fk_authority_to_loads_suppliers_supplier_id");
 
                     b.Navigation("CustomerOrderSlip");
 
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideBookAtlDetail", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.BookAtlDetail", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCOSAppointedSupplier", "AppointedSupplier")
+                    b.HasOne("IBS.Models.AccountsReceivable.COSAppointedSupplier", "AppointedSupplier")
                         .WithMany()
                         .HasForeignKey("AppointedId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("fk_filpride_book_atl_details_filpride_cos_appointed_suppliers_");
+                        .HasConstraintName("fk_book_atl_details_cos_appointed_suppliers_appointed_id");
 
-                    b.HasOne("IBS.Models.AccountsPayable.FilprideAuthorityToLoad", "Header")
+                    b.HasOne("IBS.Models.AccountsPayable.AuthorityToLoad", "Header")
                         .WithMany("Details")
                         .HasForeignKey("AuthorityToLoadId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_book_atl_details_filpride_authority_to_loads_autho");
+                        .HasConstraintName("fk_book_atl_details_authority_to_loads_authority_to_load_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", "CustomerOrderSlip")
+                    b.HasOne("IBS.Models.AccountsReceivable.CustomerOrderSlip", "CustomerOrderSlip")
                         .WithMany()
                         .HasForeignKey("CustomerOrderSlipId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_book_atl_details_filpride_customer_order_slips_cus");
+                        .HasConstraintName("fk_book_atl_details_filpride_customer_order_slips_customer_ord");
 
                     b.Navigation("AppointedSupplier");
 
@@ -5677,48 +5592,48 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("Header");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideCVTradePayment", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.CVTradePayment", b =>
                 {
                     b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CV")
                         .WithMany()
                         .HasForeignKey("CheckVoucherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_cv_trade_payments_filpride_check_voucher_headers_c");
+                        .HasConstraintName("fk_cv_trade_payments_check_voucher_headers_check_voucher_id");
 
                     b.Navigation("CV");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideCheckVoucherDetail", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.CheckVoucherDetail", b =>
                 {
                     b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CheckVoucherHeader")
                         .WithMany("Details")
                         .HasForeignKey("CheckVoucherHeaderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_check_voucher_details_filpride_check_voucher_heade");
+                        .HasConstraintName("fk_check_voucher_details_check_voucher_headers_check_voucher_h");
 
                     b.Navigation("CheckVoucherHeader");
                 });
 
             modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideBankAccount", "BankAccount")
+                    b.HasOne("IBS.Models.MasterFile.BankAccount", "BankAccount")
                         .WithMany()
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_check_voucher_headers_filpride_bank_accounts_bank_");
+                        .HasConstraintName("fk_check_voucher_headers_bank_accounts_bank_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideEmployee", "Employee")
+                    b.HasOne("IBS.Models.MasterFile.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .HasConstraintName("fk_filpride_check_voucher_headers_filpride_employees_employee_");
+                        .HasConstraintName("fk_check_voucher_headers_employees_employee_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Supplier")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_check_voucher_headers_filpride_suppliers_supplier_");
+                        .HasConstraintName("fk_check_voucher_headers_suppliers_supplier_id");
 
                     b.Navigation("BankAccount");
 
@@ -5727,90 +5642,45 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideJournalVoucherDetail", b =>
-                {
-                    b.HasOne("IBS.Models.AccountsPayable.FilprideJournalVoucherHeader", "JournalVoucherHeader")
-                        .WithMany("Details")
-                        .HasForeignKey("JournalVoucherHeaderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_filpride_journal_voucher_details_filpride_journal_voucher_h");
-
-                    b.Navigation("JournalVoucherHeader");
-                });
-
             modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideJournalVoucherHeader", b =>
                 {
                     b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CheckVoucherHeader")
                         .WithMany()
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_journal_voucher_headers_filpride_check_voucher_hea");
+                        .HasConstraintName("fk_journal_voucher_headers_check_voucher_headers_cv_id");
 
                     b.Navigation("CheckVoucherHeader");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideMultipleCheckVoucherPayment", b =>
-                {
-                    b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CheckVoucherHeaderInvoice")
-                        .WithMany()
-                        .HasForeignKey("CheckVoucherHeaderInvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_filpride_multiple_check_voucher_payments_filpride_check_vou");
-
-                    b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CheckVoucherHeaderPayment")
-                        .WithMany()
-                        .HasForeignKey("CheckVoucherHeaderPaymentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_filpride_multiple_check_voucher_payments_filpride_check_vou1");
-
-                    b.Navigation("CheckVoucherHeaderInvoice");
-
-                    b.Navigation("CheckVoucherHeaderPayment");
-                });
-
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilpridePOActualPrice", b =>
-                {
-                    b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
-                        .WithMany("ActualPrices")
-                        .HasForeignKey("PurchaseOrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_filpride_po_actual_prices_filpride_purchase_orders_purchase");
-
-                    b.Navigation("PurchaseOrder");
-                });
-
             modelBuilder.Entity("IBS.Models.AccountsPayable.FilpridePurchaseOrder", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_purchase_orders_filpride_customers_customer_id");
+                        .HasConstraintName("fk_purchase_orders_customers_customer_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilpridePickUpPoint", "PickUpPoint")
+                    b.HasOne("IBS.Models.MasterFile.PickUpPoint", "PickUpPoint")
                         .WithMany()
                         .HasForeignKey("PickUpPointId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_purchase_orders_filpride_pick_up_points_pick_up_po");
+                        .HasConstraintName("fk_purchase_orders_pick_up_points_pick_up_point_id");
 
                     b.HasOne("IBS.Models.MasterFile.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_purchase_orders_products_product_id");
+                        .HasConstraintName("fk_purchase_orders_products_product_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Supplier")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_purchase_orders_filpride_suppliers_supplier_id");
+                        .HasConstraintName("fk_purchase_orders_suppliers_supplier_id");
 
                     b.Navigation("Customer");
 
@@ -5821,24 +5691,16 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideReceivingReport", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.JournalVoucherDetail", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideDeliveryReceipt", "DeliveryReceipt")
-                        .WithMany()
-                        .HasForeignKey("DeliveryReceiptId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_receiving_reports_filpride_delivery_receipts_deliv");
-
-                    b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
-                        .WithMany("ReceivingReports")
-                        .HasForeignKey("POId")
+                    b.HasOne("IBS.Models.AccountsPayable.FilprideJournalVoucherHeader", "JournalVoucherHeader")
+                        .WithMany("Details")
+                        .HasForeignKey("JournalVoucherHeaderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_receiving_reports_filpride_purchase_orders_po_id");
+                        .HasConstraintName("fk_journal_voucher_details_journal_voucher_headers_journal_vou");
 
-                    b.Navigation("DeliveryReceipt");
-
-                    b.Navigation("PurchaseOrder");
+                    b.Navigation("JournalVoucherHeader");
                 });
 
             modelBuilder.Entity("IBS.Models.AccountsPayable.JvAmortizationSetting", b =>
@@ -5848,33 +5710,86 @@ namespace IBS.DataAccess.Migrations
                         .HasForeignKey("JvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_jv_amortization_settings_filpride_journal_voucher_headers_j");
+                        .HasConstraintName("fk_jv_amortization_settings_journal_voucher_headers_jv_id");
 
                     b.Navigation("JvHeader");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCOSAppointedSupplier", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.MultipleCheckVoucherPayment", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", "CustomerOrderSlip")
+                    b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CheckVoucherHeaderInvoice")
+                        .WithMany()
+                        .HasForeignKey("CheckVoucherHeaderInvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_multiple_check_voucher_payments_check_voucher_headers_check");
+
+                    b.HasOne("IBS.Models.AccountsPayable.FilprideCheckVoucherHeader", "CheckVoucherHeaderPayment")
+                        .WithMany()
+                        .HasForeignKey("CheckVoucherHeaderPaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_multiple_check_voucher_payments_check_voucher_headers_check1");
+
+                    b.Navigation("CheckVoucherHeaderInvoice");
+
+                    b.Navigation("CheckVoucherHeaderPayment");
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsPayable.POActualPrice", b =>
+                {
+                    b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
+                        .WithMany("ActualPrices")
+                        .HasForeignKey("PurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_po_actual_prices_purchase_orders_purchase_order_id");
+
+                    b.Navigation("PurchaseOrder");
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsPayable.ReceivingReport", b =>
+                {
+                    b.HasOne("IBS.Models.AccountsReceivable.DeliveryReceipt", "DeliveryReceipt")
+                        .WithMany()
+                        .HasForeignKey("DeliveryReceiptId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_receiving_reports_filpride_delivery_receipts_delivery_recei");
+
+                    b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
+                        .WithMany("ReceivingReports")
+                        .HasForeignKey("POId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_receiving_reports_purchase_orders_po_id");
+
+                    b.Navigation("DeliveryReceipt");
+
+                    b.Navigation("PurchaseOrder");
+                });
+
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.COSAppointedSupplier", b =>
+                {
+                    b.HasOne("IBS.Models.AccountsReceivable.CustomerOrderSlip", "CustomerOrderSlip")
                         .WithMany("AppointedSuppliers")
                         .HasForeignKey("CustomerOrderSlipId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_cos_appointed_suppliers_filpride_customer_order_sl");
+                        .HasConstraintName("fk_cos_appointed_suppliers_filpride_customer_order_slips_custo");
 
                     b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
                         .WithMany()
                         .HasForeignKey("PurchaseOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_cos_appointed_suppliers_filpride_purchase_orders_p");
+                        .HasConstraintName("fk_cos_appointed_suppliers_purchase_orders_purchase_order_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Supplier")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_cos_appointed_suppliers_filpride_suppliers_supplie");
+                        .HasConstraintName("fk_cos_appointed_suppliers_suppliers_supplier_id");
 
                     b.Navigation("CustomerOrderSlip");
 
@@ -5883,32 +5798,32 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCollectionReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CollectionReceipt", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideBankAccount", "BankAccount")
+                    b.HasOne("IBS.Models.MasterFile.BankAccount", "BankAccount")
                         .WithMany()
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_collection_receipts_filpride_bank_accounts_bank_id");
+                        .HasConstraintName("fk_collection_receipts_bank_accounts_bank_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_collection_receipts_filpride_customers_customer_id");
+                        .HasConstraintName("fk_collection_receipts_customers_customer_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideSalesInvoice", "SalesInvoice")
+                    b.HasOne("IBS.Models.AccountsReceivable.SalesInvoice", "SalesInvoice")
                         .WithMany()
                         .HasForeignKey("SalesInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_collection_receipts_filpride_sales_invoices_sales_");
+                        .HasConstraintName("fk_collection_receipts_sales_invoices_sales_invoice_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideServiceInvoice", "ServiceInvoice")
+                    b.HasOne("IBS.Models.AccountsReceivable.ServiceInvoice", "ServiceInvoice")
                         .WithMany()
                         .HasForeignKey("ServiceInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_collection_receipts_filpride_service_invoices_serv");
+                        .HasConstraintName("fk_collection_receipts_service_invoices_service_invoice_id");
 
                     b.Navigation("BankAccount");
 
@@ -5919,61 +5834,61 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("ServiceInvoice");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCollectionReceiptDetail", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CollectionReceiptDetail", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCollectionReceipt", "FilprideCollectionReceipt")
+                    b.HasOne("IBS.Models.AccountsReceivable.CollectionReceipt", "FilprideCollectionReceipt")
                         .WithMany("ReceiptDetails")
                         .HasForeignKey("CollectionReceiptId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_collection_receipt_details_filpride_collection_rec");
+                        .HasConstraintName("fk_collection_receipt_details_collection_receipts_collection_r");
 
                     b.Navigation("FilprideCollectionReceipt");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCreditMemo", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CreditMemo", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideSalesInvoice", "SalesInvoice")
+                    b.HasOne("IBS.Models.AccountsReceivable.SalesInvoice", "SalesInvoice")
                         .WithMany()
                         .HasForeignKey("SalesInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_credit_memos_filpride_sales_invoices_sales_invoice");
+                        .HasConstraintName("fk_credit_memos_sales_invoices_sales_invoice_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideServiceInvoice", "ServiceInvoice")
+                    b.HasOne("IBS.Models.AccountsReceivable.ServiceInvoice", "ServiceInvoice")
                         .WithMany()
                         .HasForeignKey("ServiceInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_credit_memos_filpride_service_invoices_service_inv");
+                        .HasConstraintName("fk_credit_memos_service_invoices_service_invoice_id");
 
                     b.Navigation("SalesInvoice");
 
                     b.Navigation("ServiceInvoice");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CustomerOrderSlip", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Commissionee")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Commissionee")
                         .WithMany()
                         .HasForeignKey("CommissioneeId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_customer_order_slips_filpride_suppliers_commission");
+                        .HasConstraintName("fk_filpride_customer_order_slips_suppliers_commissionee_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_customer_order_slips_filpride_customers_customer_id");
+                        .HasConstraintName("fk_filpride_customer_order_slips_customers_customer_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Hauler")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Hauler")
                         .WithMany()
                         .HasForeignKey("HaulerId")
-                        .HasConstraintName("fk_filpride_customer_order_slips_filpride_suppliers_hauler_id");
+                        .HasConstraintName("fk_filpride_customer_order_slips_suppliers_hauler_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilpridePickUpPoint", "PickUpPoint")
+                    b.HasOne("IBS.Models.MasterFile.PickUpPoint", "PickUpPoint")
                         .WithMany()
                         .HasForeignKey("PickUpPointId")
-                        .HasConstraintName("fk_filpride_customer_order_slips_filpride_pick_up_points_pick_");
+                        .HasConstraintName("fk_filpride_customer_order_slips_pick_up_points_pick_up_point_");
 
                     b.HasOne("IBS.Models.MasterFile.Product", "Product")
                         .WithMany()
@@ -5986,12 +5901,12 @@ namespace IBS.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("PurchaseOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_customer_order_slips_filpride_purchase_orders_purc");
+                        .HasConstraintName("fk_filpride_customer_order_slips_purchase_orders_purchase_orde");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Supplier")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
-                        .HasConstraintName("fk_filpride_customer_order_slips_filpride_suppliers_supplier_id");
+                        .HasConstraintName("fk_filpride_customer_order_slips_suppliers_supplier_id");
 
                     b.Navigation("Commissionee");
 
@@ -6008,64 +5923,64 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideDebitMemo", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.DebitMemo", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideSalesInvoice", "SalesInvoice")
+                    b.HasOne("IBS.Models.AccountsReceivable.SalesInvoice", "SalesInvoice")
                         .WithMany()
                         .HasForeignKey("SalesInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_debit_memos_filpride_sales_invoices_sales_invoice_");
+                        .HasConstraintName("fk_debit_memos_sales_invoices_sales_invoice_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideServiceInvoice", "ServiceInvoice")
+                    b.HasOne("IBS.Models.AccountsReceivable.ServiceInvoice", "ServiceInvoice")
                         .WithMany()
                         .HasForeignKey("ServiceInvoiceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_debit_memos_filpride_service_invoices_service_invo");
+                        .HasConstraintName("fk_debit_memos_service_invoices_service_invoice_id");
 
                     b.Navigation("SalesInvoice");
 
                     b.Navigation("ServiceInvoice");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideDeliveryReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.DeliveryReceipt", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsPayable.FilprideAuthorityToLoad", "AuthorityToLoad")
+                    b.HasOne("IBS.Models.AccountsPayable.AuthorityToLoad", "AuthorityToLoad")
                         .WithMany()
                         .HasForeignKey("AuthorityToLoadId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_delivery_receipts_filpride_authority_to_loads_auth");
+                        .HasConstraintName("fk_filpride_delivery_receipts_authority_to_loads_authority_to_");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Commissionee")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Commissionee")
                         .WithMany()
                         .HasForeignKey("CommissioneeId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_delivery_receipts_filpride_suppliers_commissionee_");
+                        .HasConstraintName("fk_filpride_delivery_receipts_suppliers_commissionee_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_delivery_receipts_filpride_customers_customer_id");
+                        .HasConstraintName("fk_filpride_delivery_receipts_customers_customer_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", "CustomerOrderSlip")
+                    b.HasOne("IBS.Models.AccountsReceivable.CustomerOrderSlip", "CustomerOrderSlip")
                         .WithMany("DeliveryReceipts")
                         .HasForeignKey("CustomerOrderSlipId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_filpride_delivery_receipts_filpride_customer_order_slips_cu");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Hauler")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Hauler")
                         .WithMany()
                         .HasForeignKey("HaulerId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_delivery_receipts_filpride_suppliers_hauler_id");
+                        .HasConstraintName("fk_filpride_delivery_receipts_suppliers_hauler_id");
 
                     b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
                         .WithMany()
                         .HasForeignKey("PurchaseOrderId")
-                        .HasConstraintName("fk_filpride_delivery_receipts_filpride_purchase_orders_purchas");
+                        .HasConstraintName("fk_filpride_delivery_receipts_purchase_orders_purchase_order_id");
 
                     b.Navigation("AuthorityToLoad");
 
@@ -6080,58 +5995,58 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("PurchaseOrder");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideProvisionalReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.ProvisionalReceipt", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideBankAccount", "BankAccount")
+                    b.HasOne("IBS.Models.MasterFile.BankAccount", "BankAccount")
                         .WithMany()
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_provisional_receipts_filpride_bank_accounts_bank_id");
+                        .HasConstraintName("fk_provisional_receipts_bank_accounts_bank_id");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideEmployee", "Employee")
+                    b.HasOne("IBS.Models.MasterFile.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_provisional_receipts_filpride_employees_employee_id");
+                        .HasConstraintName("fk_provisional_receipts_employees_employee_id");
 
                     b.Navigation("BankAccount");
 
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideSalesInvoice", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.SalesInvoice", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_sales_invoices_filpride_customers_customer_id");
+                        .HasConstraintName("fk_sales_invoices_customers_customer_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", "CustomerOrderSlip")
+                    b.HasOne("IBS.Models.AccountsReceivable.CustomerOrderSlip", "CustomerOrderSlip")
                         .WithMany()
                         .HasForeignKey("CustomerOrderSlipId")
-                        .HasConstraintName("fk_filpride_sales_invoices_filpride_customer_order_slips_custo");
+                        .HasConstraintName("fk_sales_invoices_filpride_customer_order_slips_customer_order");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideDeliveryReceipt", "DeliveryReceipt")
+                    b.HasOne("IBS.Models.AccountsReceivable.DeliveryReceipt", "DeliveryReceipt")
                         .WithMany()
                         .HasForeignKey("DeliveryReceiptId")
-                        .HasConstraintName("fk_filpride_sales_invoices_filpride_delivery_receipts_delivery");
+                        .HasConstraintName("fk_sales_invoices_filpride_delivery_receipts_delivery_receipt_");
 
                     b.HasOne("IBS.Models.MasterFile.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_sales_invoices_products_product_id");
+                        .HasConstraintName("fk_sales_invoices_products_product_id");
 
                     b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
                         .WithMany()
                         .HasForeignKey("PurchaseOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_sales_invoices_filpride_purchase_orders_purchase_o");
+                        .HasConstraintName("fk_sales_invoices_purchase_orders_purchase_order_id");
 
                     b.Navigation("Customer");
 
@@ -6144,27 +6059,27 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("PurchaseOrder");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideServiceInvoice", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.ServiceInvoice", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_service_invoices_filpride_customers_customer_id");
+                        .HasConstraintName("fk_service_invoices_customers_customer_id");
 
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideDeliveryReceipt", "DeliveryReceipt")
+                    b.HasOne("IBS.Models.AccountsReceivable.DeliveryReceipt", "DeliveryReceipt")
                         .WithMany()
                         .HasForeignKey("DeliveryReceiptId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_filpride_service_invoices_filpride_delivery_receipts_delive");
+                        .HasConstraintName("fk_service_invoices_filpride_delivery_receipts_delivery_receip");
 
-                    b.HasOne("IBS.Models.MasterFile.FilprideService", "Service")
+                    b.HasOne("IBS.Models.MasterFile.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_service_invoices_filpride_services_service_id");
+                        .HasConstraintName("fk_service_invoices_services_service_id");
 
                     b.Navigation("Customer");
 
@@ -6173,83 +6088,83 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideGLPeriodBalance", b =>
+            modelBuilder.Entity("IBS.Models.Books.FilprideSalesLockedRecordsQueue", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideChartOfAccount", "Account")
+                    b.HasOne("IBS.Models.AccountsReceivable.DeliveryReceipt", "DeliveryReceipt")
+                        .WithMany()
+                        .HasForeignKey("DeliveryReceiptId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_sales_locked_records_queues_filpride_delivery_receipts_deli");
+
+                    b.Navigation("DeliveryReceipt");
+                });
+
+            modelBuilder.Entity("IBS.Models.Books.GLPeriodBalance", b =>
+                {
+                    b.HasOne("IBS.Models.MasterFile.ChartOfAccount", "Account")
                         .WithMany("Balances")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_gl_period_balances_filpride_chart_of_accounts_acco");
+                        .HasConstraintName("fk_gl_period_balances_chart_of_accounts_account_id");
 
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideGLSubAccountBalance", b =>
+            modelBuilder.Entity("IBS.Models.Books.GLSubAccountBalance", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideChartOfAccount", "Account")
+                    b.HasOne("IBS.Models.MasterFile.ChartOfAccount", "Account")
                         .WithMany("SubAccountBalances")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_gl_sub_account_balances_filpride_chart_of_accounts");
+                        .HasConstraintName("fk_gl_sub_account_balances_chart_of_accounts_account_id");
 
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideGeneralLedgerBook", b =>
+            modelBuilder.Entity("IBS.Models.Books.GeneralLedgerBook", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideChartOfAccount", "Account")
+                    b.HasOne("IBS.Models.MasterFile.ChartOfAccount", "Account")
                         .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_general_ledger_books_filpride_chart_of_accounts_ac");
+                        .HasConstraintName("fk_general_ledger_books_chart_of_accounts_account_id");
 
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilprideInventory", b =>
+            modelBuilder.Entity("IBS.Models.Books.Inventory", b =>
                 {
                     b.HasOne("IBS.Models.AccountsPayable.FilpridePurchaseOrder", "PurchaseOrder")
                         .WithMany()
                         .HasForeignKey("POId")
-                        .HasConstraintName("fk_filpride_inventories_filpride_purchase_orders_po_id");
+                        .HasConstraintName("fk_inventories_purchase_orders_po_id");
 
                     b.HasOne("IBS.Models.MasterFile.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_inventories_products_product_id");
+                        .HasConstraintName("fk_inventories_products_product_id");
 
                     b.Navigation("Product");
 
                     b.Navigation("PurchaseOrder");
                 });
 
-            modelBuilder.Entity("IBS.Models.Books.FilpridePurchaseLockedRecordsQueue", b =>
+            modelBuilder.Entity("IBS.Models.Books.PurchaseLockedRecordsQueue", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsPayable.FilprideReceivingReport", "ReceivingReport")
+                    b.HasOne("IBS.Models.AccountsPayable.ReceivingReport", "ReceivingReport")
                         .WithMany()
                         .HasForeignKey("ReceivingReportId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_purchase_locked_records_queues_filpride_receiving_");
+                        .HasConstraintName("fk_purchase_locked_records_queues_receiving_reports_receiving_");
 
                     b.Navigation("ReceivingReport");
-                });
-
-            modelBuilder.Entity("IBS.Models.Books.FilprideSalesLockedRecordsQueue", b =>
-                {
-                    b.HasOne("IBS.Models.AccountsReceivable.FilprideDeliveryReceipt", "DeliveryReceipt")
-                        .WithMany()
-                        .HasForeignKey("DeliveryReceiptId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_filpride_sales_locked_records_queues_filpride_delivery_rece");
-
-                    b.Navigation("DeliveryReceipt");
                 });
 
             modelBuilder.Entity("IBS.Models.Common.UserNotification", b =>
@@ -6273,58 +6188,46 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("IBS.Models.Filpride.FilprideFreight", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.ChartOfAccount", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilpridePickUpPoint", "PickUpPoint")
-                        .WithMany()
-                        .HasForeignKey("PickUpPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_filpride_freights_filpride_pick_up_points_pick_up_point_id");
-
-                    b.Navigation("PickUpPoint");
-                });
-
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideChartOfAccount", b =>
-                {
-                    b.HasOne("IBS.Models.MasterFile.FilprideChartOfAccount", "ParentAccount")
+                    b.HasOne("IBS.Models.MasterFile.ChartOfAccount", "ParentAccount")
                         .WithMany("Children")
                         .HasForeignKey("ParentAccountId")
-                        .HasConstraintName("fk_filpride_chart_of_accounts_filpride_chart_of_accounts_paren");
+                        .HasConstraintName("fk_chart_of_accounts_chart_of_accounts_parent_account_id");
 
                     b.Navigation("ParentAccount");
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideCustomer", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Customer", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Commissionee")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Commissionee")
                         .WithMany()
                         .HasForeignKey("CommissioneeId")
-                        .HasConstraintName("fk_filpride_customers_filpride_suppliers_commissionee_id");
+                        .HasConstraintName("fk_customers_suppliers_commissionee_id");
 
                     b.Navigation("Commissionee");
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideCustomerBranch", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.CustomerBranch", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideCustomer", "Customer")
+                    b.HasOne("IBS.Models.MasterFile.Customer", "Customer")
                         .WithMany("Branches")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_customer_branches_filpride_customers_customer_id");
+                        .HasConstraintName("fk_customer_branches_customers_customer_id");
 
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilpridePickUpPoint", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.PickUpPoint", b =>
                 {
-                    b.HasOne("IBS.Models.MasterFile.FilprideSupplier", "Supplier")
+                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_filpride_pick_up_points_filpride_suppliers_supplier_id");
+                        .HasConstraintName("fk_pick_up_points_suppliers_supplier_id");
 
                     b.Navigation("Supplier");
                 });
@@ -6386,7 +6289,7 @@ namespace IBS.DataAccess.Migrations
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsPayable.FilprideAuthorityToLoad", b =>
+            modelBuilder.Entity("IBS.Models.AccountsPayable.AuthorityToLoad", b =>
                 {
                     b.Navigation("Details");
                 });
@@ -6408,12 +6311,12 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("ReceivingReports");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCollectionReceipt", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CollectionReceipt", b =>
                 {
                     b.Navigation("ReceiptDetails");
                 });
 
-            modelBuilder.Entity("IBS.Models.AccountsReceivable.FilprideCustomerOrderSlip", b =>
+            modelBuilder.Entity("IBS.Models.AccountsReceivable.CustomerOrderSlip", b =>
                 {
                     b.Navigation("AppointedSuppliers");
 
@@ -6425,7 +6328,7 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("UserNotifications");
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideChartOfAccount", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.ChartOfAccount", b =>
                 {
                     b.Navigation("Balances");
 
@@ -6434,7 +6337,7 @@ namespace IBS.DataAccess.Migrations
                     b.Navigation("SubAccountBalances");
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.FilprideCustomer", b =>
+            modelBuilder.Entity("IBS.Models.MasterFile.Customer", b =>
                 {
                     b.Navigation("Branches");
                 });

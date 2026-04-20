@@ -38,8 +38,6 @@ namespace IBS.Services
             {
                 var today = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime());
 
-                await CosExpiration(today);
-
                 await transaction.CommitAsync();
             }
             catch (Exception ex)
@@ -47,36 +45,6 @@ namespace IBS.Services
                 await transaction.RollbackAsync();
                 _logger.LogError(ex, ex.Message);
             }
-        }
-
-        private async Task CosExpiration(DateOnly today)
-        {
-            var cosList = await _dbContext.FilprideCustomerOrderSlips
-                .Where(cos => cos.ExpirationDate <= today
-                              && cos.Status != nameof(CosStatus.Completed)
-                              && cos.Status != nameof(CosStatus.Expired)
-                              && cos.Status != nameof(CosStatus.Closed)
-                              && cos.Status != nameof(CosStatus.Disapproved))
-                .ToListAsync();
-
-            if (cosList.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var cos in cosList)
-            {
-                // Record the current status before updating
-                var previousStatus = cos.Status;
-
-                // Update the status to Expired
-                cos.Status = nameof(CosStatus.Expired);
-
-                // Append the previous status and timestamp to the remarks
-                cos.Remarks = $"Previous status: [{previousStatus}] updated to Expired on {today}. {cos.Remarks}";
-            }
-
-            await _dbContext.SaveChangesAsync();
         }
     }
 }

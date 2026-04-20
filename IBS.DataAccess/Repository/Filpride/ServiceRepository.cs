@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ServiceRepository : Repository<FilprideService>, IServiceRepository
+    public class ServiceRepository : Repository<Service>, IServiceRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -17,7 +17,7 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task<string> GetLastNumber(CancellationToken cancellationToken = default)
         {
             var lastNumber = await _db
-                .FilprideServices
+                .Services
                 .OrderByDescending(s => s.ServiceId)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -32,7 +32,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task<bool> IsServicesExist(string serviceName, string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideServices
+            return await _db.Services
                 .AnyAsync(c => c.Company == company && c.Name == serviceName, cancellationToken);
         }
     }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IDeliveryReceiptRepository : IRepository<FilprideDeliveryReceipt>
+    public interface IDeliveryReceiptRepository : IRepository<DeliveryReceipt>
     {
         Task<string> GenerateCodeAsync(string companyClaims, string documentType, CancellationToken cancellationToken = default);
 
@@ -15,13 +15,13 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 
         Task<List<SelectListItem>> GetDeliveryReceiptListForSalesInvoice(string companyClaims, int cosId, CancellationToken cancellationToken = default);
 
-        Task PostAsync(FilprideDeliveryReceipt deliveryReceipt, CancellationToken cancellationToken = default);
+        Task PostAsync(DeliveryReceipt deliveryReceipt, CancellationToken cancellationToken = default);
 
         Task DeductTheVolumeToCos(int cosId, decimal drVolume, CancellationToken cancellationToken = default);
 
-        Task UpdatePreviousAppointedSupplierAsync(FilprideDeliveryReceipt model);
+        Task UpdatePreviousAppointedSupplierAsync(DeliveryReceipt model);
 
-        Task AssignNewPurchaseOrderAsync(FilprideDeliveryReceipt model);
+        Task AssignNewPurchaseOrderAsync(DeliveryReceipt model);
 
         Task AutoReversalEntryForInTransit(CancellationToken cancellationToken = default);
 
@@ -32,12 +32,12 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
             string userName,
             CancellationToken cancellationToken = default);
 
-        Task CreateEntriesForUpdatingCommission(FilprideDeliveryReceipt deliveryReceipt,
+        Task CreateEntriesForUpdatingCommission(DeliveryReceipt deliveryReceipt,
             decimal difference,
             string userName,
             CancellationToken cancellationToken = default);
 
-        Task CreateEntriesForUpdatingFreight(FilprideDeliveryReceipt deliveryReceipt,
+        Task CreateEntriesForUpdatingFreight(DeliveryReceipt deliveryReceipt,
             decimal difference,
             string userName,
             CancellationToken cancellationToken = default);

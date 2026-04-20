@@ -2,7 +2,6 @@ using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.Models.AccountsPayable;
 using IBS.Models.Enums;
-using IBS.Utility.Constants;
 using IBS.Utility.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,10 +35,7 @@ namespace IBS.Services
                 var today = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime());
                 var previousMonthDate = today.AddMonths(-1);
 
-                await GetTheUnliftedDrs(previousMonthDate);
                 await ProcessAmortization(today);
-                await SendNotificationToManagementAccounting(previousMonthDate);
-                await SendNotificationToCNC(previousMonthDate);
 
                 await transaction.CommitAsync();
             }
@@ -47,39 +43,6 @@ namespace IBS.Services
             {
                 _logger.LogError(ex, ex.Message);
                 await transaction.RollbackAsync();
-                throw;
-            }
-        }
-
-        private async Task GetTheUnliftedDrs(DateOnly previousMonthDate)
-        {
-            try
-            {
-                var hasUnliftedDrs = await _dbContext.FilprideDeliveryReceipts
-                    .AnyAsync(x => x.Date.Month == previousMonthDate.Month
-                                   && x.Date.Year == previousMonthDate.Year
-                                   && !x.HasReceivingReport);
-
-                if (hasUnliftedDrs)
-                {
-                    var users = await _dbContext.ApplicationUsers
-                        .Where(u => u.Department == SD.Department_TradeAndSupply
-                                    || u.Department == SD.Department_ManagementAccounting)
-                        .Select(u => u.Id)
-                        .ToListAsync();
-
-                    var message = $"There are still unlifted reports for {previousMonthDate:MMM yyyy}. " +
-                                  $"Please ensure the lifting dates for the remaining DRs are recorded to avoid issues during the month-end closing. " +
-                                  $"CC: Management Accounting";
-
-                    await _unitOfWork.Notifications.AddNotificationToMultipleUsersAsync(users, message);
-
-                    await _dbContext.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while getting the unlifted DRs for {Date}", previousMonthDate);
                 throw;
             }
         }
@@ -140,7 +103,7 @@ namespace IBS.Services
                             Company = sourceJv.Company,
                             JvType = nameof(JvType.Amortization),
                             Status = nameof(JvStatus.Pending),
-                            Details = sourceJv.Details.Select(detail => new FilprideJournalVoucherDetail
+                            Details = sourceJv.Details.Select(detail => new JournalVoucherDetail
                             {
                                 AccountNo = detail.AccountNo,
                                 AccountName = detail.AccountName,
@@ -164,7 +127,7 @@ namespace IBS.Services
                     }
                 }
 
-                await _dbContext.FilprideJournalVoucherHeaders.AddRangeAsync(newJournalVouchers);
+                await _dbContext.JournalVoucherHeaders.AddRangeAsync(newJournalVouchers);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -188,30 +151,6 @@ namespace IBS.Services
                 var incremented = long.Parse(numericPart) + offset;
                 return "JV" + incremented.ToString("D10");
             }
-        }
-
-        private async Task SendNotificationToManagementAccounting(DateOnly previousMonth)
-        {
-            var users = await _dbContext.ApplicationUsers
-                .Where(u => u.IsActive && u.Department == SD.Department_ManagementAccounting)
-                .Select(u => u.Id)
-                .ToListAsync();
-
-            var message = $"Kindly generate the journal voucher list for {previousMonth:MMM yyyy}.";
-
-            await _unitOfWork.Notifications.AddNotificationToMultipleUsersAsync(users, message);
-        }
-
-        private async Task SendNotificationToCNC(DateOnly previousMonth)
-        {
-            var users = await _dbContext.ApplicationUsers
-                .Where(u => u.IsActive && u.Department == SD.Department_CreditAndCollection)
-                .Select(u => u.Id)
-                .ToListAsync();
-
-            var message = $"Please ensure the transaction fee is created before the system closes the books for {previousMonth:MMM yyyy}.";
-
-            await _unitOfWork.Notifications.AddNotificationToMultipleUsersAsync(users, message);
         }
     }
 }

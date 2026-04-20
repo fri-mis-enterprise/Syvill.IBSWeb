@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IChartOfAccountRepository : IRepository<FilprideChartOfAccount>
+    public interface IChartOfAccountRepository : IRepository<ChartOfAccount>
     {
         Task<List<SelectListItem>> GetMainAccount(CancellationToken cancellationToken = default);
 
         Task<List<SelectListItem>> GetMemberAccount(string parentAcc, CancellationToken cancellationToken = default);
 
-        Task<FilprideChartOfAccount> GenerateAccount(FilprideChartOfAccount model, string thirdLevel, CancellationToken cancellationToken = default);
+        Task<ChartOfAccount> GenerateAccount(ChartOfAccount model, string thirdLevel, CancellationToken cancellationToken = default);
 
-        Task UpdateAsync(FilprideChartOfAccount model, CancellationToken cancellationToken = default);
+        Task UpdateAsync(ChartOfAccount model, CancellationToken cancellationToken = default);
 
         IEnumerable<ChartOfAccountDto> GetSummaryReportView(CancellationToken cancellationToken = default);
     }

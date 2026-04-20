@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ReportRepository : Repository<FilprideGeneralLedgerBook>, IReportRepository
+    public class ReportRepository : Repository<GeneralLedgerBook>, IReportRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -19,14 +19,14 @@ namespace IBS.DataAccess.Repository.Filpride
             _db = db;
         }
 
-        public List<FilpridePurchaseBook> GetPurchaseBooks(DateOnly dateFrom, DateOnly dateTo, string? selectedFiltering, string company)
+        public List<PurchaseBook> GetPurchaseBooks(DateOnly dateFrom, DateOnly dateTo, string? selectedFiltering, string company)
         {
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            Func<FilpridePurchaseBook, object> orderBy;
+            Func<PurchaseBook, object> orderBy;
 
             switch (selectedFiltering)
             {
@@ -49,7 +49,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             return _db
-                .FilpridePurchaseBooks
+                .PurchaseBooks
                 .AsEnumerable()
                 .Where(p => p.Company == company && (selectedFiltering == "DueDate" || selectedFiltering == "POLiquidation" ? p.DueDate : p.Date) >= dateFrom &&
                             (selectedFiltering == "DueDate" || selectedFiltering == "POLiquidation" ? p.DueDate : p.Date) <= dateTo)
@@ -57,7 +57,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ToList();
         }
 
-        public List<FilprideCashReceiptBook> GetCashReceiptBooks(DateOnly dateFrom, DateOnly dateTo, string company)
+        public List<CashReceiptBook> GetCashReceiptBooks(DateOnly dateFrom, DateOnly dateTo, string company)
         {
             if (dateFrom > dateTo)
             {
@@ -65,7 +65,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var cashReceiptBooks = _db
-             .FilprideCashReceiptBooks
+             .CashReceiptBooks
              .AsEnumerable()
              .Where(cr => cr.Company == company && cr.Date >= dateFrom && cr.Date <= dateTo)
              .OrderBy(s => s.CashReceiptBookId)
@@ -74,7 +74,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return cashReceiptBooks;
         }
 
-        public List<FilprideDisbursementBook> GetDisbursementBooks(DateOnly dateFrom, DateOnly dateTo, string company)
+        public List<DisbursementBook> GetDisbursementBooks(DateOnly dateFrom, DateOnly dateTo, string company)
         {
             if (dateFrom > dateTo)
             {
@@ -82,7 +82,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var disbursementBooks = _db
-             .FilprideDisbursementBooks
+             .DisbursementBooks
              .AsEnumerable()
              .Where(d => d.Company == company && d.Date >= dateFrom && d.Date <= dateTo)
              .OrderBy(d => d.Date)
@@ -91,7 +91,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return disbursementBooks;
         }
 
-        public async Task<List<FilprideGeneralLedgerBook>> GetGeneralLedgerBooks(DateOnly dateFrom, DateOnly dateTo, string company, CancellationToken cancellationToken = default)
+        public async Task<List<GeneralLedgerBook>> GetGeneralLedgerBooks(DateOnly dateFrom, DateOnly dateTo, string company, CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -99,7 +99,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var generalLedgerBooks = await _db
-                .FilprideGeneralLedgerBooks
+                .GeneralLedgerBooks
                 .Where(i => i.Company == company && i.Date >= dateFrom && i.Date <= dateTo && i.IsPosted)
                 .Include(i => i.Account)
                 .OrderBy(i => i.Date)
@@ -110,7 +110,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return generalLedgerBooks;
         }
 
-        public List<FilprideInventory> GetInventoryBooks(DateOnly dateFrom, DateOnly dateTo, string company)
+        public List<Inventory> GetInventoryBooks(DateOnly dateFrom, DateOnly dateTo, string company)
         {
             if (dateFrom > dateTo)
             {
@@ -118,7 +118,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var inventoryBooks = _db
-             .FilprideInventories
+             .Inventories
              .Include(i => i.Product)
              .AsEnumerable()
              .Where(i => i.Company == company && i.Date >= dateFrom && i.Date <= dateTo)
@@ -128,7 +128,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return inventoryBooks;
         }
 
-        public List<FilprideJournalBook> GetJournalBooks(DateOnly dateFrom, DateOnly dateTo, string company)
+        public List<JournalBook> GetJournalBooks(DateOnly dateFrom, DateOnly dateTo, string company)
         {
             if (dateFrom > dateTo)
             {
@@ -136,7 +136,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var disbursementBooks = _db
-             .FilprideJournalBooks
+             .JournalBooks
              .AsEnumerable()
              .Where(d => d.Company == company && d.Date >= dateFrom && d.Date <= dateTo)
              .OrderBy(d => d.JournalBookId)
@@ -145,7 +145,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return disbursementBooks;
         }
 
-        public async Task<List<FilprideReceivingReport>> GetReceivingReportAsync(DateOnly? dateFrom, DateOnly? dateTo, string? selectedFiltering, string company, CancellationToken cancellationToken = default)
+        public async Task<List<ReceivingReport>> GetReceivingReportAsync(DateOnly? dateFrom, DateOnly? dateTo, string? selectedFiltering, string company, CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -153,16 +153,16 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var receivingReportRepo = new ReceivingReportRepository(_db);
-            var receivingReport = new List<FilprideReceivingReport>();
+            var receivingReport = new List<ReceivingReport>();
 
             switch (selectedFiltering)
             {
                 case "UnpostedRR":
-                    receivingReport = (List<FilprideReceivingReport>)await receivingReportRepo
+                    receivingReport = (List<ReceivingReport>)await receivingReportRepo
                         .GetAllAsync(rr => rr.Company == company && rr.Date >= dateFrom && rr.Date <= dateTo && rr.PostedBy == null, cancellationToken);
                     break;
                 case "POLiquidation":
-                    receivingReport = (List<FilprideReceivingReport>)await receivingReportRepo
+                    receivingReport = (List<ReceivingReport>)await receivingReportRepo
                         .GetAllAsync(rr => rr.Company == company && rr.DueDate >= dateFrom && rr.DueDate <= dateTo && rr.PostedBy != null, cancellationToken);
                     break;
             }
@@ -170,10 +170,10 @@ namespace IBS.DataAccess.Repository.Filpride
             return receivingReport;
         }
 
-        public List<FilprideSalesBook> GetSalesBooks(DateOnly dateFrom, DateOnly dateTo, string? selectedDocument, string company)
+        public List<SalesBook> GetSalesBooks(DateOnly dateFrom, DateOnly dateTo, string? selectedDocument, string company)
         {
-            Func<FilprideSalesBook, object>? orderBy = null;
-            Func<FilprideSalesBook, bool>? query;
+            Func<SalesBook, object>? orderBy = null;
+            Func<SalesBook, bool>? query;
 
             switch (selectedDocument)
             {
@@ -195,16 +195,16 @@ namespace IBS.DataAccess.Repository.Filpride
 
             // Add a null check for orderBy
             var salesBooks = _db
-                .FilprideSalesBooks
+                .SalesBooks
                 .AsEnumerable()
                 .Where(query)
-                .OrderBy(orderBy ?? (Func<FilprideSalesBook, object>)(s => s.TransactionDate))
+                .OrderBy(orderBy ?? (Func<SalesBook, object>)(s => s.TransactionDate))
                 .ToList();
 
             return salesBooks;
         }
 
-        public async Task<List<FilprideAuditTrail>> GetAuditTrails(DateOnly dateFrom, DateOnly dateTo, string company)
+        public async Task<List<AuditTrail>> GetAuditTrails(DateOnly dateFrom, DateOnly dateTo, string company)
         {
             if (dateFrom > dateTo)
             {
@@ -212,7 +212,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var auditTrailBooks = await _db
-                .FilprideAuditTrails
+                .AuditTrails
                 .Where(a => a.Company == company && DateOnly.FromDateTime(a.Date) >= dateFrom && DateOnly.FromDateTime(a.Date) <= dateTo)
                 .OrderBy(a => a.Date)
                 .ToListAsync();
@@ -220,7 +220,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return auditTrailBooks;
         }
 
-        public async Task<List<FilprideCustomerOrderSlip>> GetCosUnservedVolume(DateOnly dateFrom, DateOnly dateTo, string company)
+        public async Task<List<CustomerOrderSlip>> GetCosUnservedVolume(DateOnly dateFrom, DateOnly dateTo, string company)
         {
             if (dateFrom > dateTo)
             {
@@ -274,7 +274,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ToListAsync(cancellationToken);
 
             // Fetch all sales invoices within the date range
-            var salesInvoicesQuery = _db.FilprideSalesInvoices
+            var salesInvoicesQuery = _db.SalesInvoices
                 .Where(si => si.Company == company
                              && si.Status == nameof(Status.Posted)
                              && si.TransactionDate >= dateFrom
@@ -304,7 +304,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return result;
         }
 
-        public async Task<List<FilprideSalesInvoice>> GetSalesInvoiceReport(DateOnly dateFrom, DateOnly dateTo, string company, string statusFilter = "ValidOnly",
+        public async Task<List<SalesInvoice>> GetSalesInvoiceReport(DateOnly dateFrom, DateOnly dateTo, string company, string statusFilter = "ValidOnly",
             CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
@@ -312,7 +312,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var query = _db.FilprideSalesInvoices
+            var query = _db.SalesInvoices
                 .Where(si => si.TransactionDate >= dateFrom && si.TransactionDate <= dateTo);
 
             // Apply status filter
@@ -339,14 +339,14 @@ namespace IBS.DataAccess.Repository.Filpride
             return salesInvoices;
         }
 
-        public async Task<List<FilprideServiceInvoice>> GetServiceInvoiceReport(DateOnly dateFrom, DateOnly dateTo, string company, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
+        public async Task<List<ServiceInvoice>> GetServiceInvoiceReport(DateOnly dateFrom, DateOnly dateTo, string company, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var query = _db.FilprideServiceInvoices
+            var query = _db.ServiceInvoices
                 .Where(dr => dr.Company == company &&
                              dr.Period >= dateFrom &&
                              dr.Period <= dateTo);
@@ -378,7 +378,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var query = _db.FilpridePurchaseOrders
+            var query = _db.PurchaseOrders
                 .Where(p => p.Company == company && p.Date >= dateFrom && p.Date <= dateTo);
 
             // Apply status filter
@@ -410,7 +410,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var checkVoucherHeader = await _db.FilprideCheckVoucherHeaders
+            var checkVoucherHeader = await _db.CheckVoucherHeaders
                 .AsNoTracking()
                 .Where(cd =>
                     cd.Company == company && cd.DcrDate >= dateFrom && cd.DcrDate <= dateTo &&
@@ -425,7 +425,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return checkVoucherHeader;
         }
 
-        public async Task<List<FilprideReceivingReport>> GetPurchaseReport(DateOnly dateFrom,
+        public async Task<List<ReceivingReport>> GetPurchaseReport(DateOnly dateFrom,
             DateOnly dateTo,
             string company,
             List<int>? customerIds = null,
@@ -440,7 +440,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             // Base query without date filter yet
-            var receivingReportsQuery = _db.FilprideReceivingReports
+            var receivingReportsQuery = _db.ReceivingReports
                 .Where(rr => rr.Company == company
                             && (customerIds == null || customerIds.Contains(rr.DeliveryReceipt!.CustomerId))
                             && (commissioneeIds == null || commissioneeIds.Contains(rr.DeliveryReceipt!.CommissioneeId!.Value)));
@@ -505,7 +505,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             /// TODO Call this if needs to implement the in-transit purchases
             var allReports = receivingReports
-                .Concat(additionalDeliveryReceipts.Select(dr => new FilprideReceivingReport
+                .Concat(additionalDeliveryReceipts.Select(dr => new ReceivingReport
                 {
                     DeliveryReceipt = dr,
                     Date = dr.Date,
@@ -519,7 +519,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return receivingReports.OrderBy(rr => rr.Date).ToList();
         }
 
-        public async Task<List<FilprideDeliveryReceipt>> GetGrossMarginReport(
+        public async Task<List<DeliveryReceipt>> GetGrossMarginReport(
             DateOnly dateFrom,
             DateOnly dateTo,
             string company,
@@ -572,14 +572,14 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ToList();
         }
 
-        public async Task<List<FilprideCollectionReceipt>> GetCollectionReceiptReport(DateOnly dateFrom, DateOnly dateTo, string company, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
+        public async Task<List<CollectionReceipt>> GetCollectionReceiptReport(DateOnly dateFrom, DateOnly dateTo, string company, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var query = _db.FilprideCollectionReceipts
+            var query = _db.CollectionReceipts
                 .Where(cr => cr.Company == company && cr.TransactionDate >= dateFrom && cr.TransactionDate <= dateTo);
 
             // Apply status filter
@@ -607,14 +607,14 @@ namespace IBS.DataAccess.Repository.Filpride
             return collectionReceipts;
         }
 
-        public async Task<List<FilprideReceivingReport>> GetTradePayableReport(DateOnly dateFrom, DateOnly dateTo, string company, CancellationToken cancellationToken = default)
+        public async Task<List<ReceivingReport>> GetTradePayableReport(DateOnly dateFrom, DateOnly dateTo, string company, CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var receivingReports = await _db.FilprideReceivingReports
+            var receivingReports = await _db.ReceivingReports
                 .Include(rr => rr.PurchaseOrder).ThenInclude(po => po!.Supplier)
                 .Where(rr => rr.Company == company && rr.Date <= dateTo)
                 .OrderBy(rr => rr.Date.Year)
@@ -625,7 +625,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return receivingReports;
         }
 
-        public async Task<List<FilprideDeliveryReceipt>> GetHaulerPayableReport(DateOnly dateFrom, DateOnly dateTo, string company, CancellationToken cancellationToken = default)
+        public async Task<List<DeliveryReceipt>> GetHaulerPayableReport(DateOnly dateFrom, DateOnly dateTo, string company, CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -646,7 +646,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task<List<FilpridePurchaseOrder>> GetApReport(DateOnly monthYear, string company, CancellationToken cancellationToken = default)
         {
-            var purchaseOrders = await _db.FilpridePurchaseOrders
+            var purchaseOrders = await _db.PurchaseOrders
                 .Include(po => po.ReceivingReports!
                     .Where(rr => rr.Status == nameof(Status.Posted)))
                 .Include(po => po.Product)
@@ -669,14 +669,14 @@ namespace IBS.DataAccess.Repository.Filpride
             return purchaseOrders;
         }
 
-        public async Task<List<FilprideSalesInvoice>> GetARPerCustomerReport(DateOnly dateFrom, DateOnly dateTo, string company, List<int>? customerIds = null, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
+        public async Task<List<SalesInvoice>> GetARPerCustomerReport(DateOnly dateFrom, DateOnly dateTo, string company, List<int>? customerIds = null, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var salesInvoiceQuery = _db.FilprideSalesInvoices
+            var salesInvoiceQuery = _db.SalesInvoices
                 .Where(x => x.Company == company
                             && (customerIds == null || customerIds.Contains(x.CustomerId))
                             && x.TransactionDate >= dateFrom && x.TransactionDate <= dateTo);
@@ -704,7 +704,7 @@ namespace IBS.DataAccess.Repository.Filpride
         }
 
 
-        public async Task<List<FilprideJournalVoucherDetail>> GetJournalVoucherReport(DateOnly dateFrom,
+        public async Task<List<JournalVoucherDetail>> GetJournalVoucherReport(DateOnly dateFrom,
             DateOnly dateTo, string company, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
@@ -712,7 +712,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new ArgumentException("Date From must not be greater than Date To!");
             }
 
-            var query = _db.FilprideJournalVoucherDetails
+            var query = _db.JournalVoucherDetails
                 .Include(jvd => jvd.JournalVoucherHeader)
                 .ThenInclude(jvh => jvh!.CheckVoucherHeader)
                 .Where(x => x.JournalVoucherHeader!.Company == company

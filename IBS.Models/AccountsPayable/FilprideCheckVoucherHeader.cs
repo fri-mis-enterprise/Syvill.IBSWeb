@@ -52,7 +52,7 @@ namespace IBS.Models.AccountsPayable
         public int? SupplierId { get; set; }
 
         [ForeignKey(nameof(SupplierId))]
-        public FilprideSupplier? Supplier { get; set; }
+        public Supplier? Supplier { get; set; }
 
         [StringLength(200)]
         public string? SupplierName { get; set; }
@@ -80,7 +80,7 @@ namespace IBS.Models.AccountsPayable
         public int? BankId { get; set; }
 
         [ForeignKey(nameof(BankId))]
-        public FilprideBankAccount? BankAccount { get; set; }
+        public BankAccount? BankAccount { get; set; }
 
         [StringLength(200)]
         public string? BankAccountName { get; set; }
@@ -164,7 +164,7 @@ namespace IBS.Models.AccountsPayable
         public int? EmployeeId { get; set; }
 
         [ForeignKey(nameof(EmployeeId))]
-        public FilprideEmployee? Employee { get; set; }
+        public Employee? Employee { get; set; }
 
         [StringLength(200)]
         public string Address { get; set; } = null!;
@@ -172,7 +172,7 @@ namespace IBS.Models.AccountsPayable
         [StringLength(20)]
         public string Tin { get; set; } = null!;
 
-        public ICollection<FilprideCheckVoucherDetail>? Details { get; set; }
+        public ICollection<CheckVoucherDetail>? Details { get; set; }
 
         [StringLength(20)]
         public string VatType { get; set; } = null!;

@@ -103,8 +103,6 @@ namespace IBS.DataAccess.Repository.IRepository
 
         Filpride.IRepository.IPickUpPointRepository FilpridePickUpPoint { get; }
 
-        IFreightRepository FilprideFreight { get; }
-
         IAuthorityToLoadRepository FilprideAuthorityToLoad { get; }
 
         #endregion

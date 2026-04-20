@@ -80,7 +80,7 @@ namespace IBSWeb.Areas.User.Controllers
                 }
 
                 // Audit Trail
-                FilprideAuditTrail auditTrail = new(
+                AuditTrail auditTrail = new(
                     extractedBy,
                     $"Generate {masterFileType} master file excel",
                     $"{masterFileType}",
@@ -137,32 +137,32 @@ namespace IBSWeb.Areas.User.Controllers
             // ===== WORKSHEET 1: Customer Master File =====
             var customerColumns = new List<ColumnDefinition>
             {
-                new() { Header = "CUSTOMER CODE", ValueSelector = c => ((FilprideCustomer)c).CustomerCode ?? "" },
-                new() { Header = "CUSTOMER NAME", ValueSelector = c => ((FilprideCustomer)c).CustomerName },
-                new() { Header = "CUSTOMER ADDRESS", ValueSelector = c => ((FilprideCustomer)c).CustomerAddress },
-                new() { Header = "TIN NO", ValueSelector = c => ((FilprideCustomer)c).CustomerTin },
-                new() { Header = "BUSINESS STYLE", ValueSelector = c => ((FilprideCustomer)c).BusinessStyle ?? "" },
-                new() { Header = "ZIP CODE", ValueSelector = c => ((FilprideCustomer)c).ZipCode ?? "" },
-                new() { Header = "CREDIT TERM", ValueSelector = c => ((FilprideCustomer)c).CustomerTerms },
+                new() { Header = "CUSTOMER CODE", ValueSelector = c => ((Customer)c).CustomerCode ?? "" },
+                new() { Header = "CUSTOMER NAME", ValueSelector = c => ((Customer)c).CustomerName },
+                new() { Header = "CUSTOMER ADDRESS", ValueSelector = c => ((Customer)c).CustomerAddress },
+                new() { Header = "TIN NO", ValueSelector = c => ((Customer)c).CustomerTin },
+                new() { Header = "BUSINESS STYLE", ValueSelector = c => ((Customer)c).BusinessStyle ?? "" },
+                new() { Header = "ZIP CODE", ValueSelector = c => ((Customer)c).ZipCode ?? "" },
+                new() { Header = "CREDIT TERM", ValueSelector = c => ((Customer)c).CustomerTerms },
                 new()
             {
                 Header = "CREDIT LIMIT",
-                ValueSelector = c => ((FilprideCustomer)c).CreditLimit,
+                ValueSelector = c => ((Customer)c).CreditLimit,
                 NumberFormat = "#,##0.00",
                 Alignment = ExcelHorizontalAlignment.Right
             },
             new()
             {
                 Header = "CREDIT LIMIT AS OF TODAY",
-                ValueSelector = c => ((FilprideCustomer)c).CreditLimitAsOfToday,
+                ValueSelector = c => ((Customer)c).CreditLimitAsOfToday,
                 NumberFormat = "#,##0.00",
                 Alignment = ExcelHorizontalAlignment.Right
             },
-            new() { Header = "STATION CODE", ValueSelector = c => ((FilprideCustomer)c).StationCode ?? "" },
-            new() { Header = "TYPE", ValueSelector = c => ((FilprideCustomer)c).Type },
-            new() { Header = "DEFAULT COMMISION RATE", ValueSelector = c => ((FilprideCustomer)c).CommissionRate },
-            new() { Header = "DEFAULT COMMISIONEE", ValueSelector = c => ((FilprideCustomer)c).Commissionee?.SupplierName ?? ""},
-            new() { Header = "STATUS", ValueSelector = c => ((FilprideCustomer)c).IsActive ? "Active" : "Inactive" },
+            new() { Header = "STATION CODE", ValueSelector = c => ((Customer)c).StationCode ?? "" },
+            new() { Header = "TYPE", ValueSelector = c => ((Customer)c).Type },
+            new() { Header = "DEFAULT COMMISION RATE", ValueSelector = c => ((Customer)c).CommissionRate },
+            new() { Header = "DEFAULT COMMISIONEE", ValueSelector = c => ((Customer)c).Commissionee?.SupplierName ?? ""},
+            new() { Header = "STATUS", ValueSelector = c => ((Customer)c).IsActive ? "Active" : "Inactive" },
             };
 
             var customerWidths = new Dictionary<string, double>
@@ -191,9 +191,9 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 var branchColumns = new List<ColumnDefinition>
                 {
-                    new() { Header = "CUSTOMER NAME", ValueSelector = b => ((FilprideCustomerBranch)b).Customer?.CustomerName},
-                    new() { Header = "BRANCH NAME", ValueSelector = b => ((FilprideCustomerBranch)b).BranchName },
-                    new() { Header = "BRANCH ADDRESS", ValueSelector = b => ((FilprideCustomerBranch)b).BranchAddress  },
+                    new() { Header = "CUSTOMER NAME", ValueSelector = b => ((CustomerBranch)b).Customer?.CustomerName},
+                    new() { Header = "BRANCH NAME", ValueSelector = b => ((CustomerBranch)b).BranchName },
+                    new() { Header = "BRANCH ADDRESS", ValueSelector = b => ((CustomerBranch)b).BranchAddress  },
                 };
 
                 var branchWidths = new Dictionary<string, double>
@@ -245,17 +245,17 @@ namespace IBSWeb.Areas.User.Controllers
 
             var columns = new List<ColumnDefinition>
             {
-                new() { Header = "SUPPLIER CODE", ValueSelector = s => ((FilprideSupplier)s).SupplierCode ?? "" },
-                new() { Header = "SUPPLIER NAME", ValueSelector = s => ((FilprideSupplier)s).SupplierName },
-                new() { Header = "SUPPLIER ADDRESS", ValueSelector = s => ((FilprideSupplier)s).SupplierAddress },
-                new() { Header = "ZIP CODE", ValueSelector = s => ((FilprideSupplier)s).ZipCode },
-                new() { Header = "BRANCH", ValueSelector = s => ((FilprideSupplier)s).Branch },
-                new() { Header = "TIN NO", ValueSelector = s => ((FilprideSupplier)s).SupplierTin },
-                new() { Header = "CREDIT TERMS", ValueSelector = s => ((FilprideSupplier)s).SupplierTerms },
-                new() { Header = "VATABLE", ValueSelector = s => ((FilprideSupplier)s).VatType },
-                new() { Header = "TAXABLE", ValueSelector = s => ((FilprideSupplier)s).TaxType },
-                new() { Header = "CATEGORY", ValueSelector = s => ((FilprideSupplier)s).Category },
-                new() { Header = "EWT RATE", ValueSelector = s => ((FilprideSupplier)s).WithholdingTaxPercent * 100 }
+                new() { Header = "SUPPLIER CODE", ValueSelector = s => ((Supplier)s).SupplierCode ?? "" },
+                new() { Header = "SUPPLIER NAME", ValueSelector = s => ((Supplier)s).SupplierName },
+                new() { Header = "SUPPLIER ADDRESS", ValueSelector = s => ((Supplier)s).SupplierAddress },
+                new() { Header = "ZIP CODE", ValueSelector = s => ((Supplier)s).ZipCode },
+                new() { Header = "BRANCH", ValueSelector = s => ((Supplier)s).Branch },
+                new() { Header = "TIN NO", ValueSelector = s => ((Supplier)s).SupplierTin },
+                new() { Header = "CREDIT TERMS", ValueSelector = s => ((Supplier)s).SupplierTerms },
+                new() { Header = "VATABLE", ValueSelector = s => ((Supplier)s).VatType },
+                new() { Header = "TAXABLE", ValueSelector = s => ((Supplier)s).TaxType },
+                new() { Header = "CATEGORY", ValueSelector = s => ((Supplier)s).Category },
+                new() { Header = "EWT RATE", ValueSelector = s => ((Supplier)s).WithholdingTaxPercent * 100 }
             };
 
             var customWidths = new Dictionary<string, double>
@@ -297,10 +297,10 @@ namespace IBSWeb.Areas.User.Controllers
 
             var columns = new List<ColumnDefinition>
             {
-                new() { Header = "ACCOUNT NO", ValueSelector = b => ((FilprideBankAccount)b).AccountNo },
-                new() { Header = "ACCOUNT NAME", ValueSelector = b => ((FilprideBankAccount)b).AccountName },
-                new() { Header = "BANK", ValueSelector = b => ((FilprideBankAccount)b).Bank },
-                new() { Header = "BRANCH", ValueSelector = b => ((FilprideBankAccount)b).Branch },
+                new() { Header = "ACCOUNT NO", ValueSelector = b => ((BankAccount)b).AccountNo },
+                new() { Header = "ACCOUNT NAME", ValueSelector = b => ((BankAccount)b).AccountName },
+                new() { Header = "BANK", ValueSelector = b => ((BankAccount)b).Bank },
+                new() { Header = "BRANCH", ValueSelector = b => ((BankAccount)b).Branch },
             };
 
             var customWidths = new Dictionary<string, double>
@@ -341,9 +341,9 @@ namespace IBSWeb.Areas.User.Controllers
 
             var columns = new List<ColumnDefinition>
             {
-                new() { Header = "SERVICE NO", ValueSelector = s => ((FilprideService)s).ServiceNo },
-                new() { Header = "SERVICE NAME", ValueSelector = s => ((FilprideService)s).Name },
-                new() { Header = "PERCENT", ValueSelector = s => ((FilprideService)s).Percent},
+                new() { Header = "SERVICE NO", ValueSelector = s => ((Service)s).ServiceNo },
+                new() { Header = "SERVICE NAME", ValueSelector = s => ((Service)s).Name },
+                new() { Header = "PERCENT", ValueSelector = s => ((Service)s).Percent},
             };
 
             var customWidths = new Dictionary<string, double>
@@ -384,24 +384,24 @@ namespace IBSWeb.Areas.User.Controllers
 
             var columns = new List<ColumnDefinition>
             {
-                new() { Header = "EMPLOYEE NO", ValueSelector = e => ((FilprideEmployee)e).EmployeeNumber },
-                new() { Header = "FIRST NAME", ValueSelector = e => ((FilprideEmployee)e).FirstName },
-                new() { Header = "MIDDLE NAME", ValueSelector = e => ((FilprideEmployee)e).MiddleName },
-                new() { Header = "LAST NAME", ValueSelector = e => ((FilprideEmployee)e).LastName },
-                new() { Header = "ADDRESS", ValueSelector = e => ((FilprideEmployee)e).Address },
-                new() { Header = "BIRTH DATE", ValueSelector = e => ((FilprideEmployee)e).BirthDate, NumberFormat = "mm/dd/yyyy" },
-                new() { Header = "TEL NO", ValueSelector = e => ((FilprideEmployee)e).TelNo },
-                new() { Header = "SSS NO", ValueSelector = e => ((FilprideEmployee)e).SssNo },
-                new() { Header = "TIN NO", ValueSelector = e => ((FilprideEmployee)e).TinNo },
-                new() { Header = "PHILHEALTH NO", ValueSelector = e => ((FilprideEmployee)e).PhilhealthNo },
-                new() { Header = "PAGIBIG NO", ValueSelector = e => ((FilprideEmployee)e).PagibigNo },
-                new() { Header = "COMPANY", ValueSelector = e => ((FilprideEmployee)e).Company },
-                new() { Header = "DEPARTMENT", ValueSelector = e => ((FilprideEmployee)e).Department },
-                new() { Header = "DATE HIRED", ValueSelector = e => ((FilprideEmployee)e).DateHired, NumberFormat = "mm/dd/yyyy" },
-                new() { Header = "DATE RESIGNED", ValueSelector = e => ((FilprideEmployee)e).DateResigned?.ToDateTime(TimeOnly.MinValue), NumberFormat = "mm/dd/yyyy" },
-                new() { Header = "POSITION", ValueSelector = e => ((FilprideEmployee)e).Position },
-                new() { Header = "IS MANAGERIAL", ValueSelector = e => ((FilprideEmployee)e).IsManagerial ? "Yes" : "No" },
-                new() { Header = "SUPERVISOR", ValueSelector = e => ((FilprideEmployee)e).Supervisor },
+                new() { Header = "EMPLOYEE NO", ValueSelector = e => ((Employee)e).EmployeeNumber },
+                new() { Header = "FIRST NAME", ValueSelector = e => ((Employee)e).FirstName },
+                new() { Header = "MIDDLE NAME", ValueSelector = e => ((Employee)e).MiddleName },
+                new() { Header = "LAST NAME", ValueSelector = e => ((Employee)e).LastName },
+                new() { Header = "ADDRESS", ValueSelector = e => ((Employee)e).Address },
+                new() { Header = "BIRTH DATE", ValueSelector = e => ((Employee)e).BirthDate, NumberFormat = "mm/dd/yyyy" },
+                new() { Header = "TEL NO", ValueSelector = e => ((Employee)e).TelNo },
+                new() { Header = "SSS NO", ValueSelector = e => ((Employee)e).SssNo },
+                new() { Header = "TIN NO", ValueSelector = e => ((Employee)e).TinNo },
+                new() { Header = "PHILHEALTH NO", ValueSelector = e => ((Employee)e).PhilhealthNo },
+                new() { Header = "PAGIBIG NO", ValueSelector = e => ((Employee)e).PagibigNo },
+                new() { Header = "COMPANY", ValueSelector = e => ((Employee)e).Company },
+                new() { Header = "DEPARTMENT", ValueSelector = e => ((Employee)e).Department },
+                new() { Header = "DATE HIRED", ValueSelector = e => ((Employee)e).DateHired, NumberFormat = "mm/dd/yyyy" },
+                new() { Header = "DATE RESIGNED", ValueSelector = e => ((Employee)e).DateResigned?.ToDateTime(TimeOnly.MinValue), NumberFormat = "mm/dd/yyyy" },
+                new() { Header = "POSITION", ValueSelector = e => ((Employee)e).Position },
+                new() { Header = "IS MANAGERIAL", ValueSelector = e => ((Employee)e).IsManagerial ? "Yes" : "No" },
+                new() { Header = "SUPERVISOR", ValueSelector = e => ((Employee)e).Supervisor },
             };
 
             var customWidths = new Dictionary<string, double>

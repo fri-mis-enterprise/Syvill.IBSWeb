@@ -5,17 +5,14 @@ namespace IBS.Utility.Helpers
 {
     public static class DateTimeHelper
     {
-        private static readonly TimeZoneInfo PhilippineTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+        private static readonly TimeZoneInfo _philippineTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
 
-        private static readonly object _lock = new();
+        private static readonly Lock _lock = new();
         private static DateTime? _lastGeneratedTime;
-
-
-        private static readonly HttpClient _httpClient = new();
 
         public static DateTime GetCurrentPhilippineTime()
         {
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, PhilippineTimeZone);
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _philippineTimeZone);
         }
 
         public static DateTime GetNextTransactionDateTime(DateOnly date)

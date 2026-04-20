@@ -54,7 +54,7 @@ namespace IBS.DataAccess.Repository
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public bool IsJournalEntriesBalanced(IEnumerable<FilprideGeneralLedgerBook> journals)
+        public bool IsJournalEntriesBalanced(IEnumerable<GeneralLedgerBook> journals)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<SupplierDto?> MapSupplierToDTO(string supplierCode, CancellationToken cancellationToken = default)
         {
-            return await _db.Set<FilprideSupplier>()
+            return await _db.Set<Supplier>()
                 .Where(s => s.SupplierCode == supplierCode)
                 .Select(s => new SupplierDto
                 {
@@ -179,7 +179,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<CustomerDto?> MapCustomerToDTO(int? customerId, string? customerCode, CancellationToken cancellationToken = default)
         {
-            return await _db.Set<FilprideCustomer>()
+            return await _db.Set<Customer>()
                 .Where(c => c.CustomerId == customerId || c.CustomerCode == customerCode)
                 .Select(c => new CustomerDto
                 {
@@ -222,7 +222,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<AccountTitleDto>> GetListOfAccountTitleDto(CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideChartOfAccounts
+            return await _db.ChartOfAccounts
                .Where(coa => coa.Level == 4 || coa.Level == 5)
                .Select(coa => new AccountTitleDto
                {
@@ -235,7 +235,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<DateOnly> ComputeDueDateAsync(string terms, DateOnly transactionDate, CancellationToken cancellationToken = default)
         {
-            var getTerms = await _db.FilprideTerms
+            var getTerms = await _db.Terms
                 .FirstOrDefaultAsync(x => x.TermsCode == terms, cancellationToken);
 
             if (getTerms == null)

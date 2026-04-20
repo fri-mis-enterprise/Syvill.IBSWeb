@@ -18,7 +18,7 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 
         Task<string> GenerateCodeForSubPoAsync(string purchaseOrderNo, string company, CancellationToken cancellationToken = default);
 
-        Task UpdateActualCostOnSalesAndReceiptsAsync(FilpridePOActualPrice model, CancellationToken cancellationToken = default);
+        Task UpdateActualCostOnSalesAndReceiptsAsync(POActualPrice model, CancellationToken cancellationToken = default);
 
         Task<decimal> GetPurchaseOrderCost(int purchaseOrderId, CancellationToken cancellationToken = default);
 

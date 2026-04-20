@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class TermsRepository : Repository<FilprideTerms>, ITermsRepository
+    public class TermsRepository : Repository<Terms>, ITermsRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -17,9 +17,9 @@ namespace IBS.DataAccess.Repository.Filpride
             _db = db;
         }
 
-        public override async Task<IEnumerable<FilprideTerms>> GetAllAsync(Expression<Func<FilprideTerms, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Terms>> GetAllAsync(Expression<Func<Terms, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideTerms> query = dbSet;
+            IQueryable<Terms> query = dbSet;
 
             if (filter != null)
             {
@@ -29,9 +29,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public async Task UpdateAsync(FilprideTerms model, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Terms model, CancellationToken cancellationToken = default)
         {
-            var existingTerms = await _db.FilprideTerms
+            var existingTerms = await _db.Terms
                 .FirstOrDefaultAsync(x => x.TermsCode == model.TermsCode, cancellationToken)
                                    ?? throw new InvalidOperationException($"Terms with code '{model.TermsCode}' not found.");
 
@@ -53,7 +53,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task<List<SelectListItem>> GetFilprideTermsListAsyncByCode(CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideTerms
+            return await _db.Terms
                 .OrderBy(x => x.TermsCode)
                 .Select(x => new SelectListItem
                 {

@@ -81,7 +81,7 @@ namespace IBS.Models.AccountsPayable
         [StringLength(13)]
         public string? Type { get; set; }
 
-        public ICollection<FilprideJournalVoucherDetail>? Details { get; set; }
+        public ICollection<JournalVoucherDetail>? Details { get; set; }
 
         public string JvType { get; set; } = string.Empty;
 

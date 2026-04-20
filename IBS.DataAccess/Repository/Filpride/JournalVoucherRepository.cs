@@ -30,7 +30,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastJv = await _db
-                .FilprideJournalVoucherHeaders
+                .JournalVoucherHeaders
                 .AsNoTracking()
                 .OrderByDescending(x => x.JournalVoucherHeaderNo!.Length)
                 .ThenByDescending(x => x.JournalVoucherHeaderNo)
@@ -54,7 +54,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastJv = await _db
-                .FilprideJournalVoucherHeaders
+                .JournalVoucherHeaders
                 .AsNoTracking()
                 .OrderByDescending(x => x.JournalVoucherHeaderNo!.Length)
                 .ThenByDescending(x => x.JournalVoucherHeaderNo)
@@ -115,19 +115,19 @@ namespace IBS.DataAccess.Repository.Filpride
         }
 
         public async Task PostAsync(FilprideJournalVoucherHeader header,
-            IEnumerable<FilprideJournalVoucherDetail> details,
+            IEnumerable<JournalVoucherDetail> details,
             CancellationToken cancellationToken = default)
         {
             #region --General Ledger Book Recording(GL)--
 
             var accountTitlesDto = await GetListOfAccountTitleDto(cancellationToken);
-            var ledgers = new List<FilprideGeneralLedgerBook>();
+            var ledgers = new List<GeneralLedgerBook>();
 
             foreach (var detail in details)
             {
                 var account = accountTitlesDto.Find(c => c.AccountNumber == detail.AccountNo) ?? throw new ArgumentException($"Account title '{detail.AccountNo}' not found.");
                 ledgers.Add(
-                    new FilprideGeneralLedgerBook
+                    new GeneralLedgerBook
                     {
                         Date = header.Date,
                         Reference = header.JournalVoucherHeaderNo!,
@@ -153,17 +153,17 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new ArgumentException("Debit and Credit is not equal, check your entries.");
             }
 
-            await _db.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+            await _db.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
 
             #endregion --General Ledger Book Recording(GL)--
 
             #region --Journal Book Recording(JV)--
 
-            var journalBook = new List<FilprideJournalBook>();
+            var journalBook = new List<JournalBook>();
             foreach (var detail in details)
             {
                 journalBook.Add(
-                    new FilprideJournalBook
+                    new JournalBook
                     {
                         Date = header.Date,
                         Reference = header.JournalVoucherHeaderNo!,
@@ -178,7 +178,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 );
             }
 
-            await _db.FilprideJournalBooks.AddRangeAsync(journalBook, cancellationToken);
+            await _db.JournalBooks.AddRangeAsync(journalBook, cancellationToken);
 
             #endregion --Journal Book Recording(JV)--
 

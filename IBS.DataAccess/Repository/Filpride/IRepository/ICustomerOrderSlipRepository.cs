@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ICustomerOrderSlipRepository : IRepository<FilprideCustomerOrderSlip>
+    public interface ICustomerOrderSlipRepository : IRepository<CustomerOrderSlip>
     {
         Task<string> GenerateCodeAsync(string companyClaims, CancellationToken cancellationToken = default);
 

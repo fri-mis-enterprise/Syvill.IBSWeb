@@ -25,7 +25,7 @@ namespace IBS.Models.AccountsPayable
         public int SupplierId { get; set; }
 
         [ForeignKey(nameof(SupplierId))]
-        public FilprideSupplier? Supplier { get; set; }
+        public Supplier? Supplier { get; set; }
 
         [StringLength(200)]
         public string SupplierName { get; set; } = string.Empty;
@@ -117,7 +117,7 @@ namespace IBS.Models.AccountsPayable
         public int? CustomerId { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
-        public FilprideCustomer? Customer { get; set; }
+        public Customer? Customer { get; set; }
 
         #endregion
 
@@ -139,12 +139,12 @@ namespace IBS.Models.AccountsPayable
         [Column(TypeName = "numeric(18,4)")]
         public decimal UnTriggeredQuantity { get; set; }
 
-        public ICollection<FilpridePOActualPrice>? ActualPrices { get; set; }
+        public ICollection<POActualPrice>? ActualPrices { get; set; }
 
         public int PickUpPointId { get; set; }
 
         [ForeignKey(nameof(PickUpPointId))]
-        public FilpridePickUpPoint? PickUpPoint { get; set; }
+        public PickUpPoint? PickUpPoint { get; set; }
 
         [StringLength(10)]
         public string VatType { get; set; } = string.Empty;
@@ -152,7 +152,7 @@ namespace IBS.Models.AccountsPayable
         [StringLength(20)]
         public string TaxType { get; set; } = string.Empty;
 
-        public ICollection<FilprideReceivingReport>? ReceivingReports { get; set; }
+        public ICollection<ReceivingReport>? ReceivingReports { get; set; }
 
         [StringLength(4)]
         public string TypeOfPurchase { get; set; } = string.Empty;

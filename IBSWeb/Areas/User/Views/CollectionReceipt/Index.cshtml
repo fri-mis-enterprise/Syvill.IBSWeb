@@ -1,8 +1,8 @@
 ﻿@using IBS.Models.Enums
-@model IEnumerable<FilprideCollectionReceipt>
+@model IEnumerable<CollectionReceipt>
 @{
     ViewData["Title"] = "Collection Receipt for Sales Invoice";
-    var model = new FilprideCollectionReceipt();
+    var model = new CollectionReceipt();
 }
 
 <link rel="stylesheet" href="~/css/index-style.css">
@@ -374,7 +374,7 @@
         $(document).ready(function () {
             let filterValue = localStorage.getItem('filterDate') || "";
             $('#inputDate').val(filterValue);
-            
+
             let table = $('#paginatedTable').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -451,17 +451,17 @@
                     {
                         "data": "status",
                         "render": function(data, type, row) {
-                            var statusClass = row.status === "@nameof(CollectionReceiptStatus.Posted)" 
+                            var statusClass = row.status === "@nameof(CollectionReceiptStatus.Posted)"
                             || row.status === "@nameof(CollectionReceiptStatus.Deposited)"
-                            || row.status === "@nameof(CollectionReceiptStatus.Redeposited)"    
-                                ? "bg-info" 
-                                : row.status === "@nameof(CollectionReceiptStatus.Cleared)" 
-                                    ? "bg-success" 
+                            || row.status === "@nameof(CollectionReceiptStatus.Redeposited)"
+                                ? "bg-info"
+                                : row.status === "@nameof(CollectionReceiptStatus.Cleared)"
+                                    ? "bg-success"
                                     : row.status === "@nameof(CollectionReceiptStatus.Voided)"
-                                    || row.status === "@nameof(CollectionReceiptStatus.Returned)" 
-                                        ? "bg-danger" 
-                                        : row.status === "@nameof(CollectionReceiptStatus.Canceled)" 
-                                            ? "bg-warning" 
+                                    || row.status === "@nameof(CollectionReceiptStatus.Returned)"
+                                        ? "bg-danger"
+                                        : row.status === "@nameof(CollectionReceiptStatus.Canceled)"
+                                            ? "bg-warning"
                                             : "";
 
                             return `<span class="badge rounded-pill ${statusClass}">${row.status}</span>`;
@@ -473,9 +473,9 @@
                         "render": function (data, type, row) {
                             let dropdownHtml = `
                                     <div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
-                                        <button class="btn btn-light btn-sm dropdown-toggle w-100" 
-                                                        type="button" 
-                                                        data-bs-toggle="dropdown" 
+                                        <button class="btn btn-light btn-sm dropdown-toggle w-100"
+                                                        type="button"
+                                                        data-bs-toggle="dropdown"
                                                         aria-expanded="false">
                                                     <i class="bi bi-three-dots"></i>
                                         </button>
@@ -498,7 +498,7 @@
                                 const postedStatus = "@nameof(CollectionReceiptStatus.Posted)";
                                 const clearedStatus = "@nameof(CollectionReceiptStatus.Cleared)";
                                 const returnedStatus = "@nameof(CollectionReceiptStatus.Returned)";
-                                
+
                                 if (!hasDeposit && row.status === postedStatus) {
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="addDepositInfo(${row.collectionReceiptId})">Add Deposit Info</a></li>`;
                                 } else if (!hasDeposit && row.status === returnedStatus) {
@@ -508,13 +508,13 @@
                                 } else{
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="returnCheck(${row.collectionReceiptId})">Return Check</a></li>`;
                                 }
-                                
+
                                 if (row.multipleSIId != null) {
                                     dropdownHtml += `<li><a href="@Url.Action("MultipleCollectionPrint", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
                                 } else {
                                     dropdownHtml += `<li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
                                 }
-                                
+
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmVoid(${row.collectionReceiptId})">Void</a></li>`;
                             }
 

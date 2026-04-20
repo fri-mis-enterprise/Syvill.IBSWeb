@@ -18,7 +18,7 @@ namespace IBS.DataAccess.Repository.IRepository
 
         Task RemoveRecords<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default) where TEntity : class;
 
-        bool IsJournalEntriesBalanced(IEnumerable<FilprideGeneralLedgerBook> journals);
+        bool IsJournalEntriesBalanced(IEnumerable<GeneralLedgerBook> journals);
 
         (string AccountNo, string AccountTitle) GetSalesAccountTitle(string productCode);
 

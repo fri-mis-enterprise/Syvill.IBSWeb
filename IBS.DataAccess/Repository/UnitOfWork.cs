@@ -76,7 +76,6 @@ namespace IBS.DataAccess.Repository
         public Filpride.IRepository.ICustomerRepository FilprideCustomer { get; private set; }
         public Filpride.IRepository.ISupplierRepository FilprideSupplier { get; private set; }
         public Filpride.IRepository.IPickUpPointRepository FilpridePickUpPoint { get; private set; }
-        public IFreightRepository FilprideFreight { get; private set; }
         public IAuthorityToLoadRepository FilprideAuthorityToLoad { get; private set; }
         public Filpride.IRepository.IChartOfAccountRepository FilprideChartOfAccount { get; private set; }
         public IAuditTrailRepository FilprideAuditTrail { get; private set; }
@@ -143,7 +142,6 @@ namespace IBS.DataAccess.Repository
             FilprideCustomer = new Filpride.CustomerRepository(_db);
             FilprideSupplier = new Filpride.SupplierRepository(_db);
             FilpridePickUpPoint = new Filpride.PickUpPointRepository(_db);
-            FilprideFreight = new FreightRepository(_db);
             FilprideAuthorityToLoad = new AuthorityToLoadRepository(_db);
             FilprideChartOfAccount = new Filpride.ChartOfAccountRepository(_db);
             FilprideAuditTrail = new AuditTrailRepository(_db);
@@ -214,10 +212,10 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideCustomerListAsyncById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideCustomers
+            return await _db.Customers
                 .OrderBy(c => c.CustomerName)
                 .Where(c => c.IsActive)
-                .Where(GetCompanyFilter<FilprideCustomer>(company))
+                .Where(GetCompanyFilter<Customer>(company))
                 .Select(c => new SelectListItem
                 {
                     Value = c.CustomerId.ToString(),
@@ -228,10 +226,10 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideSupplierListAsyncById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideSuppliers
+            return await _db.Suppliers
                 .OrderBy(s => s.SupplierCode)
                 .Where(s => s.IsActive)
-                .Where(GetCompanyFilter<FilprideSupplier>(company))
+                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -242,10 +240,10 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideSuppliers
+            return await _db.Suppliers
                 .OrderBy(s => s.SupplierCode)
                 .Where(s => s.IsActive && s.Category == "Trade")
-                .Where(GetCompanyFilter<FilprideSupplier>(company))
+                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -256,10 +254,10 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideNonTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideSuppliers
+            return await _db.Suppliers
                 .OrderBy(s => s.SupplierName)
                 .Where(s => s.IsActive && s.Category == "Non-Trade")
-                .Where(GetCompanyFilter<FilprideSupplier>(company))
+                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -270,10 +268,10 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideCommissioneeListAsyncById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideSuppliers
+            return await _db.Suppliers
                 .OrderBy(s => s.SupplierCode)
                 .Where(s => s.IsActive && s.Category == "Commissionee")
-                .Where(GetCompanyFilter<FilprideSupplier>(company))
+                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -284,10 +282,10 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideHaulerListAsyncById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideSuppliers
+            return await _db.Suppliers
                 .OrderBy(s => s.SupplierCode)
                 .Where(s => s.IsActive && s.Company == company && s.Category == "Hauler")
-                .Where(GetCompanyFilter<FilprideSupplier>(company))
+                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -298,8 +296,8 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideBankAccountListById(string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideBankAccounts
-                .Where(GetCompanyFilter<FilprideBankAccount>(company))
+            return await _db.BankAccounts
+                .Where(GetCompanyFilter<BankAccount>(company))
                 .OrderBy(b => b.AccountNo)
                 .Select(ba => new SelectListItem
                 {
@@ -311,7 +309,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideEmployeeListById(CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideEmployees
+            return await _db.Employees
                 .Where(e => e.IsActive)
                 .OrderBy(e => e.FirstName)
                 .ThenBy(e => e.LastName)
@@ -325,8 +323,8 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetDistinctFilpridePickupPointListById(string companyClaims, CancellationToken cancellationToken = default)
         {
-            return await _db.FilpridePickUpPoints
-                .Where(GetCompanyFilter<FilpridePickUpPoint>(companyClaims))
+            return await _db.PickUpPoints
+                .Where(GetCompanyFilter<PickUpPoint>(companyClaims))
                 .GroupBy(p => p.Depot)
                 .OrderBy(g => g.Key)
                 .Select(g => new SelectListItem
@@ -339,9 +337,9 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetFilprideServiceListById(string companyClaims, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideServices
+            return await _db.Services
                 .OrderBy(s => s.Name)
-                .Where(GetCompanyFilter<FilprideService>(companyClaims))
+                .Where(GetCompanyFilter<Service>(companyClaims))
                 .Select(s => new SelectListItem
                 {
                     Value = s.ServiceId.ToString(),
@@ -380,7 +378,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetChartOfAccountListAsyncById(CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideChartOfAccounts
+            return await _db.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
@@ -393,7 +391,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetChartOfAccountListAsyncByNo(CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideChartOfAccounts
+            return await _db.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
@@ -406,7 +404,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task<List<SelectListItem>> GetChartOfAccountListAsyncByAccountTitle(CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideChartOfAccounts
+            return await _db.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem

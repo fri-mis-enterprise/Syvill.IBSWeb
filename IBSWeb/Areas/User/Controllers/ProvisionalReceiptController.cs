@@ -62,7 +62,7 @@ namespace IBSWeb.Areas.User.Controllers
             viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.ProvisionalReceipt, cancellationToken);
         }
 
-        private static PREditViewModel MapToEditViewModel(FilprideProvisionalReceipt model)
+        private static PREditViewModel MapToEditViewModel(ProvisionalReceipt model)
         {
             return new PREditViewModel
             {
@@ -89,7 +89,7 @@ namespace IBSWeb.Areas.User.Controllers
             };
         }
 
-        private static void MapFormToEntity(ProvisionalReceiptViewModel viewModel, FilprideProvisionalReceipt model)
+        private static void MapFormToEntity(ProvisionalReceiptViewModel viewModel, ProvisionalReceipt model)
         {
             model.TransactionDate = viewModel.TransactionDate;
             model.EmployeeId = viewModel.EmployeeId;
@@ -303,7 +303,7 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var userFullName = GetUserFullName();
-                var model = new FilprideProvisionalReceipt
+                var model = new ProvisionalReceipt
                 {
                     SeriesNumber = await _unitOfWork.ProvisionalReceipt
                         .GenerateSeriesNumberAsync(companyClaims, viewModel.Type, cancellationToken),
@@ -316,11 +316,11 @@ namespace IBSWeb.Areas.User.Controllers
                 MapFormToEntity(viewModel, model);
                 model.Type = viewModel.Type;
 
-                await _dbContext.FilprideProvisionalReceipts.AddAsync(model, cancellationToken);
+                await _dbContext.ProvisionalReceipts.AddAsync(model, cancellationToken);
 
-                var auditTrail = new FilprideAuditTrail(userFullName,
+                var auditTrail = new AuditTrail(userFullName,
                     $"Create new provisional receipt# {model.SeriesNumber}", "Provisional Receipt", companyClaims);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -415,9 +415,9 @@ namespace IBSWeb.Areas.User.Controllers
                 model.EditedBy = GetUserFullName();
                 model.EditedDate = DateTimeHelper.GetCurrentPhilippineTime();
 
-                var auditTrail = new FilprideAuditTrail(GetUserFullName(),
+                var auditTrail = new AuditTrail(GetUserFullName(),
                     $"Edited provisional receipt# {model.SeriesNumber}", "Provisional Receipt", companyClaims);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -481,9 +481,9 @@ namespace IBSWeb.Areas.User.Controllers
                     model.IsPrinted = true;
 
                     var printedBy = GetUserFullName();
-                    var auditTrail = new FilprideAuditTrail(printedBy,
+                    var auditTrail = new AuditTrail(printedBy,
                         $"Printed original copy of provisional receipt# {model.SeriesNumber}", "Provisional Receipt", companyClaims);
-                    await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                    await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
                     await _dbContext.SaveChangesAsync(cancellationToken);
                 }
 
@@ -526,9 +526,9 @@ namespace IBSWeb.Areas.User.Controllers
                 model.PostedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.Status = nameof(CollectionReceiptStatus.Posted);
 
-                var auditTrail = new FilprideAuditTrail(model.PostedBy,
+                var auditTrail = new AuditTrail(model.PostedBy,
                     $"Posted provisional receipt# {model.SeriesNumber}", "Provisional Receipt", companyClaims);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -576,9 +576,9 @@ namespace IBSWeb.Areas.User.Controllers
 
                 await _unitOfWork.GeneralLedger.ReverseEntries(model.SeriesNumber, cancellationToken);
 
-                var auditTrail = new FilprideAuditTrail(model.VoidedBy,
+                var auditTrail = new AuditTrail(model.VoidedBy,
                     $"Voided provisional receipt# {model.SeriesNumber}", "Provisional Receipt", companyClaims);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -621,9 +621,9 @@ namespace IBSWeb.Areas.User.Controllers
                 model.CancellationRemarks = cancellationRemarks;
                 model.Status = nameof(CollectionReceiptStatus.Canceled);
 
-                var auditTrail = new FilprideAuditTrail(model.CanceledBy,
+                var auditTrail = new AuditTrail(model.CanceledBy,
                     $"Canceled provisional receipt# {model.SeriesNumber}", "Provisional Receipt", companyClaims);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -672,9 +672,9 @@ namespace IBSWeb.Areas.User.Controllers
 
                 await _unitOfWork.ProvisionalReceipt.DepositAsync(model, cancellationToken);
 
-                var auditTrail = new FilprideAuditTrail(GetUserFullName(),
+                var auditTrail = new AuditTrail(GetUserFullName(),
                     $"Record deposit date of provisional receipt#{model.SeriesNumber}", "Provisional Receipt", model.Company);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -723,9 +723,9 @@ namespace IBSWeb.Areas.User.Controllers
                     GetUserFullName(),
                     cancellationToken);
 
-                var auditTrail = new FilprideAuditTrail(GetUserFullName(),
+                var auditTrail = new AuditTrail(GetUserFullName(),
                     $"Return checks of provisional receipt#{model.SeriesNumber}", "Provisional Receipt", model.Company);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -770,9 +770,9 @@ namespace IBSWeb.Areas.User.Controllers
 
                 await _unitOfWork.ProvisionalReceipt.DepositAsync(model, cancellationToken);
 
-                var auditTrail = new FilprideAuditTrail(GetUserFullName(),
+                var auditTrail = new AuditTrail(GetUserFullName(),
                     $"Redeposit provisional receipt#{model.SeriesNumber}", "Provisional Receipt", model.Company);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -814,9 +814,9 @@ namespace IBSWeb.Areas.User.Controllers
                 model.ClearedDate = clearingDate;
                 model.Status = nameof(CollectionReceiptStatus.Cleared);
 
-                var auditTrail = new FilprideAuditTrail(GetUserFullName(),
+                var auditTrail = new AuditTrail(GetUserFullName(),
                     $"Apply clearing date for provisional receipt#{model.SeriesNumber}", "Provisional Receipt", model.Company);
-                await _dbContext.FilprideAuditTrails.AddAsync(auditTrail, cancellationToken);
+                await _dbContext.AuditTrails.AddAsync(auditTrail, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);

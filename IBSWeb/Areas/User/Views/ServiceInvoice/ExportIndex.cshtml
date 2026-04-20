@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FilprideServiceInvoice>
+﻿@model IEnumerable<ServiceInvoice>
 @{
     ViewData["Title"] = "Service Invoice - Export";
 }
@@ -56,14 +56,14 @@
 @section Scripts {
     <script>
         let selectedRecords = new Set();
-        
+
         $(document).ready(function () {
             // Load persisted month filters from localStorage
             let dateFromValue = localStorage.getItem('exportServiceDateFrom') || "";
             let dateToValue = localStorage.getItem('exportServiceDateTo') || "";
             $('#dateFrom').val(dateFromValue);
             $('#dateTo').val(dateToValue);
-            
+
             let table = $('#serviceInvoiceTable').DataTable({
                 processing: true,
                 serverSide: true,      // ENABLE SERVER-SIDE PROCESSING
@@ -95,21 +95,21 @@
                 },
                 columns: [
                     {
-                        data: 'serviceInvoiceId', 
-                        orderable: false, 
+                        data: 'serviceInvoiceId',
+                        orderable: false,
                         searchable: false,
                         name: 'serviceInvoiceId',
                         render: DataTable.render.select()
                     },
-                    { 
+                    {
                         data: 'serviceInvoiceNo',
                         name: 'serviceInvoiceNo'
                     },
-                    { 
+                    {
                         data: 'customerName',
                         name: 'customerName'
                     },
-                    { 
+                    {
                         data: 'serviceName',
                         name: 'service.name'
                     },
@@ -133,7 +133,7 @@
                             return formatNumber(data);
                         }
                     },
-                    { 
+                    {
                         data: 'createdBy',
                         name: 'createdBy'
                     },
@@ -180,20 +180,20 @@
                 // Persist the month values
                 localStorage.setItem('exportServiceDateFrom', $('#dateFrom').val());
                 localStorage.setItem('exportServiceDateTo', $('#dateTo').val());
-                
+
                 // Reload table with new month filters
                 table.ajax.reload();
             });
         });
-        
+
         function exportToExcel() {
             let selectedIds = Array.from(selectedRecords).join(',');
-            
+
             if (selectedIds) {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '@Url.Action("Export", "ServiceInvoice", new { area = "Filpride" })';
-                
+
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'selectedRecord';

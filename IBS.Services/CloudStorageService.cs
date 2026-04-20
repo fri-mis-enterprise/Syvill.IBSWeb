@@ -1,7 +1,6 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using IBS.Utility;
-using IBS.Utility.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -134,14 +133,12 @@ namespace IBS.Services
         {
             try
             {
-                using (var storageClient = StorageClient.Create(_googleCredential))
-                {
-                    var memoryStream = new MemoryStream();
-                    await storageClient.DownloadObjectAsync(_options.GoogleCloudStorageBucketName, fileNameToDownload, memoryStream);
-                    memoryStream.Seek(0, SeekOrigin.Begin); // Reset stream position to the beginning for reading
-                    _logger.LogInformation($"File {fileNameToDownload} downloaded successfully");
-                    return memoryStream;
-                }
+                using var storageClient = await StorageClient.CreateAsync(_googleCredential);
+                var memoryStream = new MemoryStream();
+                await storageClient.DownloadObjectAsync(_options.GoogleCloudStorageBucketName, fileNameToDownload, memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin); // Reset stream position to the beginning for reading
+                _logger.LogInformation($"File {fileNameToDownload} downloaded successfully");
+                return memoryStream;
             }
             catch (Exception ex)
             {

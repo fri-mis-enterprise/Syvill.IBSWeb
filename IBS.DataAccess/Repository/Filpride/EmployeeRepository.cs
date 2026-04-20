@@ -4,7 +4,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class EmployeeRepository : Repository<FilprideEmployee>, IEmployeeRepository
+    public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
     {
         private readonly ApplicationDbContext _db;
 

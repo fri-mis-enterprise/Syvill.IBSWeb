@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ISupplierRepository : IRepository<FilprideSupplier>
+    public interface ISupplierRepository : IRepository<Supplier>
     {
         Task<bool> IsTinNoExistAsync(string tin, string branch, string category, string company, CancellationToken cancellationToken = default);
 
@@ -15,7 +15,7 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 
         Task<string> SaveProofOfRegistration(IFormFile file, string localPath, CancellationToken cancellationToken = default);
 
-        Task UpdateAsync(FilprideSupplier model, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Supplier model, CancellationToken cancellationToken = default);
 
         Task<List<SelectListItem>> GetFilprideTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
     }

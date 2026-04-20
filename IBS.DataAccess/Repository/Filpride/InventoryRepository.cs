@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class InventoryRepository : Repository<FilprideInventory>, IInventoryRepository
+    public class InventoryRepository : Repository<Inventory>, IInventoryRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -29,7 +29,7 @@ namespace IBS.DataAccess.Repository.Filpride
             var totalBalance = viewModel.TotalBalance + total;
             var particular = viewModel.Variance < 0 ? "Actual Inventory(Loss)" : "Actual Inventory(Gain)";
 
-            FilprideInventory inventory = new()
+            Inventory inventory = new()
             {
                 Date = viewModel.Date,
                 ProductId = viewModel.ProductId,
@@ -43,18 +43,18 @@ namespace IBS.DataAccess.Repository.Filpride
                 POId = viewModel.POId,
                 Company = company
             };
-            await _db.FilprideInventories.AddAsync(inventory, cancellationToken);
+            await _db.Inventories.AddAsync(inventory, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
 
             #endregion -- Actual Inventory Entry --
 
             #region -- General Book Entry --
 
-            var ledger = new List<FilprideGeneralLedgerBook>();
+            var ledger = new List<GeneralLedgerBook>();
             for (var i = 0; i < viewModel.AccountNumber.Length; i++)
             {
                 ledger.Add(
-                    new FilprideGeneralLedgerBook
+                    new GeneralLedgerBook
                     {
                         Date = viewModel.Date,
                         Reference = inventory.InventoryId.ToString(),
@@ -69,7 +69,7 @@ namespace IBS.DataAccess.Repository.Filpride
                     });
             }
 
-            await _db.FilprideGeneralLedgerBooks.AddRangeAsync(ledger, cancellationToken);
+            await _db.GeneralLedgerBooks.AddRangeAsync(ledger, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
 
             #endregion -- General Book Entry --
@@ -77,7 +77,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task AddBeginningInventory(BeginningInventoryViewModel viewModel, string company, CancellationToken cancellationToken = default)
         {
-            FilprideInventory inventory = new()
+            Inventory inventory = new()
             {
                 Date = viewModel.Date,
                 ProductId = viewModel.ProductId,
@@ -95,13 +95,13 @@ namespace IBS.DataAccess.Repository.Filpride
                 Company = company
             };
 
-            await _db.FilprideInventories.AddAsync(inventory, cancellationToken);
+            await _db.Inventories.AddAsync(inventory, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task AddPurchaseToInventoryAsync(FilprideReceivingReport receivingReport, CancellationToken cancellationToken = default)
+        public async Task AddPurchaseToInventoryAsync(ReceivingReport receivingReport, CancellationToken cancellationToken = default)
         {
-            var sortedInventory = await _db.FilprideInventories
+            var sortedInventory = await _db.Inventories
                 .Where(i => i.Company == receivingReport.Company &&
                             i.ProductId == receivingReport.PurchaseOrder!.Product!.ProductId &&
                             i.POId == receivingReport.POId)
@@ -150,7 +150,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 : totalBalance / inventoryBalance;
 
             // Create new inventory entry
-            var inventory = new FilprideInventory
+            var inventory = new Inventory
             {
                 Date = receivingReport.Date,
                 ProductId = receivingReport.PurchaseOrder!.ProductId,
@@ -216,16 +216,16 @@ namespace IBS.DataAccess.Repository.Filpride
             // Batch updates for better performance
             if (subsequentTransactions.Count != 0)
             {
-                _db.FilprideInventories.UpdateRange(subsequentTransactions);
+                _db.Inventories.UpdateRange(subsequentTransactions);
             }
 
-            await _db.FilprideInventories.AddAsync(inventory, cancellationToken);
+            await _db.Inventories.AddAsync(inventory, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
         }
 
         private async Task UpdateJournalEntriesForCostOfGoodsSoldAsync(string reference, decimal costOfGoodsSold, CancellationToken cancellationToken)
         {
-            var journalEntries = await _db.FilprideGeneralLedgerBooks
+            var journalEntries = await _db.GeneralLedgerBooks
                 .Where(j => j.Reference == reference &&
                            (j.AccountNo.StartsWith("50101") || j.AccountNo.StartsWith("10104")))
                 .ToListAsync(cancellationToken);
@@ -249,12 +249,12 @@ namespace IBS.DataAccess.Repository.Filpride
                 }
             }
 
-            _db.FilprideGeneralLedgerBooks.UpdateRange(journalEntries);
+            _db.GeneralLedgerBooks.UpdateRange(journalEntries);
         }
 
-        public async Task AddSalesToInventoryAsync(FilprideDeliveryReceipt deliveryReceipt, CancellationToken cancellationToken = default)
+        public async Task AddSalesToInventoryAsync(DeliveryReceipt deliveryReceipt, CancellationToken cancellationToken = default)
         {
-            var sortedInventory = await _db.FilprideInventories
+            var sortedInventory = await _db.Inventories
                 .Where(i => i.Company == deliveryReceipt.Company &&
                             i.ProductId == deliveryReceipt.CustomerOrderSlip!.ProductId &&
                             i.POId == deliveryReceipt.PurchaseOrderId)
@@ -291,7 +291,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (previousInventory == null)
             {
-                var purchaseOrder = await _db.FilpridePurchaseOrders
+                var purchaseOrder = await _db.PurchaseOrders
                     .FirstOrDefaultAsync(x => x.PurchaseOrderId == deliveryReceipt.PurchaseOrderId, cancellationToken)
                                     ?? throw new NullReferenceException("Purchase order not found");
 
@@ -321,7 +321,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 : totalBalance / inventoryBalance;
 
             // Create new inventory entry
-            var inventory = new FilprideInventory
+            var inventory = new Inventory
             {
                 Date = (DateOnly)deliveryReceipt.DeliveredDate!,
                 ProductId = deliveryReceipt.CustomerOrderSlip!.ProductId,
@@ -386,16 +386,16 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (subsequentTransactions.Count != 0)
             {
-                _db.FilprideInventories.UpdateRange(subsequentTransactions);
+                _db.Inventories.UpdateRange(subsequentTransactions);
             }
 
-            await _db.FilprideInventories.AddAsync(inventory, cancellationToken);
+            await _db.Inventories.AddAsync(inventory, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
         }
 
         private async Task UpdateJournalEntriesAsync(string reference, decimal costOfGoodsSold, CancellationToken cancellationToken)
         {
-            var journalEntries = await _db.FilprideGeneralLedgerBooks
+            var journalEntries = await _db.GeneralLedgerBooks
                 .Where(j => j.Reference == reference &&
                             (j.AccountNo.StartsWith("50101") || j.AccountNo.StartsWith("10104")))
                 .ToListAsync(cancellationToken);
@@ -416,19 +416,19 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (journalEntries.Count != 0)
             {
-                _db.FilprideGeneralLedgerBooks.UpdateRange(journalEntries);
+                _db.GeneralLedgerBooks.UpdateRange(journalEntries);
             }
         }
 
         public async Task<bool> HasAlreadyBeginningInventory(int productId, int poId, string company, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideInventories
+            return await _db.Inventories
                 .AnyAsync(i => i.Company == company && i.ProductId == productId && i.POId == poId, cancellationToken);
         }
 
-        public async Task VoidInventory(FilprideInventory model, CancellationToken cancellationToken = default)
+        public async Task VoidInventory(Inventory model, CancellationToken cancellationToken = default)
         {
-            var sortedInventory = await _db.FilprideInventories
+            var sortedInventory = await _db.Inventories
             .Where(i => i.Company == model.Company
                         && i.ProductId == model.ProductId
                         && i.POId == model.POId
@@ -466,7 +466,7 @@ namespace IBS.DataAccess.Repository.Filpride
                         totalBalance = transaction.TotalBalance;
                         inventoryBalance = transaction.InventoryBalance;
 
-                        var journalEntries = await _db.FilprideGeneralLedgerBooks
+                        var journalEntries = await _db.GeneralLedgerBooks
                             .Where(j => j.Reference == transaction.Reference &&
                                         (j.AccountNo.StartsWith("50101") || j.AccountNo.StartsWith("10104")))
                             .ToListAsync(cancellationToken);
@@ -498,7 +498,7 @@ namespace IBS.DataAccess.Repository.Filpride
                             }
                         }
 
-                        _db.FilprideGeneralLedgerBooks.UpdateRange(journalEntries);
+                        _db.GeneralLedgerBooks.UpdateRange(journalEntries);
                     }
                     else if (transaction.Particular == "Purchases")
                     {
@@ -515,13 +515,13 @@ namespace IBS.DataAccess.Repository.Filpride
                 }
             }
 
-            _db.FilprideInventories.UpdateRange(sortedInventory);
-            _db.FilprideInventories.Remove(model);
+            _db.Inventories.UpdateRange(sortedInventory);
+            _db.Inventories.Remove(model);
 
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task ReCalculateInventoryAsync(List<FilprideInventory> inventories, CancellationToken cancellationToken = default)
+        public async Task ReCalculateInventoryAsync(List<Inventory> inventories, CancellationToken cancellationToken = default)
         {
             var previousInventory = inventories.FirstOrDefault();
 
@@ -548,7 +548,7 @@ namespace IBS.DataAccess.Repository.Filpride
                     totalBalance = transaction.TotalBalance;
                     inventoryBalance = transaction.InventoryBalance;
 
-                    var journalEntries = await _db.FilprideGeneralLedgerBooks
+                    var journalEntries = await _db.GeneralLedgerBooks
                         .Where(j => j.Reference == transaction.Reference &&
                                     (j.AccountNo.StartsWith("50101") || j.AccountNo.StartsWith("10104")))
                         .ToListAsync(cancellationToken);
@@ -580,7 +580,7 @@ namespace IBS.DataAccess.Repository.Filpride
                         }
                     }
 
-                    _db.FilprideGeneralLedgerBooks.UpdateRange(journalEntries);
+                    _db.GeneralLedgerBooks.UpdateRange(journalEntries);
                 }
                 else if (transaction.Particular == "Purchases")
                 {
@@ -599,16 +599,16 @@ namespace IBS.DataAccess.Repository.Filpride
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public override async Task<FilprideInventory?> GetAsync(Expression<Func<FilprideInventory, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<Inventory?> GetAsync(Expression<Func<Inventory, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(i => i.Product)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideInventory>> GetAllAsync(Expression<Func<FilprideInventory, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Inventory>> GetAllAsync(Expression<Func<Inventory, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideInventory> query = dbSet
+            IQueryable<Inventory> query = dbSet
                 .Include(i => i.Product);
 
             if (filter != null)

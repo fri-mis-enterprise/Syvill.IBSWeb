@@ -182,7 +182,7 @@ namespace IBSWeb.Areas.User.Controllers
             cv.DcpDate = dcpDate;
             cv.DcrDate = null;
 
-            FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCP date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement", cv.Company);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCP date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement", cv.Company);
             await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             await _unitOfWork.SaveAsync(cancellationToken);
@@ -228,7 +228,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             cv.DcrDate = dcrDate;
 
-            FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCR date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement", cv.Company);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCR date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement", cv.Company);
             await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             await _unitOfWork.SaveAsync(cancellationToken);

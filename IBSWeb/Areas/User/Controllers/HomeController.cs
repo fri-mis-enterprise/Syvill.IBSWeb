@@ -82,7 +82,7 @@ namespace IBSWeb.Areas.User.Controllers
                                      && dr.Company == companyClaims)
                         .CountAsync(),
 
-                OMApprovalPOCount = await _dbContext.FilpridePurchaseOrders
+                OMApprovalPOCount = await _dbContext.PurchaseOrders
                         .Where(po => po.Status == nameof(CosStatus.ForApprovalOfOM)
                                      && po.Company == companyClaims)
                         .CountAsync(),
@@ -119,7 +119,7 @@ namespace IBSWeb.Areas.User.Controllers
                                      && dr.Company == companyClaims)
                         .CountAsync(),
 
-                RecordSupplierDetails = await _dbContext.FilprideReceivingReports
+                RecordSupplierDetails = await _dbContext.ReceivingReports
                     .Where(rr => (rr.SupplierDrNo == null
                                   || rr.SupplierInvoiceDate == null
                                   || rr.SupplierInvoiceNumber == null
@@ -135,19 +135,19 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Accounting - For Approval
 
-                JournalVoucherForApprovalCount = await _dbContext.FilprideJournalVoucherHeaders
+                JournalVoucherForApprovalCount = await _dbContext.JournalVoucherHeaders
                         .Where(jv => jv.Status == nameof(JvStatus.ForApproval)
                                      && jv.Company == companyClaims)
                         .CountAsync(),
 
-                CheckVoucherNonTradeInvoiceForApprovalCount = await _dbContext.FilprideCheckVoucherHeaders
+                CheckVoucherNonTradeInvoiceForApprovalCount = await _dbContext.CheckVoucherHeaders
                         .Where(cv => cv.Status == nameof(CheckVoucherInvoiceStatus.ForApproval)
                                      && cv.Company == companyClaims
                                      && cv.CvType == nameof(CVType.Invoicing)
                                      && !cv.IsPayroll)
                         .CountAsync(),
 
-                CheckVoucherNonTradePayrollInvoiceForApprovalCount = await _dbContext.FilprideCheckVoucherHeaders
+                CheckVoucherNonTradePayrollInvoiceForApprovalCount = await _dbContext.CheckVoucherHeaders
                         .Where(cv => cv.Status == nameof(CheckVoucherInvoiceStatus.ForApproval)
                                      && cv.Company == companyClaims
                                      && cv.CvType == nameof(CVType.Invoicing)

@@ -1,8 +1,8 @@
 ﻿@using IBS.Models.Enums
-@model IEnumerable<FilprideServiceInvoice>
+@model IEnumerable<ServiceInvoice>
 @{
     ViewData["Title"] = "Service Invoice";
-    var model = new FilprideServiceInvoice();
+    var model = new ServiceInvoice();
 }
 
 <link rel="stylesheet" href="~/css/index-style.css">
@@ -79,7 +79,7 @@
                         error: function() {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
-                    }); 
+                    });
                 }
             })
         }
@@ -126,7 +126,7 @@
                         error: function() {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
-                    }); 
+                    });
                 }
             })
         }
@@ -135,7 +135,7 @@
     $(document).ready(function() {
         let filterValue = localStorage.getItem('filterDate') || "";
         $('#inputDate').val(filterValue);
-        
+
         let table = $('#paginatedTable').DataTable({
             "processing": true, // Enable processing indicator
             "serverSide": true, // Enable server-side processing
@@ -183,9 +183,9 @@
                     "render": function (data, type, row) {
                         // Assuming 'Date' is in ISO format like "2024-07-12T00:00:00"
                         var date = new Date(data);
-                        return date.toLocaleDateString('en-US', { 
+                        return date.toLocaleDateString('en-US', {
                             year: 'numeric',
-                            month: 'short', 
+                            month: 'short',
                         });
                     }
                 },
@@ -212,9 +212,9 @@
                     "orderable": false,
                     "render": function (data, type, row) {
                         var dropdown = `<div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
-                                            <button class="btn btn-light btn-sm dropdown-toggle w-100" 
-                                                        type="button" 
-                                                        data-bs-toggle="dropdown" 
+                                            <button class="btn btn-light btn-sm dropdown-toggle w-100"
+                                                        type="button"
+                                                        data-bs-toggle="dropdown"
                                                         aria-expanded="false">
                                                     <i class="bi bi-three-dots"></i>
                                             </button>

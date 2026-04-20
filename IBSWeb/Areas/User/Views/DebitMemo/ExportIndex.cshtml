@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FilprideDebitMemo>
+﻿@model IEnumerable<DebitMemo>
 @{
     ViewData["Title"] = "Debit Memo - Export";
 }
@@ -56,14 +56,14 @@
 @section Scripts {
     <script>
         let selectedRecords = new Set();
-        
+
         $(document).ready(function () {
             // Load persisted date filters from localStorage
             let dateFromValue = localStorage.getItem('exportDMDateFrom') || "";
             let dateToValue = localStorage.getItem('exportDMDateTo') || "";
             $('#dateFrom').val(dateFromValue);
             $('#dateTo').val(dateToValue);
-            
+
             let table = $('#debitMemoTable').DataTable({
                 processing: true,
                 serverSide: true,      // ENABLE SERVER-SIDE PROCESSING
@@ -95,13 +95,13 @@
                 },
                 columns: [
                     {
-                        data: 'debitMemoId', 
-                        orderable: false, 
+                        data: 'debitMemoId',
+                        orderable: false,
                         searchable: false,
                         name: 'debitMemoId',
                         render: DataTable.render.select()
                     },
-                    { 
+                    {
                         data: 'debitMemoNo',
                         name: 'debitMemoNo'
                     },
@@ -110,10 +110,10 @@
                         name: "transactionDate",
                         render: function (data) {
                             let date = new Date(data);
-                            return date.toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'short', 
-                                day: '2-digit' 
+                            return date.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: '2-digit'
                             });
                         }
                     },
@@ -130,18 +130,18 @@
                             }
                         }
                     },
-                    { 
+                    {
                         data: 'source',
                         name: 'source'
                     },
-                    { 
+                    {
                         data: 'debitAmount',
                         name: 'debitAmount',
                         render: function (data) {
                             return formatNumber(data);
                         }
                     },
-                    { 
+                    {
                         data: 'createdBy',
                         name: 'createdBy'
                     },
@@ -188,20 +188,20 @@
                 // Persist the date values
                 localStorage.setItem('exportDMDateFrom', $('#dateFrom').val());
                 localStorage.setItem('exportDMDateTo', $('#dateTo').val());
-                
+
                 // Reload table with new date filters
                 table.ajax.reload();
             });
         });
-        
+
         function exportToExcel() {
             let selectedIds = Array.from(selectedRecords).join(',');
-            
+
             if (selectedIds) {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '@Url.Action("Export", "DebitMemo", new { area = "Filpride" })';
-                
+
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'selectedRecord';

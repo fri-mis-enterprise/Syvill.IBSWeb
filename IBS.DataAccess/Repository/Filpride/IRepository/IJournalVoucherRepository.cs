@@ -8,7 +8,7 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
         Task<string> GenerateCodeAsync(string company, string? type, CancellationToken cancellationToken = default);
 
         Task PostAsync(FilprideJournalVoucherHeader header,
-            IEnumerable<FilprideJournalVoucherDetail> details,
+            IEnumerable<JournalVoucherDetail> details,
             CancellationToken cancellationToken = default);
     }
 }

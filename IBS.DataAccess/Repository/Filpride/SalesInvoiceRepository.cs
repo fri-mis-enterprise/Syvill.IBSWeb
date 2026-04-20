@@ -9,7 +9,7 @@ using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class SalesInvoiceRepository : Repository<FilprideSalesInvoice>, ISalesInvoiceRepository
+    public class SalesInvoiceRepository : Repository<SalesInvoice>, ISalesInvoiceRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -18,11 +18,11 @@ namespace IBS.DataAccess.Repository.Filpride
             _db = db;
         }
 
-        public async Task PostAsync(FilprideSalesInvoice salesInvoice, CancellationToken cancellationToken = default)
+        public async Task PostAsync(SalesInvoice salesInvoice, CancellationToken cancellationToken = default)
         {
             #region --Sales Book Recording
 
-            var salesBook = new FilprideSalesBook
+            var salesBook = new SalesBook
             {
                 TransactionDate = salesInvoice.TransactionDate,
                 SerialNo = salesInvoice.SalesInvoiceNo!,
@@ -59,7 +59,7 @@ namespace IBS.DataAccess.Repository.Filpride
             salesBook.DocumentId = salesInvoice.SalesInvoiceId;
             salesBook.Company = salesInvoice.Company;
 
-            await _db.FilprideSalesBooks.AddAsync(salesBook, cancellationToken);
+            await _db.SalesBooks.AddAsync(salesBook, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
 
             #endregion --Sales Book Recording
@@ -78,7 +78,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken)
         {
             var lastSi = await _db
-                .FilprideSalesInvoices
+                .SalesInvoices
                 .AsNoTracking()
                 .OrderByDescending(x => x.SalesInvoiceNo!.Length)
                 .ThenByDescending(x => x.SalesInvoiceNo)
@@ -102,7 +102,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken)
         {
             var lastSi = await _db
-                .FilprideSalesInvoices
+                .SalesInvoices
                 .AsNoTracking()
                 .OrderByDescending(x => x.SalesInvoiceNo!.Length)
                 .ThenByDescending(x => x.SalesInvoiceNo)
@@ -123,7 +123,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public override async Task<FilprideSalesInvoice?> GetAsync(Expression<Func<FilprideSalesInvoice, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<SalesInvoice?> GetAsync(Expression<Func<SalesInvoice, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(si => si.Product)
@@ -136,9 +136,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideSalesInvoice>> GetAllAsync(Expression<Func<FilprideSalesInvoice, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<SalesInvoice>> GetAllAsync(Expression<Func<SalesInvoice, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideSalesInvoice> query = dbSet
+            IQueryable<SalesInvoice> query = dbSet
                 .Include(si => si.Product)
                 .Include(si => si.Customer)
                 .Include(si => si.DeliveryReceipt).ThenInclude(dr => dr!.Hauler)
@@ -152,9 +152,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideSalesInvoice> GetAllQuery(Expression<Func<FilprideSalesInvoice, bool>>? filter = null)
+        public override IQueryable<SalesInvoice> GetAllQuery(Expression<Func<SalesInvoice, bool>>? filter = null)
         {
-            IQueryable<FilprideSalesInvoice> query = dbSet
+            IQueryable<SalesInvoice> query = dbSet
                 .Include(si => si.Product)
                 .Include(si => si.Customer)
                 .Include(si => si.DeliveryReceipt).ThenInclude(dr => dr!.Hauler)

@@ -68,7 +68,6 @@ if (builder.Environment.IsDevelopment())
 // Repositories + DI
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<GCSConfigOptions>(builder.Configuration);
-builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 builder.Services.AddScoped<IHubConnectionRepository, HubConnectionRepository>();
 builder.Services.AddScoped<IMonthlyClosureService, MonthlyClosureService>();
 builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
@@ -131,8 +130,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/User/Home/Error");
     app.UseHsts();
 }
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 app.UseStaticFiles();
 app.UseRouting();

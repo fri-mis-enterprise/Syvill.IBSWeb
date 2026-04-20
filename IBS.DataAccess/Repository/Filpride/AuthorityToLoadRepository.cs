@@ -7,7 +7,7 @@ using IBS.Utility.Helpers;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class AuthorityToLoadRepository : Repository<FilprideAuthorityToLoad>, IAuthorityToLoadRepository
+    public class AuthorityToLoadRepository : Repository<AuthorityToLoad>, IAuthorityToLoadRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -19,7 +19,7 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task<string> GenerateAtlNo(string company, CancellationToken cancellationToken)
         {
             var lastAtl = await _db
-                .FilprideAuthorityToLoads
+                .AuthorityToLoads
                 .AsNoTracking()
                 .OrderByDescending(x => x.AuthorityToLoadNo)
                 .FirstOrDefaultAsync(x => x.Company == company, cancellationToken);
@@ -40,9 +40,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return $"FRI-{yearToday}-1";
         }
 
-        public override async Task<IEnumerable<FilprideAuthorityToLoad>> GetAllAsync(Expression<Func<FilprideAuthorityToLoad, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<AuthorityToLoad>> GetAllAsync(Expression<Func<AuthorityToLoad, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideAuthorityToLoad> query = dbSet
+            IQueryable<AuthorityToLoad> query = dbSet
                 .Include(atl => atl.Supplier)
                 .Include(atl => atl.CustomerOrderSlip).ThenInclude(po => po!.Product)
                 .Include(atl => atl.CustomerOrderSlip).ThenInclude(dr => dr!.Hauler)
@@ -57,7 +57,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override async Task<FilprideAuthorityToLoad?> GetAsync(Expression<Func<FilprideAuthorityToLoad, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<AuthorityToLoad?> GetAsync(Expression<Func<AuthorityToLoad, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(cos => cos.Supplier)
@@ -71,9 +71,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideAuthorityToLoad> GetAllQuery(Expression<Func<FilprideAuthorityToLoad, bool>>? filter = null)
+        public override IQueryable<AuthorityToLoad> GetAllQuery(Expression<Func<AuthorityToLoad, bool>>? filter = null)
         {
-            IQueryable<FilprideAuthorityToLoad> query = dbSet
+            IQueryable<AuthorityToLoad> query = dbSet
                 .Include(atl => atl.Supplier)
                 .Include(a => a.Details).ThenInclude(d => d.CustomerOrderSlip)
                 .Include(atl => atl.CustomerOrderSlip).ThenInclude(po => po!.Product)

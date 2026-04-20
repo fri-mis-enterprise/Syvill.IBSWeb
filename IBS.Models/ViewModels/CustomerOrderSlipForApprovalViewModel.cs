@@ -27,7 +27,7 @@ namespace IBS.Models.ViewModels
 
         #endregion
 
-        public FilprideCustomerOrderSlip? CustomerOrderSlip { get; set; }
+        public CustomerOrderSlip? CustomerOrderSlip { get; set; }
 
         #region Finance Approval
 

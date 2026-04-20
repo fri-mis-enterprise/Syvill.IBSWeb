@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class PickUpPointRepository : Repository<FilpridePickUpPoint>, IPickUpPointRepository
+    public class PickUpPointRepository : Repository<PickUpPoint>, IPickUpPointRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -16,9 +16,9 @@ namespace IBS.DataAccess.Repository.Filpride
             _db = db;
         }
 
-        public override async Task<IEnumerable<FilpridePickUpPoint>> GetAllAsync(Expression<Func<FilpridePickUpPoint, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<PickUpPoint>> GetAllAsync(Expression<Func<PickUpPoint, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilpridePickUpPoint> query = dbSet;
+            IQueryable<PickUpPoint> query = dbSet;
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -29,9 +29,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilpridePickUpPoint> GetAllQuery(Expression<Func<FilpridePickUpPoint, bool>>? filter = null)
+        public override IQueryable<PickUpPoint> GetAllQuery(Expression<Func<PickUpPoint, bool>>? filter = null)
         {
-            IQueryable<FilpridePickUpPoint> query = dbSet
+            IQueryable<PickUpPoint> query = dbSet
                 .Include(p => p.Supplier)
                 .AsSplitQuery()
                 .AsNoTracking();
@@ -46,7 +46,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task<List<SelectListItem>> GetPickUpPointListBasedOnSupplier(string companyClaims, int supplierId, CancellationToken cancellationToken = default)
         {
-            return await _db.FilpridePickUpPoints
+            return await _db.PickUpPoints
                 .OrderBy(p => p.Depot)
                 .Where(p => p.SupplierId == supplierId)
                 .Select(po => new SelectListItem

@@ -190,7 +190,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return View(viewModel);
             }
 
-            var model = new FilprideDebitMemo
+            var model = new DebitMemo
             {
                 Source = viewModel.Source,
                 TransactionDate = viewModel.TransactionDate,
@@ -289,7 +289,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -329,7 +329,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Preview debit memo# {debitMemo.DebitMemoNo}", "Debit Memo", companyClaims!);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview debit memo# {debitMemo.DebitMemoNo}", "Debit Memo", companyClaims!);
             await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -381,7 +381,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     #region --Sales Book Recording(SI)--
 
-                    var sales = new FilprideSalesBook
+                    var sales = new SalesBook
                     {
                         TransactionDate = model.TransactionDate,
                         SerialNo = model.DebitMemoNo!,
@@ -417,7 +417,7 @@ namespace IBSWeb.Areas.User.Controllers
                     sales.DocumentId = model.SalesInvoiceId;
                     sales.Company = model.Company;
 
-                    await _dbContext.FilprideSalesBooks.AddAsync(sales, cancellationToken);
+                    await _dbContext.SalesBooks.AddAsync(sales, cancellationToken);
 
                     #endregion --Sales Book Recording(SI)--
 
@@ -439,7 +439,7 @@ namespace IBSWeb.Areas.User.Controllers
                         ? _unitOfWork.FilprideCreditMemo.ComputeEwtAmount(netOfVatAmount, 0.05m)
                         : 0m;
 
-                    var ledgers = new List<FilprideGeneralLedgerBook>
+                    var ledgers = new List<GeneralLedgerBook>
                     {
                         new()
                         {
@@ -464,7 +464,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (withHoldingTaxAmount > 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.DebitMemoNo!,
@@ -484,7 +484,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (withHoldingVatAmount > 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.DebitMemoNo!,
@@ -503,7 +503,7 @@ namespace IBSWeb.Areas.User.Controllers
                     }
 
                     ledgers.Add(
-                        new FilprideGeneralLedgerBook
+                        new GeneralLedgerBook
                         {
                             Date = model.TransactionDate,
                             Reference = model.DebitMemoNo!,
@@ -523,7 +523,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (vatAmount > 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.DebitMemoNo!,
@@ -546,7 +546,7 @@ namespace IBSWeb.Areas.User.Controllers
                         throw new ArgumentException("Debit and Credit is not equal, check your entries.");
                     }
 
-                    await _dbContext.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+                    await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
 
                     #endregion --General Ledger Book Recording(SI)--
                 }
@@ -579,7 +579,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     #region --Sales Book Recording(SV)--
 
-                    var sales = new FilprideSalesBook
+                    var sales = new SalesBook
                     {
                         TransactionDate = model.TransactionDate,
                         SerialNo = model.DebitMemoNo!,
@@ -621,7 +621,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     #region --General Ledger Book Recording(SV)--
 
-                    var ledgers = new List<FilprideGeneralLedgerBook>
+                    var ledgers = new List<GeneralLedgerBook>
                     {
                         new()
                         {
@@ -646,7 +646,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (ewt > 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.DebitMemoNo!,
@@ -666,7 +666,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (wvat > 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.DebitMemoNo!,
@@ -686,7 +686,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     if (netOfVatAmount > 0)
                     {
-                        ledgers.Add(new FilprideGeneralLedgerBook
+                        ledgers.Add(new GeneralLedgerBook
                         {
                             Date = model.TransactionDate,
                             Reference = model.DebitMemoNo!,
@@ -705,7 +705,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (vatAmount > 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.DebitMemoNo!,
@@ -728,14 +728,14 @@ namespace IBSWeb.Areas.User.Controllers
                         throw new ArgumentException("Debit and Credit is not equal, check your entries.");
                     }
 
-                    await _dbContext.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+                    await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
 
                     #endregion --General Ledger Book Recording(SV)--
                 }
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.PostedBy!, $"Posted debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -775,12 +775,12 @@ namespace IBSWeb.Areas.User.Controllers
                 model.VoidedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.Status = nameof(Status.Voided);
 
-                await _unitOfWork.FilprideDebitMemo.RemoveRecords<FilprideSalesBook>(crb => crb.SerialNo == model.DebitMemoNo, cancellationToken);
+                await _unitOfWork.FilprideDebitMemo.RemoveRecords<SalesBook>(crb => crb.SerialNo == model.DebitMemoNo, cancellationToken);
                 await _unitOfWork.GeneralLedger.ReverseEntries(model.DebitMemoNo, cancellationToken);
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -821,7 +821,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled debit memo# {model.DebitMemoNo}", "Debit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -920,7 +920,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return View(viewModel);
             }
 
-            var model = new FilprideDebitMemo
+            var model = new DebitMemo
             {
                 DebitMemoId = viewModel.DebitMemoId,
                 Source = viewModel.Source,
@@ -989,7 +989,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(existingDm.EditedBy!, $"Edited debit memo# {existingDm.DebitMemoNo}", "Debit Memo", existingDm.Company);
+                AuditTrail auditTrailBook = new(existingDm.EditedBy!, $"Edited debit memo# {existingDm.DebitMemoNo}", "Debit Memo", existingDm.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1024,7 +1024,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of debit memo# {dm.DebitMemoNo}", "Debit Memo", dm.Company);
+                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of debit memo# {dm.DebitMemoNo}", "Debit Memo", dm.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1036,7 +1036,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of debit memo# {dm.DebitMemoNo}", "Debit Memo", dm.Company);
+                AuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of debit memo# {dm.DebitMemoNo}", "Debit Memo", dm.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1110,7 +1110,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var totalRecords = debitMemos.Count();
 
                 // Apply pagination - HANDLE -1 FOR "ALL"
-                IEnumerable<FilprideDebitMemo> pagedDebitMemos;
+                IEnumerable<DebitMemo> pagedDebitMemos;
 
                 if (parameters.Length == -1)
                 {

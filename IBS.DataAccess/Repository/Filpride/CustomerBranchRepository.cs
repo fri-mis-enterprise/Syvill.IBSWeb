@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class CustomerBranchRepository : Repository<FilprideCustomerBranch>, ICustomerBranchRepository
+    public class CustomerBranchRepository : Repository<CustomerBranch>, ICustomerBranchRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -15,10 +15,10 @@ namespace IBS.DataAccess.Repository.Filpride
             _db = db;
         }
 
-        public async Task UpdateAsync(FilprideCustomerBranch model, CancellationToken cancellationToken)
+        public async Task UpdateAsync(CustomerBranch model, CancellationToken cancellationToken)
         {
             var currentModel = await _db
-                .FilprideCustomerBranches.FirstOrDefaultAsync(x => x.Id == model.Id, cancellationToken);
+                .CustomerBranches.FirstOrDefaultAsync(x => x.Id == model.Id, cancellationToken);
 
             if (currentModel == null)
             {
@@ -33,9 +33,9 @@ namespace IBS.DataAccess.Repository.Filpride
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideCustomerBranch>> GetAllAsync(Expression<Func<FilprideCustomerBranch, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<CustomerBranch>> GetAllAsync(Expression<Func<CustomerBranch, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideCustomerBranch> query = dbSet;
+            IQueryable<CustomerBranch> query = dbSet;
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -46,9 +46,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideCustomerBranch> GetAllQuery(Expression<Func<FilprideCustomerBranch, bool>>? filter = null)
+        public override IQueryable<CustomerBranch> GetAllQuery(Expression<Func<CustomerBranch, bool>>? filter = null)
         {
-            IQueryable<FilprideCustomerBranch> query = dbSet
+            IQueryable<CustomerBranch> query = dbSet
                 .Include(b => b.Customer)
                 .AsSplitQuery()
                 .AsNoTracking();

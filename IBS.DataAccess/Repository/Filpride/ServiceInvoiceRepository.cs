@@ -10,7 +10,7 @@ using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ServiceInvoiceRepository : Repository<FilprideServiceInvoice>, IServiceInvoiceRepository
+    public class ServiceInvoiceRepository : Repository<ServiceInvoice>, IServiceInvoiceRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -32,7 +32,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken)
         {
             var lastSv = await _db
-                .FilprideServiceInvoices
+                .ServiceInvoices
                 .AsNoTracking()
                 .OrderByDescending(x => x.ServiceInvoiceNo!.Length)
                 .ThenByDescending(x => x.ServiceInvoiceNo)
@@ -56,7 +56,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken)
         {
             var lastSv = await _db
-                .FilprideServiceInvoices
+                .ServiceInvoices
                 .AsNoTracking()
                 .OrderByDescending(x => x.ServiceInvoiceNo!.Length)
                 .ThenByDescending(x => x.ServiceInvoiceNo)
@@ -77,7 +77,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public override async Task<FilprideServiceInvoice?> GetAsync(Expression<Func<FilprideServiceInvoice, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<ServiceInvoice?> GetAsync(Expression<Func<ServiceInvoice, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(s => s.Customer)
@@ -86,9 +86,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideServiceInvoice>> GetAllAsync(Expression<Func<FilprideServiceInvoice, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<ServiceInvoice>> GetAllAsync(Expression<Func<ServiceInvoice, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideServiceInvoice> query = dbSet
+            IQueryable<ServiceInvoice> query = dbSet
                 .Include(s => s.Customer)
                 .Include(s => s.Service)
                 .Include(s => s.DeliveryReceipt);
@@ -101,9 +101,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideServiceInvoice> GetAllQuery(Expression<Func<FilprideServiceInvoice, bool>>? filter = null)
+        public override IQueryable<ServiceInvoice> GetAllQuery(Expression<Func<ServiceInvoice, bool>>? filter = null)
         {
-            IQueryable<FilprideServiceInvoice> query =
+            IQueryable<ServiceInvoice> query =
                 dbSet
                 .Include(s => s.Customer)
                 .Include(s => s.Service)
@@ -119,7 +119,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return query;
         }
 
-        public async Task PostAsync(FilprideServiceInvoice model, CancellationToken cancellationToken = default)
+        public async Task PostAsync(ServiceInvoice model, CancellationToken cancellationToken = default)
         {
             #region --Sales Book Recording
 
@@ -148,7 +148,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 withHoldingVatAmount = ComputeEwtAmount(netOfVatAmount, 0.05m);
             }
 
-            var sales = new FilprideSalesBook
+            var sales = new SalesBook
             {
                 TransactionDate = model.Period,
                 SerialNo = model.ServiceInvoiceNo,
@@ -184,13 +184,13 @@ namespace IBS.DataAccess.Repository.Filpride
                     break;
             }
 
-            await _db.FilprideSalesBooks.AddAsync(sales, cancellationToken);
+            await _db.SalesBooks.AddAsync(sales, cancellationToken);
 
             #endregion --Sales Book Recording
 
             #region --General Ledger Book Recording
 
-            var ledgers = new List<FilprideGeneralLedgerBook>();
+            var ledgers = new List<GeneralLedgerBook>();
             var accountTitlesDto = await GetListOfAccountTitleDto(cancellationToken);
             var arTradeTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020100")
                                ?? throw new ArgumentException("Account title '101020100' not found.");
@@ -204,7 +204,7 @@ namespace IBS.DataAccess.Repository.Filpride
                                 ?? throw new ArgumentException($"Account title '{model.Service!.CurrentAndPreviousNo}' not found.");
 
             ledgers.Add(
-                new FilprideGeneralLedgerBook
+                new GeneralLedgerBook
                 {
                     Date = model.Period.AddMonths(1).AddDays(-1),
                     Reference = model.ServiceInvoiceNo,
@@ -226,7 +226,7 @@ namespace IBS.DataAccess.Repository.Filpride
             if (withHoldingTaxAmount > 0)
             {
                 ledgers.Add(
-                    new FilprideGeneralLedgerBook
+                    new GeneralLedgerBook
                     {
                         Date = model.Period.AddMonths(1).AddDays(-1),
                         Reference = model.ServiceInvoiceNo,
@@ -246,7 +246,7 @@ namespace IBS.DataAccess.Repository.Filpride
             if (withHoldingVatAmount > 0)
             {
                 ledgers.Add(
-                    new FilprideGeneralLedgerBook
+                    new GeneralLedgerBook
                     {
                         Date = model.Period.AddMonths(1).AddDays(-1),
                         Reference = model.ServiceInvoiceNo,
@@ -265,7 +265,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             ledgers.Add(
-                new FilprideGeneralLedgerBook
+                new GeneralLedgerBook
                 {
                     Date = model.Period.AddMonths(1).AddDays(-1),
                     Reference = model.ServiceInvoiceNo,
@@ -285,7 +285,7 @@ namespace IBS.DataAccess.Repository.Filpride
             if (vatAmount > 0)
             {
                 ledgers.Add(
-                    new FilprideGeneralLedgerBook
+                    new GeneralLedgerBook
                     {
                         Date = model.Period.AddMonths(1).AddDays(-1),
                         Reference = model.ServiceInvoiceNo,
@@ -308,7 +308,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new ArgumentException("Debit and Credit is not equal, check your entries.");
             }
 
-            await _db.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+            await _db.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
 
             #endregion --General Ledger Book Recording

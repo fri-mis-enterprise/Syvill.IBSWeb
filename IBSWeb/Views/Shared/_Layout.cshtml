@@ -56,80 +56,38 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="User" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
-
                             <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">A. Receivable</a>
                             <ul class="dropdown-menu">
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CustomerOrderSlip" asp-action="Index">Customer Order Slip</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="ServiceInvoice" asp-action="Index">Service Invoice</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="DeliveryReceipt" asp-action="Index">Delivery Receipt</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="CollectionReceipt" asp-action="ServiceInvoiceIndex">Collection Receipt</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="SalesInvoice" asp-action="Index">Sales Invoice</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index">Provisional Receipt</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="ServiceInvoice" asp-action="Index">Service Invoice</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item dropend">
-                                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Collection Receipt
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CollectionReceipt" asp-action="ServiceInvoiceIndex">For Service</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CollectionReceipt" asp-action="Index">For Sales</a>
-                                        </li>
-                                    </ul>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="DebitMemo" asp-action="Index">Debit Memo</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="ProvisionalReceipt" asp-action="Index">Provisional Receipt</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="CreditMemo" asp-action="Index">Credit Memo</a>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="DebitMemo" asp-action="Index">Debit Memo</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CreditMemo" asp-action="Index">Credit Memo</a>
-                                </li>
-
-
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">A. Payable</a>
                             <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AuthorityToLoad" asp-action="Index">Authority To Load</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="PurchaseOrder" asp-action="Index">Purchase Order</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="ReceivingReport" asp-action="Index">Receiving Report</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item dropend">
                                     <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Check Voucher
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CheckVoucherTrade" asp-action="Index">Trade</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item dropend">
                                             <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Non-Trade
@@ -141,17 +99,17 @@
                                                     </a>
                                                     <ul class="dropdown-menu">
                                                         <li class="nav-item dropend">
-                                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CheckVoucherNonTradeInvoice" asp-action="Index">Non-Payroll</a>
+                                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="CheckVoucherNonTradeInvoice" asp-action="Index">Non-Payroll</a>
                                                         </li>
                                                         <li><hr class="dropdown-divider"></li>
                                                         <li class="nav-item dropend">
-                                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Index">Payroll</a>
+                                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Index">Payroll</a>
                                                         </li>
                                                     </ul>
                                                 </li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li class="nav-item dropend">
-                                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="CheckVoucherNonTradePayment" asp-action="Index">Payment</a>
+                                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="CheckVoucherNonTradePayment" asp-action="Index">Payment</a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -159,7 +117,7 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="JournalVoucher" asp-action="Index">Journal Voucher</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="JournalVoucher" asp-action="Index">Journal Voucher</a>
                                 </li>
 
                             </ul>
@@ -168,7 +126,7 @@
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Treasury</a>
                             <ul class="dropdown-menu">
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="Disbursement" asp-action="Index">Disbursement</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="Disbursement" asp-action="Index">Disbursement</a>
                                 </li>
                             </ul>
                         </li>
@@ -181,36 +139,17 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="GeneralLedgerReport" asp-action="GeneralLedgerBook">General Ledger by Transaction</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="GeneralLedgerReport" asp-action="GeneralLedgerBook">General Ledger by Transaction</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="GeneralLedgerReport" asp-action="GeneralLedgerReportByAccountNumber">General Ledger By Acct#</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="GeneralLedgerReport" asp-action="GeneralLedgerReportByAccountNumber">General Ledger By Acct#</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="GeneralLedgerReport" asp-action="SubsidiaryLedgerReport">Subsidiary Ledger</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item dropend">
-                                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Journal Voucher
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li class="nav-item dropend">
-                                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="GeneralLedgerReport" asp-action="JournalVoucherPriceReport">Due to updating selling price</a>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li class="nav-item dropend">
-                                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="GeneralLedgerReport" asp-action="JournalVoucherUnitCostReport">Due to updating unit cost</a>
-                                                </li>
-                                            </ul>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="GeneralLedgerReport" asp-action="SubsidiaryLedgerReport">Subsidiary Ledger</a>
                                         </li>
                                     </ul>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="InventoryReport" asp-action="InventoryReport">Inventory</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item dropend">
@@ -219,51 +158,19 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="ClearedDisbursementReport">Cleared Disbursement</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsPayableReport" asp-action="ClearedDisbursementReport">Cleared Disbursement</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="PurchaseOrderReport">Purchase Order</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsPayableReport" asp-action="NonTradeInvoiceReport">Non-Trade Invoice</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="PurchaseReport">Purchase</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsPayableReport" asp-action="CvDisbursementReport">Cv Disbursement</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="GrossMarginReport">Gross Margin</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="TradePayableReport">Trade Payable</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="ApReport">Ap Monitoring</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="NonTradeInvoiceReport">Non-Trade Invoice</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="CvDisbursementReport">Cv Disbursement</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="LiquidationReport">Liquidation</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="PurchaseJournalReport">Purchase Journal</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="HaulerPayableReport">Hauler Payable</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsPayableReport" asp-action="JournalVoucherReport">Journal Voucher</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsPayableReport" asp-action="JournalVoucherReport">Journal Voucher</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -274,44 +181,19 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="COSUnservedVolume">COS Unserved Volume</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsReceivableReport" asp-action="PostedCollection">Collection</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="DispatchReport">Dispatch</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsReceivableReport" asp-action="AgingReport">Aging</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="SalesReport">Sales</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsReceivableReport" asp-action="ArPerCustomer">AR Per Customer</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="OtcFuelSalesReport">OTC Fuel Sales</a>
-                                        </li>
-
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="PostedCollection">Collection</a>
-                                        </li>
-
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="AgingReport">Aging</a>
-                                        </li>
-
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="ArPerCustomer">AR Per Customer</a>
-                                        </li>
-
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="ServiceInvoiceReport">Service</a>
-                                        </li>
-
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="AccountsReceivableReport" asp-action="SalesInvoiceReport">Sales Invoice</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="AccountsReceivableReport" asp-action="ServiceInvoiceReport">Service</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -323,31 +205,31 @@
                                     <ul class="dropdown-menu">
 
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="FinancialReport" asp-action="LevelOneReport">Level One</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="FinancialReport" asp-action="LevelOneReport">Level One</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="FinancialReport" asp-action="TrialBalanceReport">Trial Balance</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="FinancialReport" asp-action="TrialBalanceReport">Trial Balance</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
 
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="FinancialReport" asp-action="ProfitAndLossReport">PNL</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="FinancialReport" asp-action="ProfitAndLossReport">PNL</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="FinancialReport" asp-action="StatementOfRetainedEarningsReport">SRE</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="FinancialReport" asp-action="StatementOfRetainedEarningsReport">SRE</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="FinancialReport" asp-action="BalanceSheetReport">Balance Sheet</a>
+                                            <a class="dropdown-item text-dark" asp-area="User" asp-controller="FinancialReport" asp-action="BalanceSheetReport">Balance Sheet</a>
                                         </li>
 
                                     </ul>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item">
-                                    <a class="dropdown-item text-dark" asp-area="Filpride" asp-controller="ComparativeReport" asp-action="Index">Comparative Report</a>
+                                    <a class="dropdown-item text-dark" asp-area="User" asp-controller="ComparativeReport" asp-action="Index">Comparative Report</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="nav-item dropend">
@@ -356,27 +238,27 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "Filpride", masterFileType = "Customer" })"> Customer </a>
+                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "User", masterFileType = "Customer" })"> Customer </a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
 
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "Filpride", masterFileType = "Supplier" })">Supplier</a>
+                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "User", masterFileType = "Supplier" })">Supplier</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
 
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "Filpride", masterFileType = "BankAccount" })">Bank Account</a>
+                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "User", masterFileType = "BankAccount" })">Bank Account</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
 
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "Filpride", masterFileType = "Service" })">Service</a>
+                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "User", masterFileType = "Service" })">Service</a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
 
                                         <li class="nav-item">
-                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "Filpride", masterFileType = "Employee" })">Employee</a>
+                                            <a class="dropdown-item text-dark" href="@Url.Action("GenerateExcel", "MasterFile", new { area = "User", masterFileType = "Employee" })">Employee</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -390,11 +272,11 @@
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">General Master File</a>
                                 <ul class="dropdown-menu">
                                     <li class="nav-item">
-                                        <a class="dropdown-item text-dark" asp-area="User" asp-controller="Company" asp-action="Index">Company</a>
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="nav-item">
-                                        <a class="dropdown-item text-dark" asp-area="User" asp-controller="Product" asp-action="Index">Product</a>
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="nav-item">
@@ -407,10 +289,10 @@
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Filpride" asp-controller="MonthlyPeriod" asp-action="Index">Monthly Period</a>
+                                <a class="nav-link" asp-area="Admin" asp-controller="MonthlyPeriod" asp-action="Index">Monthly Period</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Filpride" asp-controller="PostedPeriod" asp-action="Index">Posted Period</a>
+                                <a class="nav-link" asp-area="Admin" asp-controller="PostedPeriod" asp-action="Index">Posted Period</a>
                             </li>
                         }
 
@@ -438,7 +320,7 @@
 
     <footer b-q5eydxz0xc class="border-top footer bg-primary text-light">
         <div class="container text-center">
-            &copy; 2024 - Filpride <i class="bi bi-r-circle"></i> &middot; @($"v{ViewBag.AppVersion}")
+            &copy; 2024 - Syvill <i class="bi bi-r-circle"></i> &middot; @($"v{ViewBag.AppVersion}")
         </div>
     </footer>
 

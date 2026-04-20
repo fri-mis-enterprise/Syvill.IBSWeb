@@ -4,8 +4,8 @@ namespace IBS.Models.ViewModels
 {
     public class SalesReportViewModel
     {
-        public FilprideSalesInvoice? SalesInvoice { get; set; }
-        public FilprideDeliveryReceipt DeliveryReceipt { get; set; } = null!;
+        public SalesInvoice? SalesInvoice { get; set; }
+        public DeliveryReceipt DeliveryReceipt { get; set; } = null!;
 
         public string SalesInvoiceNo => SalesInvoice?.SalesInvoiceNo ?? " ";
     }

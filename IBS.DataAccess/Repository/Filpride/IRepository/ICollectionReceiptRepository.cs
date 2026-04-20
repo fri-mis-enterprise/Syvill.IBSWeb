@@ -1,20 +1,19 @@
 using IBS.DataAccess.Repository.IRepository;
 using IBS.DTOs;
 using IBS.Models.AccountsReceivable;
-using IBS.Models.Filpride;
 using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ICollectionReceiptRepository : IRepository<FilprideCollectionReceipt>
+    public interface ICollectionReceiptRepository : IRepository<CollectionReceipt>
     {
         Task<string> GenerateCodeAsync(string company, string type, CancellationToken cancellationToken = default);
 
         Task UpdateInvoice(int id, decimal paidAmount, CancellationToken cancellationToken = default);
 
-        Task UndoSalesInvoiceChanges(FilprideCollectionReceiptDetail collectionReceiptDetail, CancellationToken cancellationToken);
+        Task UndoSalesInvoiceChanges(CollectionReceiptDetail collectionReceiptDetail, CancellationToken cancellationToken);
 
-        Task UndoServiceInvoiceChanges(FilprideCollectionReceiptDetail collectionReceiptDetail, CancellationToken cancellationToken);
+        Task UndoServiceInvoiceChanges(CollectionReceiptDetail collectionReceiptDetail, CancellationToken cancellationToken);
 
         Task UpdateMultipleInvoice(string[] siNo, decimal[] paidAmount, CancellationToken cancellationToken = default);
 
@@ -26,21 +25,19 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 
         Task UpdateSV(int id, decimal paidAmount, decimal offsetAmount, CancellationToken cancellationToken = default);
 
-        Task<List<FilprideOffsettings>> GetOffsettings(string source, string reference, string company, CancellationToken cancellationToken = default);
+        Task PostAsync(CollectionReceipt collectionReceipt, CancellationToken cancellationToken = default);
 
-        Task PostAsync(FilprideCollectionReceipt collectionReceipt, CancellationToken cancellationToken = default);
-
-        Task DepositAsync(FilprideCollectionReceipt collectionReceipt, CancellationToken cancellationToken = default);
+        Task DepositAsync(CollectionReceipt collectionReceipt, CancellationToken cancellationToken = default);
 
         Task ReturnedCheck(string crNo, string company, string userName, CancellationToken cancellationToken = default);
 
-        Task RedepositAsync(FilprideCollectionReceipt collectionReceipt, CancellationToken cancellationToken = default);
+        Task RedepositAsync(CollectionReceipt collectionReceipt, CancellationToken cancellationToken = default);
 
-        Task ApplyCostOfMoney(FilprideDeliveryReceipt deliveryReceipt, decimal costOfMoney, string currentUser, DateOnly depositedDate, CancellationToken cancellationToken = default);
+        Task ApplyCostOfMoney(DeliveryReceipt deliveryReceipt, decimal costOfMoney, string currentUser, DateOnly depositedDate, CancellationToken cancellationToken = default);
 
-        Task BatchPostCollectionAsync(FilprideCollectionReceipt collectionReceipt, List<AccountTitleDto> accountTitlesDto, CancellationToken cancellationToken = default);
+        Task BatchPostCollectionAsync(CollectionReceipt collectionReceipt, List<AccountTitleDto> accountTitlesDto, CancellationToken cancellationToken = default);
 
-        Task BatchDepositAsync(FilprideCollectionReceipt collectionReceipt, Dictionary<string, FilprideChartOfAccount> accountTitlesDto,
+        Task BatchDepositAsync(CollectionReceipt collectionReceipt, Dictionary<string, ChartOfAccount> accountTitlesDto,
             CancellationToken cancellationToken = default);
     }
 }

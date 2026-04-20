@@ -182,7 +182,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return View(viewModel);
             }
 
-            var model = new FilprideCreditMemo
+            var model = new CreditMemo
             {
                 Source = viewModel.Source,
                 TransactionDate = viewModel.TransactionDate,
@@ -289,7 +289,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -375,7 +375,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return View(viewModel);
             }
 
-            var model = new FilprideCreditMemo
+            var model = new CreditMemo
             {
                 CreditMemoId = viewModel.CreditMemoId,
                 Source = viewModel.Source,
@@ -447,7 +447,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(existingCm.EditedBy!, $"Edited credit memo# {existingCm.CreditMemoNo}", "Credit Memo", existingCm.Company);
+                AuditTrail auditTrailBook = new(existingCm.EditedBy!, $"Edited credit memo# {existingCm.CreditMemoNo}", "Credit Memo", existingCm.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -492,7 +492,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Preview credit memo# {creditMemo.CreditMemoNo}", "Credit Memo", companyClaims);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview credit memo# {creditMemo.CreditMemoNo}", "Credit Memo", companyClaims);
             await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -543,7 +543,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     #region --Sales Book Recording(SI)--
 
-                    var sales = new FilprideSalesBook
+                    var sales = new SalesBook
                     {
                         TransactionDate = model.TransactionDate,
                         SerialNo = model.CreditMemoNo!,
@@ -610,7 +610,7 @@ namespace IBSWeb.Areas.User.Controllers
                         withHoldingVatAmount = (_unitOfWork.FilprideCreditMemo.ComputeEwtAmount(Math.Abs(netOfVatAmount), 0.05m)) * -1;
                     }
 
-                    var ledgers = new List<FilprideGeneralLedgerBook>
+                    var ledgers = new List<GeneralLedgerBook>
                     {
                         new()
                         {
@@ -635,7 +635,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (withHoldingTaxAmount < 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.CreditMemoNo!,
@@ -655,7 +655,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (withHoldingVatAmount < 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.CreditMemoNo!,
@@ -674,7 +674,7 @@ namespace IBSWeb.Areas.User.Controllers
                     }
 
                     ledgers.Add(
-                        new FilprideGeneralLedgerBook
+                        new GeneralLedgerBook
                         {
                             Date = model.TransactionDate,
                             Reference = model.CreditMemoNo!,
@@ -694,7 +694,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (vatAmount < 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.CreditMemoNo!,
@@ -717,7 +717,7 @@ namespace IBSWeb.Areas.User.Controllers
                         throw new ArgumentException("Debit and Credit is not equal, check your entries.");
                     }
 
-                    await _dbContext.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+                    await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
 
                     #endregion --General Ledger Book Recording(SI)--
                 }
@@ -770,7 +770,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     #region --Sales Book Recording(SV)--
 
-                    var sales = new FilprideSalesBook
+                    var sales = new SalesBook
                     {
                         TransactionDate = model.TransactionDate,
                         SerialNo = model.CreditMemoNo!,
@@ -838,7 +838,7 @@ namespace IBSWeb.Areas.User.Controllers
                         withHoldingVatAmount = (_unitOfWork.FilprideCreditMemo.ComputeEwtAmount(Math.Abs(netOfVatAmount), 0.05m)) * -1;
                     }
 
-                    var ledgers = new List<FilprideGeneralLedgerBook>
+                    var ledgers = new List<GeneralLedgerBook>
                     {
                         new()
                         {
@@ -863,7 +863,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (withHoldingTaxAmount < 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.CreditMemoNo!,
@@ -883,7 +883,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (withHoldingVatAmount < 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.CreditMemoNo!,
@@ -901,7 +901,7 @@ namespace IBSWeb.Areas.User.Controllers
                         );
                     }
 
-                    ledgers.Add(new FilprideGeneralLedgerBook
+                    ledgers.Add(new GeneralLedgerBook
                     {
                         Date = model.TransactionDate,
                         Reference = model.CreditMemoNo!,
@@ -920,7 +920,7 @@ namespace IBSWeb.Areas.User.Controllers
                     if (vatAmount < 0)
                     {
                         ledgers.Add(
-                            new FilprideGeneralLedgerBook
+                            new GeneralLedgerBook
                             {
                                 Date = model.TransactionDate,
                                 Reference = model.CreditMemoNo!,
@@ -943,14 +943,14 @@ namespace IBSWeb.Areas.User.Controllers
                         throw new ArgumentException("Debit and Credit is not equal, check your entries.");
                     }
 
-                    await _dbContext.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+                    await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
 
                     #endregion --General Ledger Book Recording(SV)--
                 }
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.PostedBy!, $"Posted credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -991,12 +991,12 @@ namespace IBSWeb.Areas.User.Controllers
                 model.VoidedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.Status = nameof(Status.Voided);
 
-                await _unitOfWork.FilprideCreditMemo.RemoveRecords<FilprideSalesBook>(crb => crb.SerialNo == model.CreditMemoNo, cancellationToken);
+                await _unitOfWork.FilprideCreditMemo.RemoveRecords<SalesBook>(crb => crb.SerialNo == model.CreditMemoNo, cancellationToken);
                 await _unitOfWork.GeneralLedger.ReverseEntries(model.CreditMemoNo, cancellationToken);
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1037,7 +1037,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
+                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled credit memo# {model.CreditMemoNo}", "Credit Memo", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1086,7 +1086,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of credit memo# {cm.CreditMemoNo}", "Credit Memo", cm.Company);
+                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of credit memo# {cm.CreditMemoNo}", "Credit Memo", cm.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1099,7 +1099,7 @@ namespace IBSWeb.Areas.User.Controllers
                 #region --Audit Trail Recording
 
                 var printedBy = GetUserFullName();
-                FilprideAuditTrail auditTrailBook = new(printedBy, $"Printed re-printed copy of credit memo# {cm.CreditMemoNo}", "Credit Memo", cm.Company);
+                AuditTrail auditTrailBook = new(printedBy, $"Printed re-printed copy of credit memo# {cm.CreditMemoNo}", "Credit Memo", cm.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -1173,7 +1173,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var totalRecords = creditMemos.Count();
 
                 // Apply pagination - HANDLE -1 FOR "ALL"
-                IEnumerable<FilprideCreditMemo> pagedCreditMemos;
+                IEnumerable<CreditMemo> pagedCreditMemos;
 
                 if (parameters.Length == -1)
                 {

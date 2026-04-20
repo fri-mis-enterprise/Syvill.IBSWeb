@@ -7,7 +7,7 @@ using IBS.Models.AccountsReceivable;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class DebitMemoRepository : Repository<FilprideDebitMemo>, IDebitMemoRepository
+    public class DebitMemoRepository : Repository<DebitMemo>, IDebitMemoRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -29,7 +29,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastDm = await _db
-                .FilprideDebitMemos
+                .DebitMemos
                 .AsNoTracking()
                 .OrderByDescending(x => x.DebitMemoNo!.Length)
                 .ThenByDescending(x => x.DebitMemoNo)
@@ -53,7 +53,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastDm = await _db
-                .FilprideDebitMemos
+                .DebitMemos
                 .AsNoTracking()
                 .OrderByDescending(x => x.DebitMemoNo!.Length)
                 .ThenByDescending(x => x.DebitMemoNo)
@@ -74,7 +74,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public override async Task<FilprideDebitMemo?> GetAsync(Expression<Func<FilprideDebitMemo, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<DebitMemo?> GetAsync(Expression<Func<DebitMemo, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(c => c.SalesInvoice)
@@ -90,9 +90,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideDebitMemo>> GetAllAsync(Expression<Func<FilprideDebitMemo, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<DebitMemo>> GetAllAsync(Expression<Func<DebitMemo, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideDebitMemo> query = dbSet
+            IQueryable<DebitMemo> query = dbSet
                 .Include(c => c.SalesInvoice)
                 .ThenInclude(s => s!.Product)
                 .Include(c => c.SalesInvoice)
@@ -110,9 +110,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideDebitMemo> GetAllQuery(Expression<Func<FilprideDebitMemo, bool>>? filter = null)
+        public override IQueryable<DebitMemo> GetAllQuery(Expression<Func<DebitMemo, bool>>? filter = null)
         {
-            IQueryable<FilprideDebitMemo> query = dbSet
+            IQueryable<DebitMemo> query = dbSet
                 .Include(c => c.SalesInvoice)
                 .ThenInclude(s => s!.Product)
                 .Include(c => c.SalesInvoice)

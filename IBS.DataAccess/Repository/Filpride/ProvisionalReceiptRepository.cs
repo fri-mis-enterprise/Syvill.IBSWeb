@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ProvisionalReceiptRepository : Repository<FilprideProvisionalReceipt>, IProvisionalReceiptRepository
+    public class ProvisionalReceiptRepository : Repository<ProvisionalReceipt>, IProvisionalReceiptRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -32,7 +32,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastCr = await _db
-                .FilprideProvisionalReceipts
+                .ProvisionalReceipts
                 .AsNoTracking()
                 .OrderByDescending(x => x.SeriesNumber.Length)
                 .ThenByDescending(x => x.SeriesNumber)
@@ -56,7 +56,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastCr = await _db
-                .FilprideProvisionalReceipts
+                .ProvisionalReceipts
                 .AsNoTracking()
                 .OrderByDescending(x => x.SeriesNumber.Length)
                 .ThenByDescending(x => x.SeriesNumber)
@@ -77,9 +77,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public async Task DepositAsync(FilprideProvisionalReceipt provisionalReceipt, CancellationToken cancellationToken = default)
+        public async Task DepositAsync(ProvisionalReceipt provisionalReceipt, CancellationToken cancellationToken = default)
         {
-            var ledgers = new List<FilprideGeneralLedgerBook>();
+            var ledgers = new List<GeneralLedgerBook>();
             var accountTitlesDto = await GetListOfAccountTitleDto(cancellationToken);
             var cashInBankTitle = accountTitlesDto.Find(c => c.AccountNumber == "101010100")
                                   ?? throw new ArgumentException("Account title '101010100' not found.");
@@ -89,7 +89,7 @@ namespace IBS.DataAccess.Repository.Filpride
             var description = $"PR Ref collected from {employeeName} Check No. {provisionalReceipt.CheckNo} issued by {provisionalReceipt.BankAccountNo} {provisionalReceipt.BankAccountName}";
 
             ledgers.Add(
-                new FilprideGeneralLedgerBook
+                new GeneralLedgerBook
                 {
                     Date = provisionalReceipt.TransactionDate,
                     Reference = provisionalReceipt.SeriesNumber,
@@ -112,7 +112,7 @@ namespace IBS.DataAccess.Repository.Filpride
             );
 
             ledgers.Add(
-                new FilprideGeneralLedgerBook
+                new GeneralLedgerBook
                 {
                     Date = provisionalReceipt.TransactionDate,
                     Reference = provisionalReceipt.SeriesNumber,
@@ -129,23 +129,23 @@ namespace IBS.DataAccess.Repository.Filpride
                 }
             );
 
-            await _db.FilprideGeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+            await _db.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
         }
 
         public async Task ReturnedCheck(string prNo, string company, string userName, CancellationToken cancellationToken = default)
         {
-            var originalEntries = await _db.FilprideGeneralLedgerBooks
+            var originalEntries = await _db.GeneralLedgerBooks
                 .Where(x => x.Reference == prNo
                             && x.Company == company)
                 .ToListAsync(cancellationToken);
 
-            var reversalEntries = new List<FilprideGeneralLedgerBook>();
+            var reversalEntries = new List<GeneralLedgerBook>();
             var dateToday = DateTimeHelper.GetCurrentPhilippineTime();
 
             foreach (var originalEntry in originalEntries)
             {
-                var reversalEntry = new FilprideGeneralLedgerBook
+                var reversalEntry = new GeneralLedgerBook
                 {
                     Reference = originalEntry.Reference,
                     Date = DateOnly.FromDateTime(dateToday),
@@ -168,11 +168,11 @@ namespace IBS.DataAccess.Repository.Filpride
                 reversalEntries.Add(reversalEntry);
             }
 
-            await _db.FilprideGeneralLedgerBooks.AddRangeAsync(reversalEntries, cancellationToken);
+            await _db.GeneralLedgerBooks.AddRangeAsync(reversalEntries, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public override async Task<FilprideProvisionalReceipt?> GetAsync(Expression<Func<FilprideProvisionalReceipt, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<ProvisionalReceipt?> GetAsync(Expression<Func<ProvisionalReceipt, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(x => x.Employee)
@@ -180,9 +180,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideProvisionalReceipt> GetAllQuery(Expression<Func<FilprideProvisionalReceipt, bool>>? filter = null)
+        public override IQueryable<ProvisionalReceipt> GetAllQuery(Expression<Func<ProvisionalReceipt, bool>>? filter = null)
         {
-            IQueryable<FilprideProvisionalReceipt> query = dbSet
+            IQueryable<ProvisionalReceipt> query = dbSet
                 .Include(x => x.Employee)
                 .Include(x => x.BankAccount)
                 .AsSplitQuery()
@@ -196,9 +196,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return query;
         }
 
-        public override async Task<IEnumerable<FilprideProvisionalReceipt>> GetAllAsync(Expression<Func<FilprideProvisionalReceipt, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<ProvisionalReceipt>> GetAllAsync(Expression<Func<ProvisionalReceipt, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideProvisionalReceipt> query = dbSet
+            IQueryable<ProvisionalReceipt> query = dbSet
                 .Include(x => x.Employee)
                 .Include(x => x.BankAccount);
 

@@ -388,8 +388,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private async Task LogAuditTrail(string username, string activity, string documentType, string company)
         {
-            var auditTrail = new FilprideAuditTrail(username, activity, documentType, company);
-            await _dbContext.FilprideAuditTrails.AddAsync(auditTrail);
+            var auditTrail = new AuditTrail(username, activity, documentType, company);
+            await _dbContext.AuditTrails.AddAsync(auditTrail);
             await _dbContext.SaveChangesAsync();
         }
 

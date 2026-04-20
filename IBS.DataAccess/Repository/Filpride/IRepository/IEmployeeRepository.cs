@@ -3,7 +3,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IEmployeeRepository : IRepository<FilprideEmployee>
+    public interface IEmployeeRepository : IRepository<Employee>
     {
 
     }

@@ -196,7 +196,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #endregion --Retrieval of Customer/Service
 
-                var model = new FilprideServiceInvoice
+                var model = new ServiceInvoice
                 {
                     ServiceInvoiceNo = await _unitOfWork.FilprideServiceInvoice.GenerateCodeAsync(companyClaims, viewModel.Type, cancellationToken),
                     ServiceId = service.ServiceId,
@@ -245,7 +245,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.CreatedBy!, $"Created new service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
+                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Created new service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -279,7 +279,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Preview service invoice#{sv.ServiceInvoiceNo}", "Service Invoice", companyClaims!);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview service invoice#{sv.ServiceInvoiceNo}", "Service Invoice", companyClaims!);
             await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -316,7 +316,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.PostedBy!, $"Posted service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
+                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -373,7 +373,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
+                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -405,9 +405,9 @@ namespace IBSWeb.Areas.User.Controllers
             }
 
             var hasAlreadyBeenUsed =
-                await _dbContext.FilprideCollectionReceipts.AnyAsync(cr => cr.ServiceInvoiceId == model.ServiceInvoiceId && cr.Status != nameof(Status.Voided), cancellationToken) ||
-                await _dbContext.FilprideDebitMemos.AnyAsync(dm => dm.ServiceInvoiceId == model.ServiceInvoiceId && dm.Status != nameof(Status.Voided), cancellationToken) ||
-                await _dbContext.FilprideCreditMemos.AnyAsync(cm => cm.ServiceInvoiceId == model.ServiceInvoiceId && cm.Status != nameof(Status.Voided), cancellationToken);
+                await _dbContext.CollectionReceipts.AnyAsync(cr => cr.ServiceInvoiceId == model.ServiceInvoiceId && cr.Status != nameof(Status.Voided), cancellationToken) ||
+                await _dbContext.DebitMemos.AnyAsync(dm => dm.ServiceInvoiceId == model.ServiceInvoiceId && dm.Status != nameof(Status.Voided), cancellationToken) ||
+                await _dbContext.CreditMemos.AnyAsync(cm => cm.ServiceInvoiceId == model.ServiceInvoiceId && cm.Status != nameof(Status.Voided), cancellationToken);
 
             if (hasAlreadyBeenUsed)
             {
@@ -440,12 +440,12 @@ namespace IBSWeb.Areas.User.Controllers
                     await RevertTheReversalOfDrEntries(dr, dr.Company, cancellationToken);
                 }
 
-                await _unitOfWork.FilprideServiceInvoice.RemoveRecords<FilprideSalesBook>(gl => gl.SerialNo == model.ServiceInvoiceNo, cancellationToken);
+                await _unitOfWork.FilprideServiceInvoice.RemoveRecords<SalesBook>(gl => gl.SerialNo == model.ServiceInvoiceNo, cancellationToken);
                 await _unitOfWork.GeneralLedger.ReverseEntries(model.ServiceInvoiceNo, cancellationToken);
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
+                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided service invoice# {model.ServiceInvoiceNo}", "Service Invoice", model.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -563,7 +563,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(existingModel.EditedBy!, $"Edited service invoice# {existingModel.ServiceInvoiceNo}", "Service Invoice", existingModel.Company);
+                AuditTrail auditTrailBook = new(existingModel.EditedBy!, $"Edited service invoice# {existingModel.ServiceInvoiceNo}", "Service Invoice", existingModel.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -631,7 +631,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice", sv.Company);
+                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice", sv.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -643,7 +643,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), $"Printed re-printed copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice", sv.Company);
+                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed re-printed copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice", sv.Company);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -783,13 +783,13 @@ namespace IBSWeb.Areas.User.Controllers
             return Json(result);
         }
 
-        private async Task RevertTheReversalOfDrEntries(FilprideDeliveryReceipt dr, string company, CancellationToken cancellationToken)
+        private async Task RevertTheReversalOfDrEntries(DeliveryReceipt dr, string company, CancellationToken cancellationToken)
         {
             var relatedRrNo = (await _unitOfWork.FilprideReceivingReport
                     .GetAsync(x => x.DeliveryReceiptId == dr.DeliveryReceiptId, cancellationToken))?
                 .ReceivingReportNo;
 
-            await _dbContext.FilprideGeneralLedgerBooks
+            await _dbContext.GeneralLedgerBooks
                 .Where(x => (x.Reference == dr.DeliveryReceiptNo || (relatedRrNo != null && x.Reference == relatedRrNo))
                             && x.Company == company && x.Description.StartsWith("Reversal"))
                 .ExecuteDeleteAsync(cancellationToken);
@@ -797,22 +797,22 @@ namespace IBSWeb.Areas.User.Controllers
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task ReverseTheDrEntries(FilprideDeliveryReceipt dr, string company, CancellationToken cancellationToken)
+        private async Task ReverseTheDrEntries(DeliveryReceipt dr, string company, CancellationToken cancellationToken)
         {
             var relatedRrNo = (await _unitOfWork.FilprideReceivingReport
                     .GetAsync(x => x.DeliveryReceiptId == dr.DeliveryReceiptId, cancellationToken))?
                 .ReceivingReportNo;
 
-            var originalEntries = await _dbContext.FilprideGeneralLedgerBooks
+            var originalEntries = await _dbContext.GeneralLedgerBooks
                 .Where(x => (x.Reference == dr.DeliveryReceiptNo || (relatedRrNo != null && x.Reference == relatedRrNo))
                             && x.Company == company)
                 .ToListAsync(cancellationToken);
 
-            var reversalEntries = new List<FilprideGeneralLedgerBook>();
+            var reversalEntries = new List<GeneralLedgerBook>();
 
             foreach (var originalEntry in originalEntries)
             {
-                var reversalEntry = new FilprideGeneralLedgerBook
+                var reversalEntry = new GeneralLedgerBook
                 {
                     Date = new DateOnly(
                         originalEntry.Date.Year,
@@ -839,7 +839,7 @@ namespace IBSWeb.Areas.User.Controllers
                 reversalEntries.Add(reversalEntry);
             }
 
-            await _dbContext.FilprideGeneralLedgerBooks.AddRangeAsync(reversalEntries, cancellationToken);
+            await _dbContext.GeneralLedgerBooks.AddRangeAsync(reversalEntries, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
@@ -920,7 +920,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var totalRecords = serviceInvoices.Count();
 
                 // Apply pagination - HANDLE -1 FOR "ALL"
-                IEnumerable<FilprideServiceInvoice> pagedServiceInvoices;
+                IEnumerable<ServiceInvoice> pagedServiceInvoices;
 
                 if (parameters.Length == -1)
                 {

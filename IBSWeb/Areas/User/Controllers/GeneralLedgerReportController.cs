@@ -219,7 +219,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by transaction report quest pdf", "General Ledger Report", companyClaims);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by transaction report quest pdf", "General Ledger Report", companyClaims);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -365,7 +365,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by transaction report excel file", "General Ledger Report", companyClaims);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by transaction report excel file", "General Ledger Report", companyClaims);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -390,7 +390,7 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new GeneralLedgerReportViewModel
             {
-                ChartOfAccounts = await _dbContext.FilprideChartOfAccounts
+                ChartOfAccounts = await _dbContext.ChartOfAccounts
                     .Where(coa => !coa.HasChildren)
                     .OrderBy(coa => coa.AccountNumber)
                     .Select(s => new SelectListItem
@@ -423,7 +423,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             try
             {
-                var generalLedgerByAccountNo = await _dbContext.FilprideGeneralLedgerBooks
+                var generalLedgerByAccountNo = await _dbContext.GeneralLedgerBooks
                     .Where(g =>
                         g.Date >= model.DateFrom && g.Date <= model.DateTo &&
                         (model.AccountNo == null || g.AccountNo == model.AccountNo) &&
@@ -616,7 +616,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by account number report quest pdf", "General Ledger Report", companyClaims);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by account number report quest pdf", "General Ledger Report", companyClaims);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -658,7 +658,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var selectedAccount = await _unitOfWork.FilprideChartOfAccount
                     .GetAsync(coa => selectedAccountNo != null && coa.AccountNumber == selectedAccountNo, cancellationToken);
 
-                var generalLedgerByAccountNo = await _dbContext.FilprideGeneralLedgerBooks
+                var generalLedgerByAccountNo = await _dbContext.GeneralLedgerBooks
                     .Where(g =>
                         g.Date >= dateFrom && g.Date <= dateTo &&
                         (selectedAccount == null || g.AccountNo == selectedAccount.AccountNumber) &&
@@ -685,7 +685,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .ToDictionary(a => a.AccountNumber!, a => a);
 
                 var previousPeriodEndDate = dateFrom.AddDays(-1);
-                var glPeriodBalances = await _dbContext.FilprideGlPeriodBalances
+                var glPeriodBalances = await _dbContext.GlPeriodBalances
                     .Include(g => g.Account)
                     .Where(pb => accountNumbers.Contains(pb.Account.AccountNumber!) &&
                                  pb.PeriodEndDate == previousPeriodEndDate && pb.Company == companyClaims)
@@ -874,7 +874,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                FilprideAuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by account number report excel file", "General Ledger Report", companyClaims);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by account number report excel file", "General Ledger Report", companyClaims);
                 await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -1139,7 +1139,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail
 
-                FilprideAuditTrail auditTrailBook = new(
+                AuditTrail auditTrailBook = new(
                     GetUserFullName(),
                     "Generate general ledger journal voucher - updating selling price report excel file",
                     "General Ledger JV Report",
@@ -1315,7 +1315,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail
 
-                FilprideAuditTrail auditTrailBook = new(
+                AuditTrail auditTrailBook = new(
                     GetUserFullName(),
                     "Generate general ledger journal voucher - updating unit cost report excel file",
                     "General Ledger JV Report",
@@ -1349,7 +1349,7 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new GeneralLedgerReportViewModel
             {
-                ChartOfAccounts = await _dbContext.FilprideChartOfAccounts
+                ChartOfAccounts = await _dbContext.ChartOfAccounts
                     .Where(coa => !coa.HasChildren)
                     .OrderBy(coa => coa.AccountNumber)
                     .Select(s => new SelectListItem
@@ -1396,7 +1396,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .FirstOrDefault();
 
                 // Query subsidiary ledger balances from database
-                var subsidiaryLedgers = await _dbContext.FilprideGlSubAccountBalances
+                var subsidiaryLedgers = await _dbContext.GlSubAccountBalances
                     .Include(s => s.Account)
                     .Where(s =>
                         s.PeriodEndDate >= dateFrom &&
@@ -1579,7 +1579,7 @@ namespace IBSWeb.Areas.User.Controllers
                 worksheet.View.FreezePanes(headerRow + 1, 1);
 
                 // Audit Trail
-                FilprideAuditTrail auditTrail = new(
+                AuditTrail auditTrail = new(
                     GetUserFullName(),
                     "Generate subsidiary ledger report excel file",
                     "Subsidiary Ledger Report",

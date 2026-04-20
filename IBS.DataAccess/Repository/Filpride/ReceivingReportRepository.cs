@@ -12,7 +12,7 @@ using IBS.Models.Common;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ReceivingReportRepository : Repository<FilprideReceivingReport>, IReceivingReportRepository
+    public class ReceivingReportRepository : Repository<ReceivingReport>, IReceivingReportRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -34,7 +34,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastRr = await _db
-                .FilprideReceivingReports
+                .ReceivingReports
                 .AsNoTracking()
                 .OrderByDescending(x => x.ReceivingReportNo!.Length)
                 .ThenByDescending(x => x.ReceivingReportNo)
@@ -59,7 +59,7 @@ namespace IBS.DataAccess.Repository.Filpride
         private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken = default)
         {
             var lastRr = await _db
-                .FilprideReceivingReports
+                .ReceivingReports
                 .AsNoTracking()
                 .OrderByDescending(x => x.ReceivingReportNo!.Length)
                 .ThenByDescending(x => x.ReceivingReportNo)
@@ -83,7 +83,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task<int> RemoveQuantityReceived(int id, decimal quantityReceived, CancellationToken cancellationToken = default)
         {
-            var po = await _db.FilpridePurchaseOrders
+            var po = await _db.PurchaseOrders
                 .Include(po => po.ActualPrices)
                 .FirstOrDefaultAsync(po => po.PurchaseOrderId == id, cancellationToken);
 
@@ -111,7 +111,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task UpdatePoAsync(int id, decimal quantityReceived, CancellationToken cancellationToken = default)
         {
-            var po = await _db.FilpridePurchaseOrders
+            var po = await _db.PurchaseOrders
                          .FirstOrDefaultAsync(po => po.PurchaseOrderId == id, cancellationToken)
                      ?? throw new ArgumentException("No record found.");
 
@@ -131,7 +131,7 @@ namespace IBS.DataAccess.Repository.Filpride
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public override async Task<FilprideReceivingReport?> GetAsync(Expression<Func<FilprideReceivingReport, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<ReceivingReport?> GetAsync(Expression<Func<ReceivingReport, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(rr => rr.DeliveryReceipt).ThenInclude(dr => dr!.Customer)
@@ -140,9 +140,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideReceivingReport>> GetAllAsync(Expression<Func<FilprideReceivingReport, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<ReceivingReport>> GetAllAsync(Expression<Func<ReceivingReport, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideReceivingReport> query = dbSet
+            IQueryable<ReceivingReport> query = dbSet
                 .Include(rr => rr.DeliveryReceipt).ThenInclude(dr => dr!.Customer)
                 .Include(rr => rr.PurchaseOrder).ThenInclude(po => po!.Product)
                 .Include(rr => rr.PurchaseOrder).ThenInclude(po => po!.Supplier);
@@ -155,9 +155,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideReceivingReport> GetAllQuery(Expression<Func<FilprideReceivingReport, bool>>? filter = null)
+        public override IQueryable<ReceivingReport> GetAllQuery(Expression<Func<ReceivingReport, bool>>? filter = null)
         {
-            IQueryable<FilprideReceivingReport> query = dbSet
+            IQueryable<ReceivingReport> query = dbSet
                 .Include(rr => rr.DeliveryReceipt).ThenInclude(dr => dr!.Customer)
                 .Include(rr => rr.PurchaseOrder).ThenInclude(po => po!.Product)
                 .Include(rr => rr.PurchaseOrder).ThenInclude(po => po!.Supplier)
@@ -172,9 +172,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return query;
         }
 
-        public async Task<string> AutoGenerateReceivingReport(FilprideDeliveryReceipt deliveryReceipt, DateOnly liftingDate, string userName, CancellationToken cancellationToken = default)
+        public async Task<string> AutoGenerateReceivingReport(DeliveryReceipt deliveryReceipt, DateOnly liftingDate, string userName, CancellationToken cancellationToken = default)
         {
-            FilprideReceivingReport model = new()
+            ReceivingReport model = new()
             {
                 DeliveryReceiptId = deliveryReceipt.DeliveryReceiptId,
                 Date = liftingDate,
@@ -210,7 +210,7 @@ namespace IBS.DataAccess.Repository.Filpride
             model.DueDate = await ComputeDueDateAsync(deliveryReceipt.PurchaseOrder.Terms, model.Date, cancellationToken);
             model.GainOrLoss = model.QuantityDelivered - model.QuantityReceived;
 
-            var poActualPrice = await _db.FilpridePOActualPrices
+            var poActualPrice = await _db.POActualPrices
                 .FirstOrDefaultAsync(a => a.PurchaseOrderId == deliveryReceipt.PurchaseOrderId
                                           && a.IsApproved
                                           && a.AppliedVolume != a.TriggeredVolume,
@@ -239,12 +239,12 @@ namespace IBS.DataAccess.Repository.Filpride
 
             #region --Audit Trail Recording
 
-            FilprideAuditTrail auditTrailCreate = new(model.PostedBy,
+            AuditTrail auditTrailCreate = new(model.PostedBy,
                 $"Created new receiving report# {model.ReceivingReportNo}",
                 "Receiving Report",
                 model.Company);
 
-            FilprideAuditTrail auditTrailPost = new(model.PostedBy,
+            AuditTrail auditTrailPost = new(model.PostedBy,
                 $"Posted receiving report# {model.ReceivingReportNo}",
                 "Receiving Report",
                 model.Company);
@@ -259,7 +259,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             #region Update the invoice if any
 
-            var salesInvoice = await _db.FilprideSalesInvoices
+            var salesInvoice = await _db.SalesInvoices
                 .FirstOrDefaultAsync(si => si.DeliveryReceiptId == model.DeliveryReceiptId, cancellationToken);
 
             if (salesInvoice != null)
@@ -277,11 +277,11 @@ namespace IBS.DataAccess.Repository.Filpride
             return model.ReceivingReportNo;
         }
 
-        public async Task PostAsync(FilprideReceivingReport model, CancellationToken cancellationToken = default)
+        public async Task PostAsync(ReceivingReport model, CancellationToken cancellationToken = default)
         {
             #region --General Ledger Recording
 
-            var ledgers = new List<FilprideGeneralLedgerBook>();
+            var ledgers = new List<GeneralLedgerBook>();
 
             var netOfVatAmount = model.PurchaseOrder!.VatType == SD.VatType_Vatable
                 ? ComputeNetOfVat(model.Amount)
@@ -315,7 +315,7 @@ namespace IBS.DataAccess.Repository.Filpride
             var inventoryTitle = accountTitlesDto.Find(c => c.AccountNumber == inventoryAcctNo)
                                  ?? throw new ArgumentException($"Account title '{inventoryAcctNo}' not found.");
 
-            ledgers.Add(new FilprideGeneralLedgerBook
+            ledgers.Add(new GeneralLedgerBook
             {
                 Date = model.Date,
                 Reference = model.ReceivingReportNo!,
@@ -333,7 +333,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (vatAmount > 0)
             {
-                ledgers.Add(new FilprideGeneralLedgerBook
+                ledgers.Add(new GeneralLedgerBook
                 {
                     Date = model.Date,
                     Reference = model.ReceivingReportNo!,
@@ -350,7 +350,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 });
             }
 
-            ledgers.Add(new FilprideGeneralLedgerBook
+            ledgers.Add(new GeneralLedgerBook
             {
                 Date = model.Date,
                 Reference = model.ReceivingReportNo!,
@@ -371,7 +371,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (ewtAmount > 0)
             {
-                ledgers.Add(new FilprideGeneralLedgerBook
+                ledgers.Add(new GeneralLedgerBook
                 {
                     Date = model.Date,
                     Reference = model.ReceivingReportNo!,
@@ -407,7 +407,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             #region --Purchase Book Recording
 
-            FilpridePurchaseBook purchaseBook = new()
+            PurchaseBook purchaseBook = new()
             {
                 Date = model.Date,
                 SupplierName = model.PurchaseOrder.SupplierName,
@@ -435,7 +435,7 @@ namespace IBS.DataAccess.Repository.Filpride
         {
             var model = await GetAsync(r => r.ReceivingReportId == receivingReportId, cancellationToken);
 
-            var existingInventory = await _db.FilprideInventories
+            var existingInventory = await _db.Inventories
                 .Include(i => i.Product)
                 .FirstOrDefaultAsync(i => i.Reference == model!.ReceivingReportNo && i.Company == model.Company, cancellationToken);
 
@@ -444,7 +444,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new Exception("Receiving Report or Inventory not found.");
             }
 
-            var existingSalesInvoice = await _db.FilprideSalesInvoices
+            var existingSalesInvoice = await _db.SalesInvoices
                 .FirstOrDefaultAsync(si =>
                     si.ReceivingReportId == model.ReceivingReportId &&
                     si.Status != nameof(Status.Voided) &&
@@ -472,7 +472,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             var unitOfWork = new UnitOfWork(_db);
-            await RemoveRecords<FilpridePurchaseBook>(pb => pb.DocumentNo == model.ReceivingReportNo, cancellationToken);
+            await RemoveRecords<PurchaseBook>(pb => pb.DocumentNo == model.ReceivingReportNo, cancellationToken);
             await unitOfWork.GeneralLedger.ReverseEntries(model.ReceivingReportNo, cancellationToken);
 
             await unitOfWork.FilprideInventory.VoidInventory(existingInventory, cancellationToken);
@@ -480,7 +480,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             #region --Audit Trail Recording
 
-            FilprideAuditTrail auditTrailBook = new(currentUser, $"Voided receiving report# {model.ReceivingReportNo}", "Receiving Report", model.Company);
+            AuditTrail auditTrailBook = new(currentUser, $"Voided receiving report# {model.ReceivingReportNo}", "Receiving Report", model.Company);
             await _db.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -489,7 +489,7 @@ namespace IBS.DataAccess.Repository.Filpride
         }
 
         private async Task<decimal> ApplyAdvanceEwtOffsetAsync(
-            FilprideReceivingReport model,
+            ReceivingReport model,
             decimal ewtAmount,
             bool isReversal,
             CancellationToken cancellationToken)
@@ -499,7 +499,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 return ewtAmount;
             }
 
-            var advancesVouchers = await _db.FilprideCheckVoucherDetails
+            var advancesVouchers = await _db.CheckVoucherDetails
                 .Include(cv => cv.CheckVoucherHeader)
                 .Where(cv =>
                     cv.CheckVoucherHeader!.SupplierId == model.PurchaseOrder.SupplierId &&
@@ -548,11 +548,11 @@ namespace IBS.DataAccess.Repository.Filpride
             return isReversal ? ewtAmount : remainingEwt;
         }
 
-        public async Task CreateEntriesForUpdatingCost(FilprideReceivingReport model, decimal difference, string userName, CancellationToken cancellationToken = default)
+        public async Task CreateEntriesForUpdatingCost(ReceivingReport model, decimal difference, string userName, CancellationToken cancellationToken = default)
         {
             #region --General Ledger Recording
 
-            var ledgers = new List<FilprideGeneralLedgerBook>();
+            var ledgers = new List<GeneralLedgerBook>();
             var isIncremental = difference > 0;
             difference = Math.Abs(difference);
             var particulars = $"Update Cost on DR#{model.DeliveryReceipt?.DeliveryReceiptNo}. DR dated {model.DeliveryReceipt?.DeliveredDate}";
@@ -566,7 +566,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (model.PurchaseOrder.Terms == SD.Terms_Cod || model.PurchaseOrder.Terms == SD.Terms_Prepaid)
             {
-                var advancesVoucher = await _db.FilprideCheckVoucherDetails
+                var advancesVoucher = await _db.CheckVoucherDetails
                     .Include(cv => cv.CheckVoucherHeader)
                     .FirstOrDefaultAsync(cv =>
                         cv.CheckVoucherHeader!.SupplierId == model.PurchaseOrder.SupplierId &&
@@ -606,7 +606,7 @@ namespace IBS.DataAccess.Repository.Filpride
             var inventoryTitle = accountTitlesDto.Find(c => c.AccountNumber == inventoryAcctNo) ?? throw new ArgumentException($"Account title '{inventoryAcctNo}' not found.");
             var cogsTitle = accountTitlesDto.Find(c => c.AccountNumber == cogsAcctNo) ?? throw new ArgumentException($"Account title '{cogsAcctNo}' not found.");
 
-            ledgers.Add(new FilprideGeneralLedgerBook
+            ledgers.Add(new GeneralLedgerBook
             {
                 Date = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime()),
                 Reference = model.ReceivingReportNo!,
@@ -624,7 +624,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (vatAmount > 0)
             {
-                ledgers.Add(new FilprideGeneralLedgerBook
+                ledgers.Add(new GeneralLedgerBook
                 {
                     Date = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime()),
                     Reference = model.ReceivingReportNo!,
@@ -641,7 +641,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 });
             }
 
-            ledgers.Add(new FilprideGeneralLedgerBook
+            ledgers.Add(new GeneralLedgerBook
             {
                 Date = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime()),
                 Reference = model.ReceivingReportNo!,
@@ -662,7 +662,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
             if (ewtAmount > 0)
             {
-                ledgers.Add(new FilprideGeneralLedgerBook
+                ledgers.Add(new GeneralLedgerBook
                 {
                     Date = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime()),
                     Reference = model.ReceivingReportNo!,
@@ -685,7 +685,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 var cogsAmount = model.DeliveryReceipt.Quantity * priceAdjustment;
                 var cogsNetOfVat = ComputeNetOfVat(cogsAmount);
 
-                ledgers.Add(new FilprideGeneralLedgerBook
+                ledgers.Add(new GeneralLedgerBook
                 {
                     Date = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime()),
                     Reference = model.ReceivingReportNo!,
@@ -701,7 +701,7 @@ namespace IBS.DataAccess.Repository.Filpride
                     ModuleType = nameof(ModuleType.Sales)
                 });
 
-                ledgers.Add(new FilprideGeneralLedgerBook
+                ledgers.Add(new GeneralLedgerBook
                 {
                     Date = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime()),
                     Reference = model.ReceivingReportNo!,

@@ -6,10 +6,10 @@ namespace IBS.Models.ViewModels
     public class CheckVoucherVM
     {
         public FilprideCheckVoucherHeader? Header { get; set; }
-        public List<FilprideCheckVoucherDetail>? Details { get; set; }
+        public List<CheckVoucherDetail>? Details { get; set; }
 
-        public FilprideSupplier? Supplier { get; set; }
+        public Supplier? Supplier { get; set; }
 
-        public FilprideEmployee? Employee { get; set; }
+        public Employee? Employee { get; set; }
     }
 }

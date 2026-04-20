@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IBankAccountRepository : IRepository<FilprideBankAccount>
+    public interface IBankAccountRepository : IRepository<BankAccount>
     {
         Task<bool> IsBankAccountNoExist(string accountNo, CancellationToken cancellationToken = default);
 

@@ -9,7 +9,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class CustomerRepository : Repository<FilprideCustomer>, ICustomerRepository
+    public class CustomerRepository : Repository<Customer>, ICustomerRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -21,7 +21,7 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task<string> GenerateCodeAsync(string customerType, CancellationToken cancellationToken = default)
         {
             var lastCustomer = await _db
-                .FilprideCustomers
+                .Customers
                 .OrderByDescending(c => c.CustomerId)
                 .FirstOrDefaultAsync(c => c.CustomerType == customerType, cancellationToken);
 
@@ -51,16 +51,16 @@ namespace IBS.DataAccess.Repository.Filpride
             if (tin == "000-000-000-00000")
                 return false;
 
-            return await _db.FilprideCustomers
+            return await _db.Customers
                 .AnyAsync(c =>
                     c.Company == company &&
                     c.CustomerTin == tin,
                     cancellationToken);
         }
 
-        public async Task UpdateAsync(FilprideCustomer model, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Customer model, CancellationToken cancellationToken = default)
         {
-            var existingCustomer = await _db.FilprideCustomers
+            var existingCustomer = await _db.Customers
                 .FirstOrDefaultAsync(x => x.CustomerId == model.CustomerId, cancellationToken)
                                    ?? throw new InvalidOperationException($"Customer with id '{model.CustomerId}' not found.");
 
@@ -100,7 +100,7 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task<List<SelectListItem>> GetCustomerBranchesSelectListAsync(int customerId, CancellationToken cancellationToken = default)
         {
-            return await _db.FilprideCustomerBranches
+            return await _db.CustomerBranches
                 .OrderBy(c => c.BranchName)
                 .Where(c => c.CustomerId == customerId)
                 .Select(b => new SelectListItem
@@ -111,16 +111,16 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ToListAsync(cancellationToken);
         }
 
-        public override async Task<FilprideCustomer?> GetAsync(Expression<Func<FilprideCustomer, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<Customer?> GetAsync(Expression<Func<Customer, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                     .Include(c => c.Commissionee)
                     .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideCustomer>> GetAllAsync(Expression<Func<FilprideCustomer, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Customer>> GetAllAsync(Expression<Func<Customer, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideCustomer> query = dbSet
+            IQueryable<Customer> query = dbSet
                 .Include(dr => dr.Commissionee);
 
             if (filter != null)
@@ -131,9 +131,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideCustomer> GetAllQuery(Expression<Func<FilprideCustomer, bool>>? filter = null)
+        public override IQueryable<Customer> GetAllQuery(Expression<Func<Customer, bool>>? filter = null)
         {
-            IQueryable<FilprideCustomer> query = dbSet
+            IQueryable<Customer> query = dbSet
                 .Include(dr => dr.Commissionee)
                 .AsSplitQuery()
                 .AsNoTracking();
