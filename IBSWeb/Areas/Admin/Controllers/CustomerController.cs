@@ -3,17 +3,16 @@ using System.Security.Claims;
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.Models.Common;
-using IBS.Models.Enums;
 using IBS.Models.MasterFile;
-using IBS.Utility.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area(nameof(User))]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class CustomerController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -51,15 +50,10 @@ namespace IBSWeb.Areas.Admin.Controllers
             return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
         }
 
-        public async Task<IActionResult> Index(string? view, CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            IEnumerable<Customer> customer = await _unitOfWork.FilprideCustomer
+            var customer = await _unitOfWork.FilprideCustomer
                 .GetAllAsync(null, cancellationToken);
-
-            if (view == nameof(DynamicView.Customer))
-            {
-                return View("ExportIndex");
-            }
 
             return View(customer);
         }
@@ -405,87 +399,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Deactivate), new { id = id });
             }
-        }
-
-        //Download as .xlsx file.(Export)
-
-        #region -- export xlsx record --
-
-        [HttpPost]
-        public async Task<IActionResult> Export(string selectedRecord)
-        {
-            if (string.IsNullOrEmpty(selectedRecord))
-            {
-                // Handle the case where no invoices are selected
-                return RedirectToAction(nameof(Index));
-            }
-
-            var recordIds = selectedRecord.Split(',').Select(int.Parse).ToList();
-
-            // Retrieve the selected invoices from the database
-            var selectedList = await _unitOfWork.FilprideCustomer
-                .GetAllAsync(c => recordIds.Contains(c.CustomerId));
-
-            // Create the Excel package
-            using var package = new ExcelPackage();
-            // Add a new worksheet to the Excel package
-            var worksheet = package.Workbook.Worksheets.Add("Customers");
-
-            worksheet.Cells["A1"].Value = "CustomerName";
-            worksheet.Cells["B1"].Value = "CustomerAddress";
-            worksheet.Cells["C1"].Value = "CustomerZipCode";
-            worksheet.Cells["D1"].Value = "CustomerTinNumber";
-            worksheet.Cells["E1"].Value = "BusinessStyle";
-            worksheet.Cells["F1"].Value = "Terms";
-            worksheet.Cells["G1"].Value = "CustomerType";
-            worksheet.Cells["H1"].Value = "WithHoldingVat";
-            worksheet.Cells["I1"].Value = "WithHoldingTax";
-            worksheet.Cells["J1"].Value = "CreatedBy";
-            worksheet.Cells["K1"].Value = "CreatedDate";
-            worksheet.Cells["L1"].Value = "OriginalCustomerId";
-            worksheet.Cells["M1"].Value = "OriginalCustomerNumber";
-
-            int row = 2;
-
-            foreach (var item in selectedList)
-            {
-                worksheet.Cells[row, 1].Value = item.CustomerName;
-                worksheet.Cells[row, 2].Value = item.CustomerAddress;
-                worksheet.Cells[row, 3].Value = item.ZipCode;
-                worksheet.Cells[row, 4].Value = item.CustomerTin;
-                worksheet.Cells[row, 5].Value = item.BusinessStyle;
-                worksheet.Cells[row, 6].Value = item.CustomerTerms;
-                worksheet.Cells[row, 7].Value = item.VatType;
-                worksheet.Cells[row, 8].Value = item.WithHoldingVat;
-                worksheet.Cells[row, 9].Value = item.WithHoldingTax;
-                worksheet.Cells[row, 10].Value = item.CreatedBy;
-                worksheet.Cells[row, 11].Value = item.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                worksheet.Cells[row, 12].Value = item.CustomerId;
-                worksheet.Cells[row, 13].Value = item.CustomerCode;
-
-                row++;
-            }
-
-            //Ser password in Excel
-            worksheet.Protection.IsProtected = true;
-            worksheet.Protection.SetPassword("mis123");
-
-            // Convert the Excel package to a byte array
-            var excelBytes = await package.GetAsByteArrayAsync();
-
-            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"CustomerList_IBS_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
-        }
-
-        #endregion -- export xlsx record --
-
-        [HttpGet]
-        public IActionResult GetAllCustomerIds()
-        {
-            var customerIds = _dbContext.Customers
-                .Select(c => c.CustomerId)
-                .ToList();
-
-            return Json(customerIds);
         }
 
         [HttpPost]

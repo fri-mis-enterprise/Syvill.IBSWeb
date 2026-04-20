@@ -5,13 +5,15 @@ using IBS.DataAccess.Repository.IRepository;
 using IBS.Models.Common;
 using IBS.Models.MasterFile;
 using IBS.Utility.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area(nameof(User))]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class PaymentTermController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

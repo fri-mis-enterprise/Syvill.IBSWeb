@@ -1,7 +1,7 @@
 ﻿@using IBS.Models.Enums
 @model IEnumerable<CollectionReceipt>
 @{
-    ViewData["Title"] = "Collection Receipt for Sales Invoice";
+    ViewData["Title"] = "Collection Receipt";
     var model = new CollectionReceipt();
 }
 
@@ -10,23 +10,11 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center bg-secondary p-3 rounded shadow">
         <h2 class="text-white m-0">@ViewData["Title"]</h2>
-        <div class="dropdown actions-dropdown">
-            <button class="btn btn-light btn-sm dropdown-toggle w-100"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                <i class="bi bi-plus-circle"></i> New Receipt
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                    <a class="dropdown-item responsive-index-button" asp-area="Filpride" asp-controller="CollectionReceipt" asp-action="SingleCollectionCreateForSales">
-                        <i class="bi bi-plus-circle"></i> Single Invoice
-                    </a>
-                    <a class="dropdown-item responsive-index-button" asp-controller="CollectionReceipt" asp-action="MultipleCollectionCreateForSales">
-                        <i class="bi bi-plus-circle"></i> Multiple Invoice
-                    </a>
-                </li>
-            </ul>
+        <div class="d-flex gap-2">
+            <a asp-area="User" asp-controller="CollectionReceipt" asp-action="CreateForService"
+               class="btn btn-light d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle"></i> Create
+            </a>
         </div>
     </div>
 
@@ -39,14 +27,14 @@
             <div class="table-responsive" style="max-height: 70vh">
                 <table class="table table-hover mb-0" id="paginatedTable">
                     <thead class="bg-light">
-                    <tr>
-                        <th class="text-start">CR#</th>
-                        <th class="text-start">Date</th>
-                        <th class="text-start">Invoice#</th>
-                        <th class="text-start">Customer</th>
-                        <th class="text-start">Total</th>
-                        <th class="text-start">Created By</th>
-                        <th class="text-start">Status</th>
+                    <tr class="text-start">
+                        <th>CR#</th>
+                        <th>Date</th>
+                        <th>Invoice#</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Created By</th>
+                        <th>Status</th>
                         <th class="text-center" style="width: 100px;">Actions</th>
                     </tr>
                     </thead>
@@ -158,32 +146,9 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.ajax({
-                        url: '@Url.Action("Void", "CollectionReceipt", new { area = "Filpride" })',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                        },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Something went wrong.', 'error');
-                        }
-                    });
+                    // Replace with the actual URL that you want to redirect to
+                    var url = `@Url.Action("Void", "CollectionReceipt", new { area = "Filpride" })/${id}`;
+                    window.location.href = url;
                 }
             })
         }
@@ -204,33 +169,12 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.ajax({
-                        url: '@Url.Action("Cancel", "CollectionReceipt", new { area = "Filpride" })',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            cancellationRemarks: $("#cancellationRemarks").val()
-                        },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Something went wrong.', 'error');
-                        }
-                    });
+                    var cancellationRemarks = $("#cancellationRemarks").val();
+                    // Encode the cancellationRemarks to make it URL safe
+                    var encodedRemarks = encodeURIComponent(cancellationRemarks);
+                    // Append the encoded remarks as a parameter in the URL
+                    var url = `@Url.Action("Cancel", "CollectionReceipt", new { area = "Filpride" })?id=${id}&cancellationRemarks=${encodedRemarks}`;
+                    window.location.href = url;
                 }
             })
         }
@@ -393,7 +337,7 @@
                     "data": function (d) {
                         return $.extend({}, d, {
                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
-                            invoiceType: "Sales",
+                            invoiceType: "Service",
                             filterDate: filterValue
                         });
                     },
@@ -443,7 +387,7 @@
                     {
                         "data": "total",
                         "render": function (data, type, row) {
-                            var amount = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                            var amount = $.fn.dataTable.render.number(',', '.', 4).display(data);
                             return `<span class="d-block fw-medium">${amount}</span>`;
                         }
                     },
@@ -482,48 +426,34 @@
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">`;
 
                             if (row.postedBy == null) {
-                                if (row.multipleSIId != null) {
-                                    dropdownHtml += `
-                                        <li><a href="@Url.Action("MultipleCollectionEdit", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Edit</a></li>
-                                        <li><a href="@Url.Action("MultipleCollectionPrint", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
-                                } else {
-                                    dropdownHtml += `
-                                        <li><a href="@Url.Action("EditForSales", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Edit</a></li>
+                                dropdownHtml += `
+                                        <li><a href="@Url.Action("EditForService", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Edit</a></li>
                                         <li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
-                                }
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmCancel(${row.collectionReceiptId})">Cancel</a></li>`;
                             } else {
-
                                 const hasDeposit = row.depositedDate && row.depositedDate !== "";
                                 const postedStatus = "@nameof(CollectionReceiptStatus.Posted)";
-                                const clearedStatus = "@nameof(CollectionReceiptStatus.Cleared)";
                                 const returnedStatus = "@nameof(CollectionReceiptStatus.Returned)";
 
                                 if (!hasDeposit && row.status === postedStatus) {
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="addDepositInfo(${row.collectionReceiptId})">Add Deposit Info</a></li>`;
                                 } else if (!hasDeposit && row.status === returnedStatus) {
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="redeposit(${row.collectionReceiptId})">Redeposit</a></li>`;
-                                } else if (hasDeposit && row.status !== returnedStatus && row.status !== clearedStatus) {
+                                } else if (hasDeposit && row.status !== returnedStatus) {
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="applyClearingDate(${row.collectionReceiptId})">Apply Clearing Date</a></li>`;
                                 } else{
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="returnCheck(${row.collectionReceiptId})">Return Check</a></li>`;
                                 }
 
-                                if (row.multipleSIId != null) {
-                                    dropdownHtml += `<li><a href="@Url.Action("MultipleCollectionPrint", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
-                                } else {
-                                    dropdownHtml += `<li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
-                                }
-
+                                dropdownHtml += `<li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmVoid(${row.collectionReceiptId})">Void</a></li>`;
                             }
-
                             dropdownHtml += `</ul></div>`;
                             return dropdownHtml;
                         }
                     }
 
-                ]
+                ],
             });
 
             $('#inputDate').on('change', function() {

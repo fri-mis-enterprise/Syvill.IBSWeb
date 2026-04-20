@@ -3,19 +3,19 @@ using System.Security.Claims;
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.Models.Common;
-using IBS.Models.Enums;
 using IBS.Models.MasterFile;
 using IBS.Services;
 using IBS.Utility.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area(nameof(User))]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class SupplierController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -66,13 +66,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             return $"{fileName}-{DateTimeHelper.GetCurrentPhilippineTime():yyyyMMddHHmmss}{extension}";
         }
 
-        public IActionResult Index(string? view)
+        public IActionResult Index()
         {
-            if (view == nameof(DynamicView.Supplier))
-            {
-                return View("ExportIndex");
-            }
-
             return View();
         }
 
@@ -538,200 +533,102 @@ namespace IBSWeb.Areas.Admin.Controllers
                 // Apply search filter if provided
                 if (!string.IsNullOrEmpty(parameters.Search.Value))
                 {
-            var searchValue = parameters.Search.Value.ToLower();
+                    var searchValue = parameters.Search.Value.ToLower();
 
-            suppliers = suppliers
-                .Where(s =>
-                    (s.SupplierCode != null && s.SupplierCode.ToLower().Contains(searchValue)) ||
-                    (s.SupplierName != null && s.SupplierName.ToLower().Contains(searchValue)) ||
-                    (s.SupplierAddress != null && s.SupplierAddress.ToLower().Contains(searchValue)) ||
-                    (s.SupplierTin != null && s.SupplierTin.ToLower().Contains(searchValue)) ||
-                    (s.SupplierTerms != null && s.SupplierTerms.ToLower().Contains(searchValue)) ||
-                    (s.VatType != null && s.VatType.ToLower().Contains(searchValue)) ||
-                    (s.Category != null && s.Category.ToLower().Contains(searchValue)) ||
-                    s.CreatedDate.ToString("MMM dd, yyyy").ToLower().Contains(searchValue)
-                )
-                .ToList();
-        }
+                    suppliers = suppliers
+                        .Where(s =>
+                            (s.SupplierCode != null && s.SupplierCode.ToLower().Contains(searchValue)) ||
+                            (s.SupplierName != null && s.SupplierName.ToLower().Contains(searchValue)) ||
+                            (s.SupplierAddress != null && s.SupplierAddress.ToLower().Contains(searchValue)) ||
+                            (s.SupplierTin != null && s.SupplierTin.ToLower().Contains(searchValue)) ||
+                            (s.SupplierTerms != null && s.SupplierTerms.ToLower().Contains(searchValue)) ||
+                            (s.VatType != null && s.VatType.ToLower().Contains(searchValue)) ||
+                            (s.Category != null && s.Category.ToLower().Contains(searchValue)) ||
+                            s.CreatedDate.ToString("MMM dd, yyyy").ToLower().Contains(searchValue)
+                        )
+                        .ToList();
+                }
 
-        // Apply sorting if provided
-        if (parameters.Order?.Count > 0)
-        {
-            var orderColumn = parameters.Order[0];
-            var columnName = parameters.Columns[orderColumn.Column].Data;
-            var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
+                // Apply sorting if provided
+                if (parameters.Order?.Count > 0)
+                {
+                    var orderColumn = parameters.Order[0];
+                    var columnName = parameters.Columns[orderColumn.Column].Data;
+                    var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
 
-            // Map frontend column names to actual entity property names
-            var columnMapping = new Dictionary<string, string>
+                    // Map frontend column names to actual entity property names
+                    var columnMapping = new Dictionary<string, string>
+                    {
+                        { "supplierCode", "SupplierCode" },
+                        { "supplierName", "SupplierName" },
+                        { "supplierAddress", "SupplierAddress" },
+                        { "supplierTin", "SupplierTin" },
+                        { "supplierTerms", "SupplierTerms" },
+                        { "vatType", "VatType" },
+                        { "category", "Category" },
+                        { "createdDate", "CreatedDate" }
+                    };
+
+                    // Get the actual property name
+                    var actualColumnName = columnMapping.ContainsKey(columnName)
+                        ? columnMapping[columnName]
+                        : columnName;
+
+                    suppliers = suppliers
+                        .AsQueryable()
+                        .OrderBy($"{actualColumnName} {sortDirection}")
+                        .ToList();
+                }
+
+                var totalRecords = suppliers.Count();
+
+                // Apply pagination - HANDLE -1 FOR "ALL"
+                IEnumerable<Supplier> pagedSuppliers;
+
+                if (parameters.Length == -1)
+                {
+                    // "All" selected - return all records
+                    pagedSuppliers = suppliers;
+                }
+                else
+                {
+                    // Normal pagination
+                    pagedSuppliers = suppliers
+                        .Skip(parameters.Start)
+                        .Take(parameters.Length);
+                }
+
+                var pagedData = pagedSuppliers
+                    .Select(x => new
+                    {
+                        x.SupplierId,
+                        x.SupplierCode,
+                        x.SupplierName,
+                        x.SupplierAddress,
+                        x.SupplierTin,
+                        x.SupplierTerms,
+                        x.VatType,
+                        x.Category,
+                        x.CreatedDate
+                    })
+                    .ToList();
+
+                return Json(new
+                {
+                    draw = parameters.Draw,
+                    recordsTotal = totalRecords,
+                    recordsFiltered = totalRecords,
+                    data = pagedData
+                });
+            }
+            catch (Exception ex)
             {
-                { "supplierCode", "SupplierCode" },
-                { "supplierName", "SupplierName" },
-                { "supplierAddress", "SupplierAddress" },
-                { "supplierTin", "SupplierTin" },
-                { "supplierTerms", "SupplierTerms" },
-                { "vatType", "VatType" },
-                { "category", "Category" },
-                { "createdDate", "CreatedDate" }
-            };
-
-            // Get the actual property name
-            var actualColumnName = columnMapping.ContainsKey(columnName)
-                ? columnMapping[columnName]
-                : columnName;
-
-            suppliers = suppliers
-                .AsQueryable()
-                .OrderBy($"{actualColumnName} {sortDirection}")
-                .ToList();
-        }
-
-        var totalRecords = suppliers.Count();
-
-        // Apply pagination - HANDLE -1 FOR "ALL"
-        IEnumerable<Supplier> pagedSuppliers;
-
-        if (parameters.Length == -1)
-        {
-            // "All" selected - return all records
-            pagedSuppliers = suppliers;
-        }
-        else
-        {
-            // Normal pagination
-            pagedSuppliers = suppliers
-                .Skip(parameters.Start)
-                .Take(parameters.Length);
-        }
-
-        var pagedData = pagedSuppliers
-            .Select(x => new
-            {
-                x.SupplierId,
-                x.SupplierCode,
-                x.SupplierName,
-                x.SupplierAddress,
-                x.SupplierTin,
-                x.SupplierTerms,
-                x.VatType,
-                x.Category,
-                x.CreatedDate
-            })
-            .ToList();
-
-        return Json(new
-        {
-            draw = parameters.Draw,
-            recordsTotal = totalRecords,
-            recordsFiltered = totalRecords,
-            data = pagedData
-        });
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Failed to get suppliers. Error: {ErrorMessage}, Stack: {StackTrace}.",
-            ex.Message, ex.StackTrace);
-        TempData["error"] = ex.Message;
-        return RedirectToAction(nameof(Index));
-    }
-}
-
-        //Download as .xlsx file.(Export)
-
-        #region -- export xlsx record --
-
-        [HttpPost]
-        public async Task<IActionResult> Export(string selectedRecord)
-        {
-            if (string.IsNullOrEmpty(selectedRecord))
-            {
-                // Handle the case where no invoices are selected
+                _logger.LogError(ex, "Failed to get suppliers. Error: {ErrorMessage}, Stack: {StackTrace}.",
+                    ex.Message, ex.StackTrace);
+                TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
             }
-
-            var recordIds = selectedRecord.Split(',').Select(int.Parse).ToList();
-
-            // Retrieve the selected invoices from the database
-            var selectedList = await _dbContext.Suppliers
-                .Where(supp => recordIds.Contains(supp.SupplierId))
-                .OrderBy(supp => supp.SupplierCode)
-                .ToListAsync();
-
-            // Create the Excel package
-            using var package = new ExcelPackage();
-            // Add a new worksheet to the Excel package
-            var worksheet = package.Workbook.Worksheets.Add("Supplier");
-
-            worksheet.Cells["A1"].Value = "Name";
-            worksheet.Cells["B1"].Value = "Address";
-            worksheet.Cells["C1"].Value = "ZipCode";
-            worksheet.Cells["D1"].Value = "TinNo";
-            worksheet.Cells["E1"].Value = "Terms";
-            worksheet.Cells["F1"].Value = "VatType";
-            worksheet.Cells["G1"].Value = "TaxType";
-            worksheet.Cells["H1"].Value = "ProofOfRegistrationFilePath";
-            worksheet.Cells["I1"].Value = "ReasonOfExemption";
-            worksheet.Cells["J1"].Value = "Validity";
-            worksheet.Cells["K1"].Value = "ValidityDate";
-            worksheet.Cells["L1"].Value = "ProofOfExemptionFilePath";
-            worksheet.Cells["M1"].Value = "CreatedBy";
-            worksheet.Cells["N1"].Value = "CreatedDate";
-            worksheet.Cells["O1"].Value = "Branch";
-            worksheet.Cells["P1"].Value = "Category";
-            worksheet.Cells["Q1"].Value = "TradeName";
-            worksheet.Cells["R1"].Value = "DefaultExpenseNumber";
-            worksheet.Cells["S1"].Value = "WithholdingTaxPercent";
-            worksheet.Cells["T1"].Value = "WithholdingTaxTitle";
-            worksheet.Cells["U1"].Value = "OriginalSupplierId";
-
-            int row = 2;
-
-            foreach (var item in selectedList)
-            {
-                worksheet.Cells[row, 1].Value = item.SupplierName;
-                worksheet.Cells[row, 2].Value = item.SupplierAddress;
-                worksheet.Cells[row, 3].Value = item.ZipCode;
-                worksheet.Cells[row, 4].Value = item.SupplierTin;
-                worksheet.Cells[row, 5].Value = item.SupplierTerms;
-                worksheet.Cells[row, 6].Value = item.VatType;
-                worksheet.Cells[row, 7].Value = item.TaxType;
-                worksheet.Cells[row, 8].Value = item.ProofOfRegistrationFilePath;
-                worksheet.Cells[row, 9].Value = item.ReasonOfExemption;
-                worksheet.Cells[row, 10].Value = item.Validity;
-                worksheet.Cells[row, 11].Value = item.ValidityDate?.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                worksheet.Cells[row, 12].Value = item.ProofOfExemptionFilePath;
-                worksheet.Cells[row, 13].Value = item.CreatedBy;
-                worksheet.Cells[row, 14].Value = item.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                worksheet.Cells[row, 15].Value = item.Branch;
-                worksheet.Cells[row, 16].Value = item.Category;
-                worksheet.Cells[row, 17].Value = item.TradeName;
-                worksheet.Cells[row, 18].Value = item.DefaultExpenseNumber;
-                worksheet.Cells[row, 19].Value = item.WithholdingTaxPercent;
-                worksheet.Cells[row, 20].Value = item.WithholdingTaxTitle;
-                worksheet.Cells[row, 21].Value = item.SupplierId;
-
-                row++;
-            }
-
-            //Set password in Excel
-            worksheet.Protection.IsProtected = true;
-            worksheet.Protection.SetPassword("mis123");
-
-            // Convert the Excel package to a byte array
-            var excelBytes = await package.GetAsByteArrayAsync();
-
-            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"SupplierList_IBS_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
         }
 
-        #endregion -- export xlsx record --
-
-        [HttpGet]
-        public IActionResult GetAllSupplierIds()
-        {
-            var supplierIds = _dbContext.Suppliers
-                 .Select(s => s.SupplierId)
-                 .ToList();
-
-            return Json(supplierIds);
-        }
     }
 }

@@ -13,8 +13,8 @@ using OfficeOpenXml;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area("User")]
-    [Authorize]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -39,16 +39,11 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        public async Task<IActionResult> Index(string? view)
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<Product> products = await _unitOfWork
+            var products = await _unitOfWork
                 .Product
                 .GetAllAsync();
-
-            if (view == nameof(DynamicView.Product))
-            {
-                return View("ExportIndex");
-            }
 
             return View(products);
         }
@@ -384,7 +379,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 var products = (await _unitOfWork
                     .Product
-                    .GetAllAsync())
+                    .GetAllAsync(cancellationToken:  cancellationToken))
                     .Select(x => new
                     {
                         x.ProductId,
@@ -406,56 +401,5 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
-        //Download as .xlsx file.(Export)
-        #region -- export xlsx record --
-
-        [HttpPost]
-        public async Task<IActionResult> Export(string selectedRecord)
-        {
-            if (string.IsNullOrEmpty(selectedRecord))
-            {
-                // Handle the case where no invoices are selected
-                return RedirectToAction(nameof(Index));
-            }
-
-            var recordIds = selectedRecord.Split(',').Select(int.Parse).ToList();
-
-            var selectedList = await _unitOfWork.Product
-                .GetAllAsync(p => recordIds.Contains(p.ProductId));
-
-            // Create the Excel package
-            using var package = new ExcelPackage();
-            // Add a new worksheet to the Excel package
-            var worksheet = package.Workbook.Worksheets.Add("Product");
-
-            worksheet.Cells["A1"].Value = "ProductCode";
-            worksheet.Cells["B1"].Value = "ProductName";
-            worksheet.Cells["C1"].Value = "ProductUnit";
-            worksheet.Cells["D1"].Value = "CreatedBy";
-            worksheet.Cells["E1"].Value = "CreatedDate";
-            worksheet.Cells["F1"].Value = "OriginalProductId";
-
-            int row = 2;
-
-            foreach (var item in selectedList)
-            {
-                worksheet.Cells[row, 1].Value = item.ProductCode;
-                worksheet.Cells[row, 2].Value = item.ProductName;
-                worksheet.Cells[row, 3].Value = item.ProductUnit;
-                worksheet.Cells[row, 4].Value = item.CreatedBy;
-                worksheet.Cells[row, 5].Value = item.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                worksheet.Cells[row, 6].Value = item.ProductId;
-
-                row++;
-            }
-
-            // Convert the Excel package to a byte array
-            var excelBytes = await package.GetAsByteArrayAsync();
-
-            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ProductList_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
-        }
-
-        #endregion -- export xlsx record --
     }
 }

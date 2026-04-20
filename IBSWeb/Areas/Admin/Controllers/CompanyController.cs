@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area("User")]
-    [Authorize]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

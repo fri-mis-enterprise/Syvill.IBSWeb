@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area(nameof(User))]
+    [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
     public class MonthlyPeriodController : Controller
     {

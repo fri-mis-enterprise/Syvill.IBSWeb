@@ -6,6 +6,7 @@ using IBS.Models.Common;
 using IBS.Models.Enums;
 using IBS.Models.MasterFile;
 using IBS.Utility.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,8 @@ using OfficeOpenXml;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area(nameof(User))]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class BankAccountController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -51,14 +53,14 @@ namespace IBSWeb.Areas.Admin.Controllers
             return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
         }
 
-        public async Task<IActionResult> Index(string? view, CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             try
             {
                 var banks = await _unitOfWork.FilprideBankAccount
                 .GetAllAsync(null, cancellationToken);
 
-                return view == nameof(DynamicView.BankAccount) ? View("ExportIndex") : View(banks);
+                return View(banks);
             }
             catch (Exception ex)
             {
@@ -279,77 +281,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
             }
-        }
-
-        //Download as .xlsx file.(Export)
-
-        #region -- export xlsx record --
-
-        [HttpPost]
-        public async Task<IActionResult> Export(string selectedRecord)
-        {
-            if (string.IsNullOrEmpty(selectedRecord))
-            {
-                // Handle the case where no invoices are selected
-                return RedirectToAction(nameof(Index));
-            }
-
-            var recordIds = selectedRecord.Split(',').Select(int.Parse).ToList();
-
-            // Retrieve the selected invoices from the database
-            var selectedList = await _dbContext.BankAccounts
-                .Where(bank => recordIds.Contains(bank.BankAccountId))
-                .OrderBy(bank => bank.BankAccountId)
-                .ToListAsync();
-
-            // Create the Excel package
-            using var package = new ExcelPackage();
-            // Add a new worksheet to the Excel package
-            var worksheet = package.Workbook.Worksheets.Add("BankAccount");
-
-            worksheet.Cells["A1"].Value = "Branch";
-            worksheet.Cells["B1"].Value = "CreatedBy";
-            worksheet.Cells["C1"].Value = "CreatedDate";
-            worksheet.Cells["D1"].Value = "AccountName";
-            worksheet.Cells["E1"].Value = "AccountNo";
-            worksheet.Cells["F1"].Value = "Bank";
-            worksheet.Cells["G1"].Value = "OriginalBankId";
-
-            int row = 2;
-
-            foreach (var item in selectedList)
-            {
-                worksheet.Cells[row, 1].Value = item.Branch;
-                worksheet.Cells[row, 2].Value = item.CreatedBy;
-                worksheet.Cells[row, 3].Value = item.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                worksheet.Cells[row, 4].Value = item.AccountName;
-                worksheet.Cells[row, 5].Value = item.AccountNo;
-                worksheet.Cells[row, 6].Value = item.Bank;
-                worksheet.Cells[row, 7].Value = item.BankAccountId;
-
-                row++;
-            }
-
-            //Set password in Excel
-            worksheet.Protection.IsProtected = true;
-            worksheet.Protection.SetPassword("mis123");
-
-            // Convert the Excel package to a byte array
-            var excelBytes = await package.GetAsByteArrayAsync();
-
-            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"BankAccountList_IBS_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
-        }
-
-        #endregion -- export xlsx record --
-
-        [HttpGet]
-        public IActionResult GetAllBankAccountIds()
-        {
-            var bankIds = _dbContext.BankAccounts
-                .Select(b => b.BankAccountId)
-                .ToList();
-
-            return Json(bankIds);
         }
     }
 }

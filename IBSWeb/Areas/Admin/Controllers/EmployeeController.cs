@@ -4,13 +4,15 @@ using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.Models.Common;
 using IBS.Models.MasterFile;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace IBSWeb.Areas.Admin.Controllers
 {
-    [Area(nameof(User))]
+    [Area(nameof(Admin))]
+    [Authorize(Roles = "Admin")]
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
