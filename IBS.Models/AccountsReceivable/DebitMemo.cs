@@ -11,17 +11,8 @@ namespace IBS.Models.AccountsReceivable
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DebitMemoId { get; set; }
 
-        [Display(Name = "SI No")]
-        public int? SalesInvoiceId { get; set; }
-
-        [ForeignKey(nameof(SalesInvoiceId))]
-        public SalesInvoice? SalesInvoice { get; set; }
-
-        [NotMapped]
-        public List<SelectListItem>? SalesInvoices { get; set; }
-
         [Display(Name = "SV No")]
-        public int? ServiceInvoiceId { get; set; }
+        public int ServiceInvoiceId { get; set; }
 
         [ForeignKey(nameof(ServiceInvoiceId))]
         public ServiceInvoice? ServiceInvoice { get; set; }
@@ -31,7 +22,7 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(13)]
         [Display(Name = "DM No")]
-        public string? DebitMemoNo { get; set; }
+        public string DebitMemoNo { get; set; } = null!;
 
         [Column(TypeName = "date")]
         [Display(Name = "Transaction Date")]
@@ -52,14 +43,6 @@ namespace IBS.Models.AccountsReceivable
 
         private string _description = null!;
 
-        [Display(Name = "Price Adjustment")]
-        [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal? AdjustedPrice { get; set; }
-
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal? Quantity { get; set; }
-
         [StringLength(20)]
         public string Source { get; set; } = null!;
 
@@ -78,7 +61,7 @@ namespace IBS.Models.AccountsReceivable
 
         [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -87,9 +70,6 @@ namespace IBS.Models.AccountsReceivable
         [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
         public decimal UnearnedAmount { get; set; }
-
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
 
         public bool IsPrinted { get; set; }
 

@@ -34,7 +34,7 @@ namespace IBS.Models.AccountsPayable
         public int CheckVoucherHeaderId { get; set; }
 
         [ForeignKey(nameof(CheckVoucherHeaderId))]
-        public FilprideCheckVoucherHeader? CheckVoucherHeader { get; set; }
+        public CheckVoucherHeader? CheckVoucherHeader { get; set; }
 
         [Column(TypeName = "numeric(18,4)")]
         public decimal Amount { get; set; }

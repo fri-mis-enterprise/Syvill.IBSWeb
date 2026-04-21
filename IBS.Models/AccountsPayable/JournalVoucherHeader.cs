@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.Models.AccountsPayable
 {
-    public class FilprideJournalVoucherHeader : BaseEntity
+    public class JournalVoucherHeader : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -33,7 +33,7 @@ namespace IBS.Models.AccountsPayable
         public int? CVId { get; set; }
 
         [ForeignKey(nameof(CVId))]
-        public FilprideCheckVoucherHeader? CheckVoucherHeader { get; set; }
+        public CheckVoucherHeader? CheckVoucherHeader { get; set; }
 
         [NotMapped]
         public List<SelectListItem>? CheckVoucherHeaders { get; set; }
@@ -70,16 +70,13 @@ namespace IBS.Models.AccountsPayable
         [NotMapped]
         public List<SelectListItem>? COA { get; set; }
 
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
-
         public bool IsPrinted { get; set; }
 
         [StringLength(50)]
         public string Status { get; set; } = nameof(JvStatus.ForApproval);
 
         [StringLength(13)]
-        public string? Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         public ICollection<JournalVoucherDetail>? Details { get; set; }
 

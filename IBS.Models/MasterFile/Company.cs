@@ -11,7 +11,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Company Code")]
         [Column(TypeName = "varchar(3)")]
-        public string? CompanyCode { get; set; }
+        public string CompanyCode { get; set; } = null!;
 
         [Required]
         [Display(Name = "Company Name")]
@@ -37,7 +37,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [Column(TypeName = "varchar(50)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -50,6 +50,6 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Edited Date")]
         [Column(TypeName = "timestamp without time zone")]
-        public DateTime EditedDate { get; set; }
+        public DateTime? EditedDate { get; set; }
     }
 }

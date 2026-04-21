@@ -18,22 +18,16 @@ namespace IBS.DataAccess.Repository.Filpride
             _db = db;
         }
 
-        public async Task<string> GenerateCodeAsync(string customerType, CancellationToken cancellationToken = default)
+        public async Task<string> GenerateCodeAsync(CancellationToken cancellationToken = default)
         {
             var lastCustomer = await _db
                 .Customers
                 .OrderByDescending(c => c.CustomerId)
-                .FirstOrDefaultAsync(c => c.CustomerType == customerType, cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (lastCustomer == null)
             {
-                return customerType switch
-                {
-                    nameof(CustomerType.Retail) => "RET0001",
-                    nameof(CustomerType.Industrial) => "IND0001",
-                    nameof(CustomerType.Reseller) => "RES0001",
-                    _ => "GOV0001"
-                };
+                return "C0001";
             }
 
             var lastCode = lastCustomer.CustomerCode!;
@@ -46,14 +40,13 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastCode.Substring(0, 3) + incrementedNumber.ToString("D4");
         }
 
-        public async Task<bool> IsTinNoExistAsync(string tin, string company, CancellationToken cancellationToken = default)
+        public async Task<bool> IsTinNoExistAsync(string tin, CancellationToken cancellationToken = default)
         {
             if (tin == "000-000-000-00000")
                 return false;
 
             return await _db.Customers
                 .AnyAsync(c =>
-                    c.Company == company &&
                     c.CustomerTin == tin,
                     cancellationToken);
         }
@@ -69,22 +62,14 @@ namespace IBS.DataAccess.Repository.Filpride
             existingCustomer.CustomerTin = model.CustomerTin;
             existingCustomer.BusinessStyle = model.BusinessStyle;
             existingCustomer.CustomerTerms = model.CustomerTerms;
-            existingCustomer.CustomerType = model.CustomerType;
             existingCustomer.WithHoldingVat = model.WithHoldingVat;
             existingCustomer.WithHoldingTax = model.WithHoldingTax;
-            existingCustomer.ClusterCode = model.ClusterCode;
             existingCustomer.CreditLimit = model.CreditLimit;
             existingCustomer.CreditLimitAsOfToday = model.CreditLimitAsOfToday;
             existingCustomer.ZipCode = model.ZipCode;
             existingCustomer.RetentionRate = model.RetentionRate;
-            existingCustomer.IsFilpride = model.IsFilpride;
-            existingCustomer.IsBienes = model.IsBienes;
             existingCustomer.VatType = model.VatType;
             existingCustomer.Type = model.Type;
-            existingCustomer.RequiresPriceAdjustment = model.RequiresPriceAdjustment;
-            existingCustomer.StationCode = model.StationCode;
-            existingCustomer.CommissionRate = model.CommissionRate;
-            existingCustomer.CommissioneeId = model.CommissioneeId;
 
             if (_db.ChangeTracker.HasChanges())
             {
@@ -114,14 +99,12 @@ namespace IBS.DataAccess.Repository.Filpride
         public override async Task<Customer?> GetAsync(Expression<Func<Customer, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
-                    .Include(c => c.Commissionee)
                     .FirstOrDefaultAsync(cancellationToken);
         }
 
         public override async Task<IEnumerable<Customer>> GetAllAsync(Expression<Func<Customer, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<Customer> query = dbSet
-                .Include(dr => dr.Commissionee);
+            IQueryable<Customer> query = dbSet;
 
             if (filter != null)
             {
@@ -134,7 +117,6 @@ namespace IBS.DataAccess.Repository.Filpride
         public override IQueryable<Customer> GetAllQuery(Expression<Func<Customer, bool>>? filter = null)
         {
             IQueryable<Customer> query = dbSet
-                .Include(dr => dr.Commissionee)
                 .AsSplitQuery()
                 .AsNoTracking();
 

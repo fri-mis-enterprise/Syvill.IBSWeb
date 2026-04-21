@@ -1,20 +1,5 @@
 namespace IBS.Models.Enums
 {
-    public enum CustomerType
-    {
-        Retail,
-        Industrial,
-        Government,
-        Reseller
-    }
-
-    public enum JournalType
-    {
-        Sales,
-        Purchase,
-        Inventory
-    }
-
     public enum NormalBalance
     {
         Debit,
@@ -27,22 +12,6 @@ namespace IBS.Models.Enums
         Undocumented
     }
 
-    public enum CosStatus
-    {
-        Created,
-        SupplierAppointed,
-        HaulerAppointed,
-        ForAtlBooking,
-        ForApprovalOfOM,
-        ForApprovalOfCNC,
-        ForApprovalOfFM,
-        ForDR,
-        Completed,
-        Disapproved,
-        Expired,
-        Closed
-    }
-
     public enum Status
     {
         Pending,
@@ -50,25 +19,6 @@ namespace IBS.Models.Enums
         Voided,
         Canceled,
         Closed,
-    }
-
-    public enum DRStatus
-    {
-        PendingDelivery,
-        ForInvoicing,
-        Invoiced,
-        ForApprovalOfOM,
-        Canceled,
-        Voided
-    }
-
-    public enum ClusterArea
-    {
-        South,
-        North,
-        Marinduque,
-        Bacolod,
-        Cdo
     }
 
     public enum CVType
@@ -90,13 +40,8 @@ namespace IBS.Models.Enums
 
     public enum Module
     {
-        CustomerOrderSlip,
-        DeliveryReceipt,
-        SalesInvoice,
         ServiceInvoice,
         CollectionReceipt,
-        PurchaseOrder,
-        ReceivingReport,
         CheckVoucher,
         JournalVoucher,
         DebitMemo,

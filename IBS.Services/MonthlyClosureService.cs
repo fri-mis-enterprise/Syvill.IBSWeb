@@ -10,9 +10,9 @@ namespace IBS.Services
 {
     public interface IMonthlyClosureService
     {
-        Task CloseAsync(DateOnly monthDate, string company, string user, CancellationToken cancellationToken = default);
+        Task CloseAsync(DateOnly monthDate, string user, CancellationToken cancellationToken = default);
 
-        Task OpenAsync(DateOnly monthDate, string company, string user, CancellationToken cancellationToken = default);
+        Task OpenAsync(DateOnly monthDate, string user, CancellationToken cancellationToken = default);
     }
 
     public class MonthlyClosureService : IMonthlyClosureService
@@ -32,7 +32,7 @@ namespace IBS.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task CloseAsync(DateOnly monthDate, string company, string user, CancellationToken cancellationToken = default)
+        public async Task CloseAsync(DateOnly monthDate, string user, CancellationToken cancellationToken = default)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
             try
@@ -44,23 +44,9 @@ namespace IBS.Services
                     throw new InvalidOperationException($"{monthDate:MMMM yyyy} is not locked.");
                 }
 
-                var hasUnliftedDrs = await _dbContext.FilprideDeliveryReceipts
-                    .AnyAsync(x => x.Company == company &&
-                                   x.Date.Month == monthDate.Month &&
-                                   x.Date.Year == monthDate.Year &&
-                                   x.VoidedBy == null &&
-                                   x.CanceledBy == null &&
-                                   !x.HasReceivingReport, cancellationToken);
-
-                if (hasUnliftedDrs)
-                {
-                    throw new InvalidOperationException($"There are still unlifted DRs for {monthDate:MMMM yyyy}. " +
-                                                        $"Closing for this month cannot proceed.");
-                }
-
-                /// TODO await AutoReversalForCvWithoutDcrDate(monthDate, company, cancellationToken);
-                await ComputeNibit(monthDate, company, cancellationToken);
-                await RecordGlPeriodBalance(monthDate, company, cancellationToken);
+                /// TODO await AutoReversalForCvWithoutDcrDate(monthDate, cancellationToken);
+                await ComputeNibit(monthDate, cancellationToken);
+                await RecordGlPeriodBalance(monthDate, cancellationToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -74,7 +60,7 @@ namespace IBS.Services
             }
         }
 
-        private async Task AutoReversalForCvWithoutDcrDate(DateOnly periodMonth, string company, CancellationToken cancellationToken)
+        private async Task AutoReversalForCvWithoutDcrDate(DateOnly periodMonth, CancellationToken cancellationToken)
         {
             try
             {
@@ -82,7 +68,6 @@ namespace IBS.Services
 
                 var disbursementsWithoutDcrDate = await _dbContext.CheckVoucherHeaders
                     .Where(cv =>
-                        cv.Company == company &&
                         cv.Date.Month == periodMonth.Month &&
                         cv.Date.Year == periodMonth.Year &&
                         cv.CvType != nameof(CVType.Invoicing) &&
@@ -98,9 +83,8 @@ namespace IBS.Services
 
                 foreach (var cv in disbursementsWithoutDcrDate)
                 {
-                    var accountTitlesDto = await _unitOfWork.FilprideCheckVoucher.GetListOfAccountTitleDto(cancellationToken);
+                    var accountTitlesDto = await _unitOfWork.CheckVoucher.GetListOfAccountTitleDto(cancellationToken);
                     var ledgers = new List<GeneralLedgerBook>();
-                    var journalBooks = new List<JournalBook>();
 
                     var details = await _dbContext.CheckVoucherDetails
                         .Where(cvd => cvd.CheckVoucherHeaderId == cv.CheckVoucherHeaderId)
@@ -121,7 +105,6 @@ namespace IBS.Services
                             AccountTitle = account.AccountName,
                             Debit = detail.Credit,
                             Credit = detail.Debit,
-                            Company = cv.Company,
                             CreatedBy = "SYSTEM GENERATED",
                             CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                             SubAccountId = detail.SubAccountId,
@@ -140,7 +123,6 @@ namespace IBS.Services
                             AccountTitle = account.AccountName,
                             Debit = detail.Debit,
                             Credit = detail.Credit,
-                            Company = cv.Company,
                             CreatedBy = "SYSTEM GENERATED",
                             CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                             SubAccountId = detail.SubAccountId,
@@ -149,40 +131,13 @@ namespace IBS.Services
                             ModuleType = nameof(ModuleType.Disbursement)
                         });
 
-                        journalBooks.Add(new JournalBook
-                        {
-                            Date = endOfPreviousMonth,
-                            Reference = cv.CheckVoucherHeaderNo!,
-                            Description = cv.Particulars!,
-                            AccountTitle = $"{account.AccountNumber} {account.AccountName}",
-                            Debit = detail.Credit,
-                            Credit = detail.Debit,
-                            Company = cv.Company,
-                            CreatedBy = "SYSTEM GENERATED",
-                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                        });
-
-                        journalBooks.Add(new JournalBook
-                        {
-                            Date = endOfPreviousMonth,
-                            Reference = cv.CheckVoucherHeaderNo!,
-                            Description = cv.Particulars!,
-                            AccountTitle = $"{account.AccountNumber} {account.AccountName}",
-                            Debit = detail.Debit,
-                            Credit = detail.Credit,
-                            Company = cv.Company,
-                            CreatedBy = "SYSTEM GENERATED",
-                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                        });
-
-                        if (!_unitOfWork.FilprideCheckVoucher.IsJournalEntriesBalanced(ledgers))
+                        if (!_unitOfWork.CheckVoucher.IsJournalEntriesBalanced(ledgers))
                         {
                             throw new ArgumentException("Debit and Credit is not equal, check your entries.");
                         }
                     }
 
                     await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
-                    await _dbContext.JournalBooks.AddRangeAsync(journalBooks, cancellationToken);
                     await _dbContext.SaveChangesAsync(cancellationToken);
                 }
             }
@@ -193,15 +148,14 @@ namespace IBS.Services
             }
         }
 
-        private async Task ComputeNibit(DateOnly periodMonth, string company, CancellationToken cancellationToken)
+        private async Task ComputeNibit(DateOnly periodMonth, CancellationToken cancellationToken)
         {
             try
             {
                 var hasAlreadyNibit = await _dbContext.MonthlyNibits
                     .AnyAsync(x =>
                         x.Month == periodMonth.Month &&
-                        x.Year == periodMonth.Year &&
-                        x.Company == company,
+                        x.Year == periodMonth.Year,
                         cancellationToken);
 
                 if (hasAlreadyNibit)
@@ -214,8 +168,7 @@ namespace IBS.Services
                     .ThenInclude(filprideChartOfAccount => filprideChartOfAccount.ParentAccount) // Level 4
                     .Where(gl =>
                         gl.Date.Month == periodMonth.Month &&
-                        gl.Date.Year == periodMonth.Year &&
-                        gl.Company == company)
+                        gl.Date.Year == periodMonth.Year)
                     .ToListAsync(cancellationToken);
 
                 if (!generalLedgers.Any())
@@ -223,7 +176,7 @@ namespace IBS.Services
                     return;
                 }
 
-                if (!_unitOfWork.FilprideCheckVoucher.IsJournalEntriesBalanced(generalLedgers))
+                if (!_unitOfWork.CheckVoucher.IsJournalEntriesBalanced(generalLedgers))
                 {
                     throw new InvalidOperationException($"GL balance mismatch. " +
                                                         $"Debit:{generalLedgers.Sum(g => g.Debit):N2}, " +
@@ -267,7 +220,6 @@ namespace IBS.Services
                 {
                     Month = periodMonth.Month,
                     Year = periodMonth.Year,
-                    Company = company,
                     NetIncome = nibit,
                     PriorPeriodAdjustment = generalLedgers
                         .Where(g => g.AccountTitle.Contains("Prior Period"))
@@ -277,7 +229,7 @@ namespace IBS.Services
                 var beginning = await _dbContext.MonthlyNibits
                     .OrderByDescending(m => m.Year)
                     .ThenByDescending(m => m.Month)
-                    .FirstOrDefaultAsync(m => m.Company == company, cancellationToken);
+                    .FirstOrDefaultAsync(cancellationToken);
 
                 if (beginning != null)
                 {
@@ -296,7 +248,7 @@ namespace IBS.Services
             }
         }
 
-        private async Task RecordGlPeriodBalance(DateOnly periodMonth, string company, CancellationToken cancellationToken)
+        private async Task RecordGlPeriodBalance(DateOnly periodMonth, CancellationToken cancellationToken)
         {
             try
             {
@@ -316,7 +268,6 @@ namespace IBS.Services
                 var glEntries = await _dbContext.GeneralLedgerBooks
                     .Include(x => x.Account)
                     .Where(x =>
-                        x.Company == company &&
                         x.Date.Month == periodMonth.Month &&
                         x.Date.Year == periodMonth.Year)
                     .ToListAsync(cancellationToken);
@@ -399,8 +350,7 @@ namespace IBS.Services
                         CreditTotal = totalCredit,
                         EndingBalance = endingBalance,
                         IsClosed = true,
-                        ClosedAt = closedAt,
-                        Company = company
+                        ClosedAt = closedAt
                     });
                 }
 
@@ -454,8 +404,7 @@ namespace IBS.Services
                             DebitTotal = subAccount.TotalDebit,
                             CreditTotal = subAccount.TotalCredit,
                             EndingBalance = endingBalance,
-                            IsClosed = true,
-                            Company = company
+                            IsClosed = true
                         });
                     }
                 }
@@ -473,19 +422,19 @@ namespace IBS.Services
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation(
-                    "Recorded GL balances for period {PeriodMonth} and company {Company}: {AccountCount} accounts ({ActiveCount} with transactions), {SubAccountCount} sub-accounts.",
-                    periodMonth.ToString("yyyy-MM-dd"), company, glBalances.Count, glGroupedByAccount.Count, subAccountBalances.Count);
+                    "Recorded GL balances for period {PeriodMonth} : {AccountCount} accounts ({ActiveCount} with transactions), {SubAccountCount} sub-accounts.",
+                    periodMonth.ToString("yyyy-MM-dd"), glBalances.Count, glGroupedByAccount.Count, subAccountBalances.Count);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
-                    "An error occurred while recording the GL balance for period {PeriodMonth} and company {Company}.",
-                    periodMonth.ToString("yyyy-MM-dd"), company);
+                    "An error occurred while recording the GL balance for period {PeriodMonth}.",
+                    periodMonth.ToString("yyyy-MM-dd"));
                 throw;
             }
         }
 
-        public async Task OpenAsync(DateOnly monthDate, string company, string user, CancellationToken cancellationToken = default)
+        public async Task OpenAsync(DateOnly monthDate, string user, CancellationToken cancellationToken = default)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -494,7 +443,6 @@ namespace IBS.Services
                 await _dbContext.MonthlyNibits
                      .Where(n =>
                         n.IsValid &&
-                        n.Company == company &&
                          (n.Year > monthDate.Year ||
                          (n.Year == monthDate.Year && n.Month >= monthDate.Month)))
                      .ExecuteUpdateAsync(e =>
@@ -503,7 +451,6 @@ namespace IBS.Services
                 await _dbContext.GlSubAccountBalances
                     .Where(s =>
                         s.IsValid &&
-                        s.Company == company &&
                         s.PeriodStartDate >= monthDate)
                     .ExecuteUpdateAsync(e =>
                         e.SetProperty(d => d.IsValid, false), cancellationToken);
@@ -511,7 +458,6 @@ namespace IBS.Services
                 await _dbContext.GlPeriodBalances
                     .Where(s =>
                         s.IsValid &&
-                        s.Company == company &&
                         s.PeriodStartDate >= monthDate)
                     .ExecuteUpdateAsync(e =>
                         e.SetProperty(d => d.IsValid, false), cancellationToken);

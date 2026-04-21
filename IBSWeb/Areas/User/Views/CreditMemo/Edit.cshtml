@@ -47,25 +47,6 @@
                        min="@Model.MinDate.ToString("yyyy-MM-dd")"/>
                 <span asp-validation-for="TransactionDate" class="text-danger"></span>
             </div>
-            <div class="form-group" id="siList">
-                <div class="form-group mb-3">
-                    <label asp-for="SalesInvoiceId" class="control-label"></label>
-                    <select asp-for="SalesInvoiceId" asp-items="@Model.SalesInvoices" class="form-control js-select2" style="width:100%" required>
-                        <option></option>
-                    </select>
-                    <span asp-validation-for="SalesInvoiceId" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label class="control-label">Quantity</label>
-                    <input asp-for="Quantity" class="form-control money" value="@Model.Quantity" placeholder="0.000" required/>
-                    <span asp-validation-for="Quantity" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="AdjustedPrice" class="control-label"></label>
-                    <input asp-for="AdjustedPrice" class="form-control money" value="@Model.AdjustedPrice" placeholder="0.000" required/>
-                    <span asp-validation-for="AdjustedPrice" class="text-danger"></span>
-                </div>
-            </div>
             <div class="form-group" id="svList" style="display: none;">
                 <div class="form-group mb-3">
                     <label asp-for="ServiceInvoiceId" class="control-label"></label>

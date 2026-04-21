@@ -57,7 +57,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var banks = await _unitOfWork.FilprideBankAccount
+                var banks = await _unitOfWork.BankAccount
                 .GetAllAsync(null, cancellationToken);
 
                 return View(banks);
@@ -90,13 +90,13 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                if (await _unitOfWork.FilprideBankAccount.IsBankAccountNoExist(model.AccountNo, cancellationToken))
+                if (await _unitOfWork.BankAccount.IsBankAccountNoExist(model.AccountNo, cancellationToken))
                 {
                     ModelState.AddModelError("AccountNo", "Bank account no already exist!");
                     return View(model);
                 }
 
-                if (await _unitOfWork.FilprideBankAccount.IsBankAccountNameExist(model.AccountName, cancellationToken))
+                if (await _unitOfWork.BankAccount.IsBankAccountNameExist(model.AccountName, cancellationToken))
                 {
                     ModelState.AddModelError("AccountName", "Bank account name already exist!");
                     return View(model);
@@ -109,17 +109,15 @@ namespace IBSWeb.Areas.Admin.Controllers
                     return BadRequest();
                 }
 
-                model.Company = companyClaims;
-
                 model.CreatedBy = GetUserFullName();
 
-                await _unitOfWork.FilprideBankAccount.AddAsync(model, cancellationToken);
+                await _unitOfWork.BankAccount.AddAsync(model, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
                 #region -- Audit Trail Recordings --
 
-                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new bank {model.Bank} {model.AccountName} {model.AccountNo}", "Bank Account", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new bank {model.Bank} {model.AccountName} {model.AccountNo}", "Bank Account");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recordings --
 
@@ -141,7 +139,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var query = _unitOfWork.FilprideBankAccount
+                var query = _unitOfWork.BankAccount
                     .GetAllQuery();
 
                 var totalRecords = await query.CountAsync(cancellationToken);
@@ -198,7 +196,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var existingModel = await _unitOfWork.FilprideBankAccount
+            var existingModel = await _unitOfWork.BankAccount
                 .GetAsync(b => b.BankAccountId == id, cancellationToken);
             return View(existingModel);
         }
@@ -207,7 +205,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(BankAccount model, CancellationToken cancellationToken)
         {
-            var existingModel = await _unitOfWork.FilprideBankAccount
+            var existingModel = await _unitOfWork.BankAccount
                 .GetAsync(b => b.BankAccountId == model.BankAccountId, cancellationToken);
 
             if (existingModel == null)
@@ -227,8 +225,11 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 #region -- Audit Trail Recordings --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Edited bank {existingModel.Bank} {existingModel.AccountName} {existingModel.AccountNo} => {model.Bank} {model.AccountName} {model.AccountNo}", "Bank Account", existingModel.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(
+                    GetUserFullName(),
+                    $"Edited bank {existingModel.Bank} {existingModel.AccountName} {existingModel.AccountNo} => {model.Bank} {model.AccountName} {model.AccountNo}",
+                    "Bank Account");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recordings --
 
@@ -236,8 +237,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                 existingModel.AccountName = model.AccountName;
                 existingModel.Bank = model.Bank;
                 existingModel.Branch = model.Branch;
-                existingModel.IsFilpride = model.IsFilpride;
-                existingModel.IsBienes = model.IsBienes;
 
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -258,7 +257,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var bankAccounts = (await _unitOfWork.FilprideBankAccount
+                var bankAccounts = (await _unitOfWork.BankAccount
                     .GetAllAsync(null, cancellationToken))
                     .Select(x => new
                     {

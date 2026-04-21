@@ -7,11 +7,11 @@ namespace IBS.Models.AccountsPayable
         public Guid Id { get; set; }
 
         [ForeignKey(nameof(CheckVoucherHeaderPaymentId))]
-        public FilprideCheckVoucherHeader? CheckVoucherHeaderPayment { get; set; } = null;
+        public CheckVoucherHeader? CheckVoucherHeaderPayment { get; set; } = null;
         public int CheckVoucherHeaderPaymentId { get; set; }
 
         [ForeignKey(nameof(CheckVoucherHeaderInvoiceId))]
-        public FilprideCheckVoucherHeader? CheckVoucherHeaderInvoice { get; set; } = null;
+        public CheckVoucherHeader? CheckVoucherHeaderInvoice { get; set; } = null;
         public int CheckVoucherHeaderInvoiceId { get; set; }
 
         [Column(TypeName = "numeric(18,4)")]

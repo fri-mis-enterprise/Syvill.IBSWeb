@@ -7,46 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.Models.AccountsPayable
 {
-    public class FilprideCheckVoucherHeader : BaseEntity
+    public class CheckVoucherHeader : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CheckVoucherHeaderId { get; set; }
 
         [StringLength(13)]
-        public string? CheckVoucherHeaderNo { get; set; }
-
-        [StringLength(100)]
-        public string? OldCvNo
-        {
-            get => _oldCvNo;
-            set => _oldCvNo = value?.Trim();
-        }
-
-        private string? _oldCvNo;
+        public string CheckVoucherHeaderNo { get; set; } = string.Empty;
 
         [Display(Name = "Transaction Date")]
         [Column(TypeName = "date")]
         [DisplayFormat(DataFormatString = "{0:MMM dd, yyyy}")]
         public DateOnly Date { get; set; }
 
-        [Display(Name = "RR No")]
-        [Column(TypeName = "varchar[]")]
-        public string[]? RRNo { get; set; }
-
         [Display(Name = "SI No")]
         [Column(TypeName = "varchar[]")]
         public string[]? SINo { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? RR { get; set; }
-
         [Display(Name = "PO No")]
         [Column(TypeName = "varchar[]")]
         public string[]? PONo { get; set; }
-
-        [NotMapped]
-        public List<SelectListItem>? PO { get; set; }
 
         [Display(Name = "Supplier Id")]
         public int? SupplierId { get; set; }
@@ -98,12 +79,9 @@ namespace IBS.Models.AccountsPayable
 
         private string? _checkNo;
 
-        [StringLength(20)]
-        public string Category { get; set; } = null!;
-
         [Display(Name = "Payee")]
         [StringLength(150)]
-        public string? Payee { get; set; }
+        public string Payee { get; set; } = string.Empty;
 
         [NotMapped]
         public List<SelectListItem>? BankAccounts { get; set; }
@@ -134,16 +112,13 @@ namespace IBS.Models.AccountsPayable
 
         public bool IsPaid { get; set; }
 
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
-
         public bool IsPrinted { get; set; }
 
         [StringLength(50)]
         public string Status { get; set; } = nameof(CheckVoucherPaymentStatus.ForPosting);
 
         [StringLength(13)]
-        public string? Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]

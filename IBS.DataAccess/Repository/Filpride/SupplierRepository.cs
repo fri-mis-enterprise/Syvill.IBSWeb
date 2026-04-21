@@ -42,17 +42,18 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task<bool> IsSupplierExistAsync(string supplierName, string category, string company, CancellationToken cancellationToken = default)
         {
             return await _db.Suppliers
-                .AnyAsync(s => s.Company == company && s.SupplierName == supplierName && s.Category == category, cancellationToken);
+                .AnyAsync(s => s.SupplierName == supplierName && s.Category == category, cancellationToken);
         }
 
         public async Task<bool> IsTinNoExistAsync(string tin, string branch, string category, string company, CancellationToken cancellationToken = default)
         {
             if (tin == "000-000-000-00000")
+            {
                 return false;
+            }
 
             return await _db.Suppliers
                 .AnyAsync(s =>
-                    s.Company == company &&
                     s.SupplierTin == tin &&
                     s.Branch == branch &&
                     s.Category == category,
@@ -92,10 +93,6 @@ namespace IBS.DataAccess.Repository.Filpride
             existingSupplier.DefaultExpenseNumber = model.DefaultExpenseNumber;
             existingSupplier.WithholdingTaxPercent = model.WithholdingTaxPercent;
             existingSupplier.ZipCode = model.ZipCode;
-            existingSupplier.IsFilpride = model.IsFilpride;
-            existingSupplier.IsBienes = model.IsBienes;
-            existingSupplier.RequiresPriceAdjustment = model.RequiresPriceAdjustment;
-            existingSupplier.TradeName = model.TradeName;
             existingSupplier.WithholdingTaxTitle = model.WithholdingTaxTitle;
 
             if (model.ProofOfRegistrationFilePath != null && existingSupplier.ProofOfRegistrationFilePath != model.ProofOfRegistrationFilePath)

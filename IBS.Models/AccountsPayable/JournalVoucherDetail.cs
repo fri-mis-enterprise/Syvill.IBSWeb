@@ -29,7 +29,7 @@ namespace IBS.Models.AccountsPayable
 
         public int JournalVoucherHeaderId { get; set; }
 
-        public FilprideJournalVoucherHeader? JournalVoucherHeader { get; set; }
+        public JournalVoucherHeader? JournalVoucherHeader { get; set; }
 
         public SubAccountType? SubAccountType { get; set; }
 

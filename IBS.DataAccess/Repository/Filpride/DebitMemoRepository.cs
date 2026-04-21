@@ -34,7 +34,6 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.DebitMemoNo!.Length)
                 .ThenByDescending(x => x.DebitMemoNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Company == company &&
                     x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
@@ -58,7 +57,6 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.DebitMemoNo!.Length)
                 .ThenByDescending(x => x.DebitMemoNo)
                 .FirstOrDefaultAsync(x =>
-                        x.Company == company &&
                         x.Type == nameof(DocumentType.Undocumented),
                     cancellationToken);
 
@@ -77,26 +75,16 @@ namespace IBS.DataAccess.Repository.Filpride
         public override async Task<DebitMemo?> GetAsync(Expression<Func<DebitMemo, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
-                .Include(c => c.SalesInvoice)
-                .ThenInclude(s => s!.Product)
-                .Include(c => c.SalesInvoice)
-                .ThenInclude(s => s!.Customer)
                 .Include(c => c.ServiceInvoice)
                 .ThenInclude(sv => sv!.Customer)
                 .Include(c => c.ServiceInvoice)
                 .ThenInclude(sv => sv!.Service)
-                .Include(si => si.SalesInvoice)
-                .ThenInclude(cos => cos!.CustomerOrderSlip)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
         public override async Task<IEnumerable<DebitMemo>> GetAllAsync(Expression<Func<DebitMemo, bool>>? filter, CancellationToken cancellationToken = default)
         {
             IQueryable<DebitMemo> query = dbSet
-                .Include(c => c.SalesInvoice)
-                .ThenInclude(s => s!.Product)
-                .Include(c => c.SalesInvoice)
-                .ThenInclude(s => s!.Customer)
                 .Include(c => c.ServiceInvoice)
                 .ThenInclude(sv => sv!.Customer)
                 .Include(c => c.ServiceInvoice)
@@ -113,10 +101,6 @@ namespace IBS.DataAccess.Repository.Filpride
         public override IQueryable<DebitMemo> GetAllQuery(Expression<Func<DebitMemo, bool>>? filter = null)
         {
             IQueryable<DebitMemo> query = dbSet
-                .Include(c => c.SalesInvoice)
-                .ThenInclude(s => s!.Product)
-                .Include(c => c.SalesInvoice)
-                .ThenInclude(s => s!.Customer)
                 .Include(c => c.ServiceInvoice)
                 .ThenInclude(sv => sv!.Customer)
                 .Include(c => c.ServiceInvoice)

@@ -64,7 +64,7 @@ namespace IBS.Models.ViewModels
 
         public Dictionary<int, string> AccountNumberDictionary { get; set; } = new Dictionary<int, string>();
 
-        public FilprideCheckVoucherHeader? Headers { get; set; }
+        public CheckVoucherHeader? Headers { get; set; }
 
         public List<AccountingEntryViewModel>? AccountingEntries { get; set; }
 

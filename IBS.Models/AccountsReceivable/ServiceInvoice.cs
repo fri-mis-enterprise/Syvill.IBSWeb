@@ -13,7 +13,7 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(13)]
         [Display(Name = "SV No")]
-        public string ServiceInvoiceNo { get; set; } = string.Empty;
+        public string ServiceInvoiceNo { get; set; } = null!;
 
         #region Customer properties
 
@@ -92,9 +92,6 @@ namespace IBS.Models.AccountsReceivable
 
         public bool IsPaid { get; set; }
 
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
-
         public bool IsPrinted { get; set; }
 
         [StringLength(50)]
@@ -109,10 +106,5 @@ namespace IBS.Models.AccountsReceivable
         public bool HasEwt { get; set; }
 
         public bool HasWvat { get; set; }
-
-        public int? DeliveryReceiptId { get; set; }
-
-        [ForeignKey(nameof(DeliveryReceiptId))]
-        public DeliveryReceipt? DeliveryReceipt { get; set; }
     }
 }

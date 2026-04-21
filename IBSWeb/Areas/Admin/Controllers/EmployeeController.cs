@@ -80,14 +80,14 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                model.Company = companyClaims;
-                await _unitOfWork.FilprideEmployee.AddAsync(model, cancellationToken);
+                await _unitOfWork.Employee.AddAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Created new Employee #{model.EmployeeNumber}", "Employee", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Created new Employee #{model.EmployeeNumber}",
+                    "Employee");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -109,7 +109,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var queried = _unitOfWork.FilprideEmployee
+                var queried = _unitOfWork.Employee
                     .GetAllQuery();
 
                 var totalRecords = await queried.CountAsync(cancellationToken);
@@ -169,7 +169,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var existingEmployee = await _unitOfWork.FilprideEmployee
+            var existingEmployee = await _unitOfWork.Employee
                 .GetAsync(x => x.EmployeeId == id, cancellationToken);
 
             return View(existingEmployee);
@@ -185,7 +185,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var existingModel = await _unitOfWork.FilprideEmployee
+            var existingModel = await _unitOfWork.Employee
                 .GetAsync(x => x.EmployeeId == model.EmployeeId, cancellationToken);
 
             if (existingModel == null)
@@ -200,8 +200,9 @@ namespace IBSWeb.Areas.Admin.Controllers
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Edited Employee #{existingModel.EmployeeNumber} => {model.EmployeeNumber}", "Employee", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited Employee #{existingModel.EmployeeNumber} => {model.EmployeeNumber}",
+                    "Employee");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 

@@ -70,13 +70,12 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                await _monthlyClosureService.CloseAsync(monthDate, companyClaim, User.Identity!.Name!, cancellationToken);
+                await _monthlyClosureService.CloseAsync(monthDate, User.Identity!.Name!, cancellationToken);
 
                 AuditTrail auditTrailBook = new(
                     GetUserFullName(),
                     $"Close the book for the month of {monthDate:MMM yyyy}",
-                    "Monthly Period",
-                    companyClaim
+                    "Monthly Period"
                 );
 
                 await _dbContext.AuditTrails.AddAsync(auditTrailBook, cancellationToken);
@@ -108,13 +107,12 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                await _monthlyClosureService.OpenAsync(monthDate, companyClaim, User.Identity!.Name!, cancellationToken);
+                await _monthlyClosureService.OpenAsync(monthDate, User.Identity!.Name!, cancellationToken);
 
                 AuditTrail auditTrailBook = new(
                     GetUserFullName(),
                     $"Open the book for the month of {monthDate:MMM yyyy}",
-                    "Monthly Period",
-                    companyClaim
+                    "Monthly Period"
                 );
 
                 await _dbContext.AuditTrails.AddAsync(auditTrailBook, cancellationToken);

@@ -116,7 +116,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             try
             {
-                var checkVoucherHeader = await _unitOfWork.FilprideReport.GetClearedDisbursementReport(model.DateFrom, model.DateTo, companyClaims, cancellationToken);
+                var checkVoucherHeader = await _unitOfWork.Report.GetClearedDisbursementReport(model.DateFrom, model.DateTo, companyClaims, cancellationToken);
 
                 if (checkVoucherHeader.Count == 0)
                 {
@@ -251,8 +251,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate cleared disbursement report quest pdf", "Accounts Payable Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate cleared disbursement report quest pdf", "Accounts Payable Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
 
@@ -292,7 +292,7 @@ namespace IBSWeb.Areas.User.Controllers
                 }
 
                 var clearedDisbursementReport =
-                    await _unitOfWork.FilprideReport.GetClearedDisbursementReport(model.DateFrom, model.DateTo,
+                    await _unitOfWork.Report.GetClearedDisbursementReport(model.DateFrom, model.DateTo,
                         companyClaims, cancellationToken);
 
                 if (clearedDisbursementReport.Count == 0)
@@ -404,8 +404,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate cleared disbursement report excel file", "Accounts Payable Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate cleared disbursement report excel file", "Accounts Payable Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
 
@@ -452,15 +452,12 @@ namespace IBSWeb.Areas.User.Controllers
                 var nonTradeInvoiceReport =
                     await _dbContext.CheckVoucherDetails
                         .AsNoTracking()
-                        .Where(cvd => cvd.CheckVoucherHeader!.Company == companyClaims
-                                      && cvd.CheckVoucherHeader.CvType == nameof(CVType.Invoicing)
+                        .Where(cvd => cvd.CheckVoucherHeader!.CvType == nameof(CVType.Invoicing)
                                       && cvd.CheckVoucherHeader.Date >= dateFrom &&
                                       cvd.CheckVoucherHeader.Date <= dateTo
                                       && (statusFilter == "ValidOnly"
                                           ? cvd.CheckVoucherHeader.VoidedBy == null
-                                          : statusFilter == "InvalidOnly"
-                                              ? cvd.CheckVoucherHeader.VoidedBy != null
-                                              : true))
+                                          : statusFilter != "InvalidOnly" || cvd.CheckVoucherHeader.VoidedBy != null))
                         .Include(cvd => cvd.CheckVoucherHeader)
                         .ThenInclude(cvh => cvh!.Supplier)
                         .OrderBy(cvd => cvd.CheckVoucherHeader!.Date)
@@ -474,7 +471,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var payments = await _dbContext.CheckVoucherHeaders
                     .AsNoTracking()
-                    .Where(x => x.Reference != null && nonTradeNos.Contains(x.Reference) && x.Company == companyClaims)
+                    .Where(x => x.Reference != null && nonTradeNos.Contains(x.Reference))
                     .Select(x => new
                     {
                         x.Reference,
@@ -619,8 +616,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate Non-Trade Invoice report excel file", "Accounts Payable Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate Non-Trade Invoice report excel file", "Accounts Payable Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
 
@@ -668,31 +665,17 @@ namespace IBSWeb.Areas.User.Controllers
                 var cvTradeHeaderReport = await _dbContext.CheckVoucherHeaders
                         .AsNoTracking()
                         .Where(cvh =>
-                            cvh.Company == companyClaims &&
                             cvh.CvType != nameof(CVType.Invoicing) &&
                             cvh.Date >= dateFrom &&
                             cvh.Date <= dateTo
                             && (statusFilter == "ValidOnly"
                                 ? cvh.VoidedBy == null
-                                : statusFilter == "InvalidOnly"
-                                    ? cvh.VoidedBy != null
-                                    : true))
+                                : statusFilter != "InvalidOnly" || cvh.VoidedBy != null))
                         .Include(cvh => cvh.Details!)
                         .Include(cvh => cvh.Supplier)
                         .OrderBy(cvh => cvh.Date)
                         .ThenBy(cvh => cvh.CheckVoucherHeaderNo)
                         .ToListAsync(cancellationToken);
-
-                var cvTradeHeaderIds = cvTradeHeaderReport.Select(cvh => cvh.CheckVoucherHeaderId).ToList();
-                var cvTradePayments = await _dbContext.CVTradePayments.Where(cvp => cvTradeHeaderIds.Contains(cvp.CheckVoucherId)).ToListAsync(cancellationToken);
-
-                var supplierIds = cvTradeHeaderReport.Where(cvh => cvh.Category == "Trade" && cvh.CvType == "Supplier").Select(cvh => cvh.CheckVoucherHeaderId).ToList();
-                var receivingReportIds = cvTradePayments.Where(cvp => supplierIds.Contains(cvp.CheckVoucherId)).Select(cvp => cvp.DocumentId).ToList();
-                var receivingReports = await _unitOfWork.FilprideReceivingReport.GetAllAsync(dr => receivingReportIds.Contains(dr.ReceivingReportId), cancellationToken);
-
-                var notSupplierIds = cvTradeHeaderReport.Where(cvh => cvh.Category == "Trade" && cvh.CvType != "Supplier").Select(cvh => cvh.CheckVoucherHeaderId).ToList();
-                var deliveryReceiptIds = cvTradePayments.Where(cvp => notSupplierIds.Contains(cvp.CheckVoucherId)).Select(cvp => cvp.DocumentId).ToList();
-                var deliveryReceipts = await _unitOfWork.FilprideDeliveryReceipt.GetAllAsync(dr => deliveryReceiptIds.Contains(dr.DeliveryReceiptId), cancellationToken);
 
                 if (cvTradeHeaderReport.Count == 0)
                 {
@@ -779,57 +762,7 @@ namespace IBSWeb.Areas.User.Controllers
                         worksheet.Cells[row, col].Style.WrapText = true;
                         col++;
                         worksheet.Cells[row, col].Value = header.Type == nameof(DocumentType.Documented) ? "Doc" : "Undoc"; col++;
-
-                        if (header.Category == "Trade")
-                        {
-                            var rrListOfString = new List<string>();
-
-                            if (header.CvType == "Supplier")
-                            {
-                                var cvTradeRrs = cvTradePayments
-                                    .Where(ctp => ctp.CheckVoucherId == header.CheckVoucherHeaderId)
-                                    .ToList();
-
-                                if (cvTradeRrs.Count > 0)
-                                {
-                                    foreach (var cvTradeRr in cvTradeRrs)
-                                    {
-                                        var rr = receivingReports.FirstOrDefault(r => r.ReceivingReportId == cvTradeRr.DocumentId);
-                                        if (rr != null)
-                                        {
-                                            rrListOfString.Add(rr.ReceivingReportNo!);
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var cvTradeDrs = cvTradePayments
-                                    .Where(ctp => ctp.CheckVoucherId == header.CheckVoucherHeaderId)
-                                    .ToList();
-
-                                if (cvTradeDrs.Count > 0)
-                                {
-                                    foreach (var cvTradeRr in cvTradeDrs)
-                                    {
-                                        var rr = deliveryReceipts.FirstOrDefault(r => r.DeliveryReceiptId == cvTradeRr.DocumentId);
-                                        if (rr != null)
-                                        {
-                                            rrListOfString.Add(rr.DeliveryReceiptNo);
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (rrListOfString.Count > 0)
-                            {
-                                worksheet.Cells[row, col].Value = $"{string.Join(", ", rrListOfString)}";
-                            }
-                        }
-                        else
-                        {
-                            worksheet.Cells[row, col].Value = header.Reference;
-                        }
+                        worksheet.Cells[row, col].Value = header.Reference;
                         worksheet.Cells[row, col].Style.WrapText = true;
                         col++;
 
@@ -882,8 +815,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate Cv Disbursement report excel file", "Accounts Payable Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate Cv Disbursement report excel file", "Accounts Payable Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
 
@@ -936,7 +869,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
                 // Fetch journal voucher report data
-                var journalVoucherReport = await _unitOfWork.FilprideReport
+                var journalVoucherReport = await _unitOfWork.Report
                     .GetJournalVoucherReport(model.DateFrom, model.DateTo, companyClaims, statusFilter, cancellationToken);
 
                 if (journalVoucherReport.Count == 0)
@@ -1073,10 +1006,9 @@ namespace IBSWeb.Areas.User.Controllers
                 AuditTrail auditTrailBook = new(
                     GetUserFullName(),
                     "Generate journal voucher report excel file",
-                    "Journal Voucher Report",
-                    companyClaims
+                    "Journal Voucher Report"
                 );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
 

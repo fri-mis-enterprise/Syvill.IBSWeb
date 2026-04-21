@@ -83,10 +83,9 @@ namespace IBSWeb.Areas.User.Controllers
                 AuditTrail auditTrail = new(
                     extractedBy,
                     $"Generate {masterFileType} master file excel",
-                    $"{masterFileType}",
-                    companyClaims
+                    $"{masterFileType}"
                 );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrail, cancellationToken);
+                await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
                 return File(result.stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
@@ -114,8 +113,8 @@ namespace IBSWeb.Areas.User.Controllers
             CancellationToken cancellationToken)
         {
             // Fetch customers
-            var customers = (await _unitOfWork.FilprideCustomer
-                .GetAllAsync(c => c.Company == company, cancellationToken))
+            var customers = (await _unitOfWork.Customer
+                .GetAllAsync(null, cancellationToken))
                 .OrderBy(x => x.CustomerCode);
 
             if (!customers.Any())
@@ -127,7 +126,7 @@ namespace IBSWeb.Areas.User.Controllers
             var customerIds = customers.Select(c => c.CustomerId).ToList();
 
             // Fetch branches separately
-            var branches = await _unitOfWork.FilprideCustomerBranch.GetAllAsync(
+            var branches = await _unitOfWork.CustomerBranch.GetAllAsync(
                 filter: b => customerIds.Contains(b.CustomerId),
                 cancellationToken: cancellationToken);
 
@@ -158,10 +157,6 @@ namespace IBSWeb.Areas.User.Controllers
                 NumberFormat = "#,##0.00",
                 Alignment = ExcelHorizontalAlignment.Right
             },
-            new() { Header = "STATION CODE", ValueSelector = c => ((Customer)c).StationCode ?? "" },
-            new() { Header = "TYPE", ValueSelector = c => ((Customer)c).Type },
-            new() { Header = "DEFAULT COMMISION RATE", ValueSelector = c => ((Customer)c).CommissionRate },
-            new() { Header = "DEFAULT COMMISIONEE", ValueSelector = c => ((Customer)c).Commissionee?.SupplierName ?? ""},
             new() { Header = "STATUS", ValueSelector = c => ((Customer)c).IsActive ? "Active" : "Inactive" },
             };
 
@@ -234,8 +229,8 @@ namespace IBSWeb.Areas.User.Controllers
                    string company,
                    CancellationToken cancellationToken)
         {
-            var suppliers = (await _unitOfWork.FilprideSupplier
-                    .GetAllAsync(s => s.Company == company, cancellationToken))
+            var suppliers = (await _unitOfWork.Supplier
+                    .GetAllAsync(null, cancellationToken))
                 .OrderBy(x => x.SupplierCode);
 
             if (!suppliers.Any())
@@ -285,9 +280,7 @@ namespace IBSWeb.Areas.User.Controllers
             string company,
             CancellationToken cancellationToken)
         {
-            var bankAccounts = (await _unitOfWork.FilprideBankAccount.GetAllAsync(
-                filter: b => b.Company == company,
-                cancellationToken: cancellationToken))
+            var bankAccounts = (await _unitOfWork.BankAccount.GetAllAsync(cancellationToken: cancellationToken))
                 .OrderBy(x => x.AccountNo);
 
             if (!bankAccounts.Any())
@@ -330,7 +323,7 @@ namespace IBSWeb.Areas.User.Controllers
             string company,
             CancellationToken cancellationToken)
         {
-            var services = (await _unitOfWork.FilprideService.GetAllAsync(
+            var services = (await _unitOfWork.Service.GetAllAsync(
                 cancellationToken: cancellationToken))
                 .OrderBy(x => x.ServiceNo);
 
@@ -373,8 +366,8 @@ namespace IBSWeb.Areas.User.Controllers
             CancellationToken cancellationToken)
         {
 
-            var employees = (await _unitOfWork.FilprideEmployee
-                .GetAllAsync(x => x.Company == company, cancellationToken))
+            var employees = (await _unitOfWork.Employee
+                .GetAllAsync(null, cancellationToken))
                 .OrderBy(x => x.EmployeeNumber);
 
             if (!employees.Any())
@@ -395,7 +388,6 @@ namespace IBSWeb.Areas.User.Controllers
                 new() { Header = "TIN NO", ValueSelector = e => ((Employee)e).TinNo },
                 new() { Header = "PHILHEALTH NO", ValueSelector = e => ((Employee)e).PhilhealthNo },
                 new() { Header = "PAGIBIG NO", ValueSelector = e => ((Employee)e).PagibigNo },
-                new() { Header = "COMPANY", ValueSelector = e => ((Employee)e).Company },
                 new() { Header = "DEPARTMENT", ValueSelector = e => ((Employee)e).Department },
                 new() { Header = "DATE HIRED", ValueSelector = e => ((Employee)e).DateHired, NumberFormat = "mm/dd/yyyy" },
                 new() { Header = "DATE RESIGNED", ValueSelector = e => ((Employee)e).DateResigned?.ToDateTime(TimeOnly.MinValue), NumberFormat = "mm/dd/yyyy" },

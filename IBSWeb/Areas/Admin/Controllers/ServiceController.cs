@@ -129,32 +129,31 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                if (await _unitOfWork.FilprideService.IsServicesExist(services.Name, companyClaims, cancellationToken))
+                if (await _unitOfWork.Service.IsServicesExist(services.Name, companyClaims, cancellationToken))
                 {
                     ModelState.AddModelError("Name", "Services already exist!");
                     return View(services);
                 }
 
-                var currentAndPrevious = await _unitOfWork.FilprideChartOfAccount
+                var currentAndPrevious = await _unitOfWork.ChartOfAccount
                     .GetAsync(x => x.AccountId == services.CurrentAndPreviousId, cancellationToken);
 
-                var unearned = await _unitOfWork.FilprideChartOfAccount
+                var unearned = await _unitOfWork.ChartOfAccount
                     .GetAsync(x => x.AccountId == services.UnearnedId, cancellationToken);
 
                 services.CurrentAndPreviousNo = currentAndPrevious!.AccountNumber;
                 services.CurrentAndPreviousTitle = currentAndPrevious.AccountName;
                 services.UnearnedNo = unearned!.AccountNumber;
                 services.UnearnedTitle = unearned.AccountName;
-                services.Company = companyClaims;
                 services.CreatedBy = GetUserFullName();
-                services.ServiceNo = await _unitOfWork.FilprideService.GetLastNumber(cancellationToken);
-                await _unitOfWork.FilprideService.AddAsync(services, cancellationToken);
+                services.ServiceNo = await _unitOfWork.Service.GetLastNumber(cancellationToken);
+                await _unitOfWork.Service.AddAsync(services, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Create Service #{services.ServiceNo}", "Service", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Create Service #{services.ServiceNo}", "Service");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -176,7 +175,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var query = _unitOfWork.FilprideService
+                var query = _unitOfWork.Service
                     .GetAllQuery();
 
                 var totalRecords = await query.CountAsync(cancellationToken);
@@ -238,7 +237,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var services = await _unitOfWork.FilprideService
+            var services = await _unitOfWork.Service
                 .GetAsync(x => x.ServiceId == id, cancellationToken);
 
             if (services == null)
@@ -257,7 +256,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(services);
             }
 
-            var existingModel =  await _unitOfWork.FilprideService
+            var existingModel =  await _unitOfWork.Service
                 .GetAsync(x => x.ServiceId == services.ServiceId, cancellationToken);
 
             if (existingModel == null)
@@ -278,8 +277,9 @@ namespace IBSWeb.Areas.Admin.Controllers
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Edited Service #{existingModel.ServiceNo}", "Service", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited Service #{existingModel.ServiceNo}",
+                    "Service");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 

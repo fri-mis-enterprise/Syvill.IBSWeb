@@ -12,7 +12,7 @@ namespace IBS.Models.MasterFile
 
         [StringLength(5)]
         [Display(Name = "Service No")]
-        public string? ServiceNo { get; set; }
+        public string ServiceNo { get; set; } = null!;
 
         [StringLength(20)]
         public string? CurrentAndPreviousNo { get; set; }
@@ -49,15 +49,12 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(100)]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedDate { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
             TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila"));
-
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
 
         public bool IsFilpride { get; set; }
 

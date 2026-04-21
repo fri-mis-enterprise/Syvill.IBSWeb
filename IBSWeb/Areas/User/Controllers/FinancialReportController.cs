@@ -98,8 +98,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .Include(gl => gl.Account)
                     .Where(gl =>
                         gl.Date >= firstDayOfMonth &&
-                        gl.Date <= lastDayOfMonth &&
-                        gl.Company == companyClaims)
+                        gl.Date <= lastDayOfMonth)
                     .ToListAsync(cancellationToken);
 
                 var chartOfAccounts = await _dbContext.ChartOfAccounts
@@ -110,8 +109,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var nibitForThePeriod = await _dbContext.MonthlyNibits
                     .FirstOrDefaultAsync(m => m.Year == monthDate.Year &&
-                                              m.Month == monthDate.Month &&
-                                              m.Company == companyClaims, cancellationToken);
+                                              m.Month == monthDate.Month, cancellationToken);
 
                 if (nibitForThePeriod == null)
                 {
@@ -294,8 +292,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate profit and loss report quest pdf", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate profit and loss report quest pdf", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -339,8 +337,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .Include(gl => gl.Account) // Level 4
                     .Where(gl =>
                         gl.Date >= firstDayOfMonth &&
-                        gl.Date <= lastDayOfMonth &&
-                        gl.Company == companyClaims)
+                        gl.Date <= lastDayOfMonth)
                     .ToListAsync(cancellationToken);
 
                 var chartOfAccounts = await _dbContext.ChartOfAccounts
@@ -351,8 +348,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var nibitForThePeriod = await _dbContext.MonthlyNibits
                     .FirstOrDefaultAsync(m => m.Year == monthDate.Year &&
-                                              m.Month == monthDate.Month &&
-                                              m.Company == companyClaims, cancellationToken);
+                                              m.Month == monthDate.Month, cancellationToken);
 
                 if (nibitForThePeriod == null)
                 {
@@ -540,8 +536,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate profit and loss report excel file", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate profit and loss report excel file", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -594,8 +590,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .ThenInclude(ac => ac!.ParentAccount) // Level 1
                     .Where(gl =>
                         gl.Date >= firstDayOfMonth &&
-                        gl.Date <= lastDayOfMonth &&
-                        gl.Company == companyClaims)
+                        gl.Date <= lastDayOfMonth)
                     .ToListAsync(cancellationToken);
 
                 if (!generalLedgers.Any())
@@ -746,8 +741,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate level one report quest pdf", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate level one report quest pdf", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -794,8 +789,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .ThenInclude(ac => ac!.ParentAccount) // Level 1
                     .Where(gl =>
                         gl.Date >= firstDayOfMonth &&
-                        gl.Date <= lastDayOfMonth &&
-                        gl.Company == companyClaims)
+                        gl.Date <= lastDayOfMonth)
                     .ToListAsync(cancellationToken);
 
                 if (!generalLedgers.Any())
@@ -926,8 +920,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate level one report excel file", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate level one report excel file", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -977,8 +971,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .ThenInclude(ac => ac!.ParentAccount) // Level 1
                     .Where(gl =>
                         gl.Date >= model.DateFrom &&
-                        gl.Date <= model.DateTo &&
-                        gl.Company == companyClaims)
+                        gl.Date <= model.DateTo)
                     .ToListAsync(cancellationToken);
 
                 var priorLedgers = await _dbContext.GeneralLedgerBooks
@@ -987,8 +980,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .ThenInclude(ac => ac!.ParentAccount) // Level 2
                     .ThenInclude(ac => ac!.ParentAccount) // Level 1
                     .Where(gl =>
-                        gl.Date < model.DateFrom &&
-                        gl.Company == companyClaims)
+                        gl.Date < model.DateFrom)
                     .ToListAsync(cancellationToken);
 
                 var chartOfAccounts = await _dbContext.ChartOfAccounts
@@ -1159,8 +1151,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate trial balance report quest pdf", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate trial balance report quest pdf", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -1197,8 +1189,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .Include(g => g.Account)
                     .Where(pb =>
                         pb.PeriodStartDate >= dateFrom &&
-                        pb.PeriodEndDate <= dateTo &&
-                        pb.Company == companyClaims)
+                        pb.PeriodEndDate <= dateTo)
                     .OrderBy(pb => pb.Account.AccountNumber)
                     .ToListAsync(cancellationToken);
 
@@ -1320,8 +1311,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate trial balance report excel file", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate trial balance report excel file", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -1374,8 +1365,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var generalLedgers = await _dbContext.GeneralLedgerBooks
                     .Include(gl => gl.Account)
                     .Where(gl =>
-                        gl.Date <= lastDayOfMonth &&
-                        gl.Company == companyClaims)
+                        gl.Date <= lastDayOfMonth)
                     .ToListAsync(cancellationToken);
 
                 var chartOfAccounts = await _dbContext.ChartOfAccounts
@@ -1386,8 +1376,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var nibitForThePeriod = await _dbContext.MonthlyNibits
                     .FirstOrDefaultAsync(m => m.Year == monthDate.Year &&
-                                              m.Month == monthDate.Month &&
-                                              m.Company == companyClaims, cancellationToken);
+                                              m.Month == monthDate.Month, cancellationToken);
 
                 if (nibitForThePeriod == null)
                 {
@@ -1606,8 +1595,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate balance sheet report quest pdf", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate balance sheet report quest pdf", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -1649,8 +1638,7 @@ namespace IBSWeb.Areas.User.Controllers
                 var generalLedgers = await _dbContext.GeneralLedgerBooks
                     .Include(gl => gl.Account) // Level 4
                     .Where(gl =>
-                        gl.Date <= lastDayOfMonth &&
-                        gl.Company == companyClaims)
+                        gl.Date <= lastDayOfMonth)
                     .ToListAsync(cancellationToken);
 
                 var chartOfAccounts = await _dbContext.ChartOfAccounts
@@ -1661,8 +1649,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var nibitForThePeriod = await _dbContext.MonthlyNibits
                     .FirstOrDefaultAsync(m => m.Year == monthDate.Year &&
-                                              m.Month == monthDate.Month &&
-                                              m.Company == companyClaims, cancellationToken);
+                                              m.Month == monthDate.Month, cancellationToken);
 
                 if (nibitForThePeriod == null)
                 {
@@ -1942,8 +1929,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var nibitForThePeriod = await _dbContext.MonthlyNibits
                     .FirstOrDefaultAsync(m => m.Year == monthDate.Year &&
-                                              m.Month == monthDate.Month &&
-                                              m.Company == companyClaims, cancellationToken);
+                                              m.Month == monthDate.Month, cancellationToken);
 
                 if (nibitForThePeriod == null)
                 {
@@ -2071,8 +2057,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate statement of retained earnings report quest pdf", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate statement of retained earnings report quest pdf", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
@@ -2110,8 +2096,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var nibitForThePeriod = await _dbContext.MonthlyNibits
                     .FirstOrDefaultAsync(m => m.Year == monthDate.Year &&
-                                              m.Month == monthDate.Month &&
-                                              m.Company == companyClaims, cancellationToken);
+                                              m.Month == monthDate.Month, cancellationToken);
 
                 if (nibitForThePeriod == null)
                 {
@@ -2234,8 +2219,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate statement of retained earnings report excel file", "Financial Report", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate statement of retained earnings report excel file", "Financial Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 

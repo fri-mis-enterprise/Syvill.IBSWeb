@@ -23,11 +23,11 @@ namespace IBS.Models.MasterFile
 
         [StringLength(25)]
         [Display(Name = "Account Type")]
-        public string? AccountType { get; set; }
+        public string AccountType { get; set; } = null!;
 
         [StringLength(20)]
         [Display(Name = "Normal Balance")]
-        public string? NormalBalance { get; set; }
+        public string NormalBalance { get; set; } = null!;
 
         public int Level { get; set; }
 
@@ -39,7 +39,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(50)]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -52,7 +52,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Edited Date")]
         [Column(TypeName = "timestamp without time zone")]
-        public DateTime EditedDate { get; set; }
+        public DateTime? EditedDate { get; set; }
 
         public bool HasChildren { get; set; }
 

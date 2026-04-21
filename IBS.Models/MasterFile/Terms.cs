@@ -13,13 +13,13 @@ namespace IBS.Models.MasterFile
         public int NumberOfMonths { get; set; }
 
         [StringLength(100)]
-        public string CreatedBy { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = null!;
 
         public DateTime CreatedDate { get; set; }
 
         [StringLength(100)]
-        public string EditedBy { get; set; } = string.Empty;
+        public string? EditedBy { get; set; }
 
-        public DateTime EditedDate { get; set; }
+        public DateTime? EditedDate { get; set; }
     }
 }

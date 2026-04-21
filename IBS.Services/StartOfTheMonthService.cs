@@ -65,16 +65,16 @@ namespace IBS.Services
                     return;
                 }
 
-                var newJournalVouchers = new List<FilprideJournalVoucherHeader>();
+                var newJournalVouchers = new List<JournalVoucherHeader>();
 
                 var groupedAmortizations = amortizationSetting
-                    .GroupBy(a => new { a.JvHeader.Company, a.JvHeader.Type })
+                    .GroupBy(a => new { a.JvHeader.Type })
                     .ToList();
 
                 foreach (var group in groupedAmortizations)
                 {
-                    var baseCode = await _unitOfWork.FilprideJournalVoucher
-                        .GenerateCodeAsync(group.Key.Company, group.Key.Type);
+                    var baseCode = await _unitOfWork.JournalVoucher
+                        .GenerateCodeAsync(group.Key.Type);
 
                     var offset = 0;
                     foreach (var amortization in group)
@@ -89,7 +89,7 @@ namespace IBS.Services
 
                         var generatedCode = IncrementCode(baseCode, offset++);
 
-                        var newHeader = new FilprideJournalVoucherHeader
+                        var newHeader = new JournalVoucherHeader
                         {
                             Type = sourceJv.Type,
                             JournalVoucherHeaderNo = generatedCode,
@@ -100,7 +100,6 @@ namespace IBS.Services
                             CRNo = sourceJv.CRNo,
                             JVReason = sourceJv.JVReason,
                             CreatedBy = "SYSTEM",
-                            Company = sourceJv.Company,
                             JvType = nameof(JvType.Amortization),
                             Status = nameof(JvStatus.Pending),
                             Details = sourceJv.Details.Select(detail => new JournalVoucherDetail

@@ -67,10 +67,9 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 var companyClaims = await GetCompanyClaimAsync();
 
-                var disbursements = _unitOfWork.FilprideCheckVoucher
+                var disbursements = _unitOfWork.CheckVoucher
                     .GetAllQuery(x=> x.CvType != nameof(CVType.Invoicing) &&
-                                     x.PostedBy != null &&
-                                     x.Company == companyClaims) ;
+                                     x.PostedBy != null) ;
 
                 var totalRecords = await disbursements.CountAsync(cancellationToken);
 
@@ -156,7 +155,7 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateDCPDate(int cvId, DateOnly dcpDate, CancellationToken cancellationToken)
         {
-            var cv = await _unitOfWork.FilprideCheckVoucher
+            var cv = await _unitOfWork.CheckVoucher
                 .GetAsync(cv => cv.CheckVoucherHeaderId == cvId, cancellationToken);
 
             if (cv == null)
@@ -182,8 +181,8 @@ namespace IBSWeb.Areas.User.Controllers
             cv.DcpDate = dcpDate;
             cv.DcrDate = null;
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCP date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement", cv.Company);
-            await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCP date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement");
+            await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             await _unitOfWork.SaveAsync(cancellationToken);
 
@@ -193,7 +192,7 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateDCRDate(int cvId, DateOnly dcrDate, CancellationToken cancellationToken)
         {
-            var cv = await _unitOfWork.FilprideCheckVoucher
+            var cv = await _unitOfWork.CheckVoucher
                 .GetAsync(cv => cv.CheckVoucherHeaderId == cvId, cancellationToken);
 
             if (cv == null)
@@ -228,8 +227,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             cv.DcrDate = dcrDate;
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCR date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement", cv.Company);
-            await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCR date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement");
+            await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             await _unitOfWork.SaveAsync(cancellationToken);
 

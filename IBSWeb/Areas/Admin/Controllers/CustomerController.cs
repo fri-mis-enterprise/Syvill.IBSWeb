@@ -52,7 +52,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var customer = await _unitOfWork.FilprideCustomer
+            var customer = await _unitOfWork.Customer
                 .GetAllAsync(null, cancellationToken);
 
             return View(customer);
@@ -69,9 +69,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             var model = new Customer()
             {
 
-                PaymentTerms = await _unitOfWork.FilprideTerms
+                PaymentTerms = await _unitOfWork.Terms
                     .GetFilprideTermsListAsyncByCode(cancellationToken),
-                Commissionees = await _unitOfWork.GetFilprideCommissioneeListAsyncById(companyClaims, cancellationToken),
             };
             return View(model);
         }
@@ -93,10 +92,10 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return BadRequest();
             }
 
-            model.PaymentTerms = await _unitOfWork.FilprideTerms
+            model.PaymentTerms = await _unitOfWork.Terms
                 .GetFilprideTermsListAsyncByCode(cancellationToken);
 
-            var isTinExist = await _unitOfWork.FilprideCustomer.IsTinNoExistAsync(model.CustomerTin, companyClaims, cancellationToken);
+            var isTinExist = await _unitOfWork.Customer.IsTinNoExistAsync(model.CustomerTin, cancellationToken);
 
             if (isTinExist)
             {
@@ -108,17 +107,17 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                model.Company = companyClaims;
-                model.CustomerCode = await _unitOfWork.FilprideCustomer.GenerateCodeAsync(model.CustomerType, cancellationToken);
+                model.CustomerCode = await _unitOfWork.Customer.GenerateCodeAsync(cancellationToken);
                 model.CreatedBy = GetUserFullName();
-                await _unitOfWork.FilprideCustomer.AddAsync(model, cancellationToken);
+                await _unitOfWork.Customer.AddAsync(model, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
                 #region -- Audit Trail Recording
 
                 AuditTrail auditTrailBook = new(model.CreatedBy!,
-                    $"Created new Customer #{model.CustomerCode}", "Customer", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Created new Customer #{model.CustomerCode}",
+                    "Customer");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
@@ -143,7 +142,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var customer = await _unitOfWork.FilprideCustomer.GetAsync(c => c.CustomerId == id, cancellationToken);
+            var customer = await _unitOfWork.Customer.GetAsync(c => c.CustomerId == id, cancellationToken);
             var companyClaims = await GetCompanyClaimAsync();
             if (companyClaims == null)
             {
@@ -152,9 +151,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             if (customer != null)
             {
-                customer.PaymentTerms = await _unitOfWork.FilprideTerms
+                customer.PaymentTerms = await _unitOfWork.Terms
                     .GetFilprideTermsListAsyncByCode(cancellationToken);
-                customer.Commissionees = await _unitOfWork.GetFilprideCommissioneeListAsyncById(companyClaims, cancellationToken);
                 return View(customer);
             }
 
@@ -170,7 +168,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(model);
             }
 
-            model.PaymentTerms = await _unitOfWork.FilprideTerms
+            model.PaymentTerms = await _unitOfWork.Terms
                 .GetFilprideTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -178,13 +176,14 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 model.EditedBy = GetUserFullName();
-                await _unitOfWork.FilprideCustomer.UpdateAsync(model, cancellationToken);
+                await _unitOfWork.Customer.UpdateAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (model.EditedBy,
-                    $"Edited Customer #{model.CustomerCode}", "Customer", model.Company );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited Customer #{model.CustomerCode}",
+                    "Customer");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -206,7 +205,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var query = _unitOfWork.FilprideCustomer
+                var query = _unitOfWork.Customer
                     .GetAllQuery();
 
                 var totalRecords = await query.CountAsync(cancellationToken);
@@ -266,7 +265,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var customer = await _unitOfWork
-                .FilprideCustomer
+                .Customer
                 .GetAsync(c => c.CustomerId == id, cancellationToken);
 
             if (customer == null)
@@ -274,7 +273,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            customer.PaymentTerms = await _unitOfWork.FilprideTerms
+            customer.PaymentTerms = await _unitOfWork.Terms
                 .GetFilprideTermsListAsyncByCode(cancellationToken);
 
             return View(customer);
@@ -289,7 +288,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var customer = await _unitOfWork
-                .FilprideCustomer
+                .Customer
                 .GetAsync(c => c.CustomerId == id, cancellationToken);
 
             if (customer == null)
@@ -297,7 +296,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            customer.PaymentTerms = await _unitOfWork.FilprideTerms
+            customer.PaymentTerms = await _unitOfWork.Terms
                 .GetFilprideTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -311,9 +310,10 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 var user = GetUserFullName();
                 AuditTrail auditTrailBook = new(
-                    user!, $"Activated Customer #{customer.CustomerCode}",
-                    "Customer", customer.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    user,
+                    $"Activated Customer #{customer.CustomerCode}",
+                    "Customer");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -339,12 +339,12 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var customer = await _unitOfWork
-                .FilprideCustomer
+                .Customer
                 .GetAsync(c => c.CustomerId == id, cancellationToken);
 
             if (customer != null)
             {
-                customer.PaymentTerms = await _unitOfWork.FilprideTerms
+                customer.PaymentTerms = await _unitOfWork.Terms
                     .GetFilprideTermsListAsyncByCode(cancellationToken);
 
                 return View(customer);
@@ -362,7 +362,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var customer = await _unitOfWork
-                .FilprideCustomer
+                .Customer
                 .GetAsync(c => c.CustomerId == id, cancellationToken);
 
             if (customer == null)
@@ -370,7 +370,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            customer.PaymentTerms = await _unitOfWork.FilprideTerms
+            customer.PaymentTerms = await _unitOfWork.Terms
                 .GetFilprideTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -383,8 +383,9 @@ namespace IBSWeb.Areas.Admin.Controllers
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Deactivated Customer #{customer.CustomerCode}", "Customer", customer.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Deactivated Customer #{customer.CustomerCode}",
+                    "Customer");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
@@ -411,7 +412,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var customers = await _unitOfWork.FilprideCustomer
+                var customers = await _unitOfWork.Customer
                     .GetAllAsync(null, cancellationToken);
 
                 // Apply date range filter if provided (using CreatedDate)
@@ -443,7 +444,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                             (s.CustomerTin != null && s.CustomerTin.ToLower().Contains(searchValue)) ||
                             (s.BusinessStyle != null && s.BusinessStyle.ToLower().Contains(searchValue)) ||
                             (s.CustomerTerms != null && s.CustomerTerms.ToLower().Contains(searchValue)) ||
-                            (s.CustomerType != null && s.CustomerType.ToLower().Contains(searchValue)) ||
                             s.CreatedDate.ToString("MMM dd, yyyy").ToLower().Contains(searchValue)
                         )
                         .ToList();
@@ -506,7 +506,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                         x.CustomerTin,
                         x.BusinessStyle,
                         x.CustomerTerms,
-                        x.CustomerType,
                         x.CreatedDate
                     })
                     .ToList();

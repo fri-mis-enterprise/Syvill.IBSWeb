@@ -99,7 +99,6 @@ namespace IBS.DataAccess.Repository.Filpride
                     AccountTitle = cashInBankTitle.AccountName,
                     Debit = provisionalReceipt.CashAmount + provisionalReceipt.CheckAmount + provisionalReceipt.ManagersCheckAmount,
                     Credit = 0,
-                    Company = provisionalReceipt.Company,
                     CreatedBy = provisionalReceipt.PostedBy!,
                     CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                     SubAccountType = SubAccountType.BankAccount,
@@ -122,7 +121,6 @@ namespace IBS.DataAccess.Repository.Filpride
                     AccountTitle = cashInBankTitle.AccountName,
                     Debit = 0,
                     Credit = provisionalReceipt.CashAmount + provisionalReceipt.CheckAmount + provisionalReceipt.ManagersCheckAmount,
-                    Company = provisionalReceipt.Company,
                     CreatedBy = provisionalReceipt.PostedBy!,
                     CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                     ModuleType = nameof(ModuleType.Collection)
@@ -136,8 +134,7 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task ReturnedCheck(string prNo, string company, string userName, CancellationToken cancellationToken = default)
         {
             var originalEntries = await _db.GeneralLedgerBooks
-                .Where(x => x.Reference == prNo
-                            && x.Company == company)
+                .Where(x => x.Reference == prNo)
                 .ToListAsync(cancellationToken);
 
             var reversalEntries = new List<GeneralLedgerBook>();
@@ -157,7 +154,6 @@ namespace IBS.DataAccess.Repository.Filpride
                     CreatedBy = userName,
                     CreatedDate = dateToday,
                     IsPosted = true,
-                    Company = originalEntry.Company,
                     AccountId = originalEntry.AccountId,
                     SubAccountType = originalEntry.SubAccountType,
                     SubAccountId = originalEntry.SubAccountId,

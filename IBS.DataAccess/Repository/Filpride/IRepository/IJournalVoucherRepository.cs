@@ -3,11 +3,11 @@ using IBS.Models.AccountsPayable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IJournalVoucherRepository : IRepository<FilprideJournalVoucherHeader>
+    public interface IJournalVoucherRepository : IRepository<JournalVoucherHeader>
     {
-        Task<string> GenerateCodeAsync(string company, string? type, CancellationToken cancellationToken = default);
+        Task<string> GenerateCodeAsync(string? type, CancellationToken cancellationToken = default);
 
-        Task PostAsync(FilprideJournalVoucherHeader header,
+        Task PostAsync(JournalVoucherHeader header,
             IEnumerable<JournalVoucherDetail> details,
             CancellationToken cancellationToken = default);
     }

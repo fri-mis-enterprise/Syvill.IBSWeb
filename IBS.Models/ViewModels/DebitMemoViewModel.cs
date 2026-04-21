@@ -15,23 +15,14 @@ namespace IBS.Models.ViewModels
         [DisplayFormat(DataFormatString = "{0:MMM dd, yyyy}")]
         public DateOnly TransactionDate { get; set; }
 
-        public int? SalesInvoiceId { get; set; }
-
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal? Quantity { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal? AdjustedPrice { get; set; }
-
-        public int? ServiceInvoiceId { get; set; }
+        public int ServiceInvoiceId { get; set; }
 
         [Column(TypeName = "date")]
         public DateOnly Period { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Required]
         [StringLength(1000)]
@@ -51,9 +42,6 @@ namespace IBS.Models.ViewModels
         }
 
         private string _description = null!;
-
-        [NotMapped]
-        public List<SelectListItem>? SalesInvoices { get; set; }
 
         [NotMapped]
         public List<SelectListItem>? ServiceInvoices { get; set; }

@@ -37,7 +37,6 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.ServiceInvoiceNo!.Length)
                 .ThenByDescending(x => x.ServiceInvoiceNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Company == company &&
                     x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
@@ -61,7 +60,6 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.ServiceInvoiceNo!.Length)
                 .ThenByDescending(x => x.ServiceInvoiceNo)
                 .FirstOrDefaultAsync(x =>
-                        x.Company == company &&
                         x.Type == nameof(DocumentType.Undocumented),
                     cancellationToken);
 
@@ -82,7 +80,6 @@ namespace IBS.DataAccess.Repository.Filpride
             return await dbSet.Where(filter)
                 .Include(s => s.Customer)
                 .Include(s => s.Service)
-                .Include(s => s.DeliveryReceipt)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -90,8 +87,7 @@ namespace IBS.DataAccess.Repository.Filpride
         {
             IQueryable<ServiceInvoice> query = dbSet
                 .Include(s => s.Customer)
-                .Include(s => s.Service)
-                .Include(s => s.DeliveryReceipt);
+                .Include(s => s.Service);
 
             if (filter != null)
             {
@@ -107,7 +103,6 @@ namespace IBS.DataAccess.Repository.Filpride
                 dbSet
                 .Include(s => s.Customer)
                 .Include(s => s.Service)
-                .Include(s => s.DeliveryReceipt)
                 .AsSplitQuery()
                 .AsNoTracking();
 
@@ -121,8 +116,6 @@ namespace IBS.DataAccess.Repository.Filpride
 
         public async Task PostAsync(ServiceInvoice model, CancellationToken cancellationToken = default)
         {
-            #region --Sales Book Recording
-
             decimal withHoldingTaxAmount = 0;
             decimal withHoldingVatAmount = 0;
             decimal netOfVatAmount;
@@ -147,46 +140,6 @@ namespace IBS.DataAccess.Repository.Filpride
             {
                 withHoldingVatAmount = ComputeEwtAmount(netOfVatAmount, 0.05m);
             }
-
-            var sales = new SalesBook
-            {
-                TransactionDate = model.Period,
-                SerialNo = model.ServiceInvoiceNo,
-                SoldTo = model.CustomerName,
-                TinNo = model.CustomerTin,
-                Address = model.CustomerAddress,
-                Description = model.ServiceName,
-                Amount = model.Total,
-                VatAmount = vatAmount,
-                VatableSales = netOfVatAmount,
-                Discount = model.Discount,
-                NetSales = netOfVatAmount,
-                CreatedBy = model.CreatedBy,
-                CreatedDate = model.CreatedDate,
-                DueDate = model.DueDate,
-                DocumentId = model.ServiceInvoiceId,
-                Company = model.Company,
-            };
-
-            switch (model.VatType)
-            {
-                case SD.VatType_Vatable:
-                    sales.VatAmount = vatAmount;
-                    sales.VatableSales = netOfVatAmount;
-                    break;
-
-                case SD.VatType_Exempt:
-                    sales.VatExemptSales = model.Total;
-                    break;
-
-                default:
-                    sales.ZeroRated = model.Total;
-                    break;
-            }
-
-            await _db.SalesBooks.AddAsync(sales, cancellationToken);
-
-            #endregion --Sales Book Recording
 
             #region --General Ledger Book Recording
 
@@ -214,7 +167,6 @@ namespace IBS.DataAccess.Repository.Filpride
                     AccountTitle = arTradeTitle.AccountName,
                     Debit = model.Total - (withHoldingTaxAmount + withHoldingVatAmount),
                     Credit = 0,
-                    Company = model.Company,
                     CreatedBy = model.PostedBy!,
                     CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                     SubAccountType = SubAccountType.Customer,
@@ -236,7 +188,6 @@ namespace IBS.DataAccess.Repository.Filpride
                         AccountTitle = arTradeCwt.AccountName,
                         Debit = withHoldingTaxAmount,
                         Credit = 0,
-                        Company = model.Company,
                         CreatedBy = model.PostedBy!,
                         CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                         ModuleType = nameof(ModuleType.Sales)
@@ -256,7 +207,6 @@ namespace IBS.DataAccess.Repository.Filpride
                         AccountTitle = arTradeCwv.AccountName,
                         Debit = withHoldingVatAmount,
                         Credit = 0,
-                        Company = model.Company,
                         CreatedBy = model.PostedBy!,
                         CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                         ModuleType = nameof(ModuleType.Sales)
@@ -275,7 +225,6 @@ namespace IBS.DataAccess.Repository.Filpride
                     AccountTitle = servicesTitle.AccountName,
                     Debit = 0,
                     Credit = netOfVatAmount,
-                    Company = model.Company,
                     CreatedBy = model.PostedBy!,
                     CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                     ModuleType = nameof(ModuleType.Sales)
@@ -295,7 +244,6 @@ namespace IBS.DataAccess.Repository.Filpride
                         AccountTitle = vatOutputTitle.AccountName,
                         Debit = 0,
                         Credit = vatAmount,
-                        Company = model.Company,
                         CreatedBy = model.PostedBy!,
                         CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                         ModuleType = nameof(ModuleType.Sales)

@@ -92,23 +92,10 @@ namespace IBSWeb.Areas.User.Controllers
                     return BadRequest();
                 }
 
-                var collectionReceipts = _unitOfWork.FilprideCollectionReceipt
-                    .GetAllQuery(c => c.Company == companyClaims);
+                var collectionReceipts = _unitOfWork.CollectionReceipt
+                    .GetAllQuery();
 
                 var totalRecords = await collectionReceipts.CountAsync(cancellationToken);
-
-                switch (invoiceType)
-                {
-                    case "Sales":
-                        collectionReceipts = collectionReceipts
-                            .Where(s => s.SalesInvoiceId != null || s.MultipleSIId != null);
-                        break;
-
-                    case "Service":
-                        collectionReceipts = collectionReceipts
-                            .Where(s => s.ServiceInvoiceId != null);
-                        break;
-                }
 
                 // Search filter
                 if (!string.IsNullOrEmpty(parameters.Search.Value))
@@ -163,7 +150,6 @@ namespace IBSWeb.Areas.User.Controllers
                         c.VoidedBy,
                         c.PostedBy,
                         c.CanceledBy,
-                        c.MultipleSIId,
                         c.DepositedDate,
                     })
                     .ToListAsync(cancellationToken);
@@ -194,13 +180,13 @@ namespace IBSWeb.Areas.User.Controllers
                 return BadRequest();
             }
 
-            return Json(await _unitOfWork.GetFilprideBankAccountListById(companyClaims, cancellationToken));
+            return Json(await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken));
         }
 
         [HttpGet]
         public async Task<IActionResult> Deposit(int id, int bankId, DateOnly depositDate, CancellationToken cancellationToken)
         {
-            var bank = await _unitOfWork.FilprideBankAccount
+            var bank = await _unitOfWork.BankAccount
                 .GetAsync(b => b.BankAccountId == bankId, cancellationToken);
 
             if (bank == null)
@@ -208,7 +194,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            var model = await _unitOfWork.FilprideCollectionReceipt
+            var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
@@ -230,40 +216,13 @@ namespace IBSWeb.Areas.User.Controllers
                     .Where(rd => rd.CollectionReceiptId == model.CollectionReceiptId)
                     .ToListAsync(cancellationToken);
 
-                await _unitOfWork.FilprideCollectionReceipt.DepositAsync(model, cancellationToken);
-
-                foreach (var receipt in model.ReceiptDetails!)
-                {
-                    var salesInvoice = await _unitOfWork.FilprideSalesInvoice
-                                           .GetAsync(x => x.SalesInvoiceNo == receipt.InvoiceNo
-                                                          && x.Company == model.Company, cancellationToken);
-
-                    if (salesInvoice == null)
-                    {
-                        continue;
-                    }
-                    var getHolidays = await DateTimeHelper.GetNonWorkingDays(salesInvoice.DueDate, depositDate, "PH");
-                    var daysDelayed = depositDate.DayNumber - salesInvoice.DueDate.DayNumber - getHolidays.Count;
-
-                    if (daysDelayed <= 0 || salesInvoice.DeliveryReceipt == null || salesInvoice.DeliveryReceipt?.CommissionAmount <= 0)
-                    {
-                        continue;
-                    }
-
-                    var dr = salesInvoice.DeliveryReceipt!;
-
-                    //Formula: Commission Amount x 3% x Days Delayed / 360
-                    var costOfMoney = dr.CommissionAmount * .03m * daysDelayed / 360m;
-
-                    await _unitOfWork.FilprideCollectionReceipt.ApplyCostOfMoney(dr, costOfMoney,
-                        GetUserFullName(), depositDate, cancellationToken);
-                }
+                await _unitOfWork.CollectionReceipt.DepositAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Record deposit date of collection receipt#{model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Record deposit date of collection receipt#{model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -285,7 +244,7 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Print(int id, CancellationToken cancellationToken)
         {
-            var cr = await _unitOfWork.FilprideCollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
+            var cr = await _unitOfWork.CollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (cr == null)
             {
@@ -296,60 +255,12 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt", companyClaims!);
-            await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
+            await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
 
             return View(cr);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetSalesInvoices(int customerNo, int? crId, CancellationToken cancellationToken)
-        {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            List<SalesInvoice> invoices;
-
-            if (crId != null)
-            {
-                var invoicesPaid = await _dbContext.CollectionReceiptDetails
-                    .Where(crd => crd.CollectionReceiptId == crId)
-                    .ToListAsync(cancellationToken);
-
-                var invoiceNo = invoicesPaid
-                    .Select(crd => crd.InvoiceNo);
-
-                invoices = (await _unitOfWork.FilprideSalesInvoice
-                        .GetAllAsync(si =>
-                                si.Company == companyClaims &&
-                                (
-                                    (si.Balance > 0 || invoiceNo.Contains(si.SalesInvoiceNo!)) &&
-                                    si.CustomerId == customerNo &&
-                                    si.PostedBy != null
-                                ),
-                            cancellationToken))
-                    .OrderBy(si => si.SalesInvoiceId)
-                    .ToList();
-            }
-            else
-            {
-                invoices = (await _unitOfWork.FilprideSalesInvoice
-                        .GetAllAsync(si => si.Company == companyClaims
-                                           && si.Balance > 0
-                                           && si.CustomerId == customerNo
-                                           && si.PostedBy != null, cancellationToken))
-                    .OrderBy(si => si.SalesInvoiceId)
-                    .ToList();
-            }
-
-            var invoiceList = invoices.Select(si => new SelectListItem
-            {
-                Value = si.SalesInvoiceId.ToString(),   // Replace with your actual ID property
-                Text = si.SalesInvoiceNo              // Replace with your actual property for display text
-            }).ToList();
-
-            return Json(invoiceList);
         }
 
         [HttpGet]
@@ -368,23 +279,19 @@ namespace IBSWeb.Areas.User.Controllers
                 var invoiceNo = invoicesPaid
                     .Select(crd => crd.InvoiceNo);
 
-                invoices = (await _unitOfWork.FilprideServiceInvoice
+                invoices = (await _unitOfWork.ServiceInvoice
                         .GetAllAsync(si =>
-                                si.Company == companyClaims &&
-                                (
-                                    (si.Balance > 0 || invoiceNo.Contains(si.ServiceInvoiceNo!)) &&
-                                    si.CustomerId == customerNo &&
-                                    si.PostedBy != null
-                                ),
+                                (si.Balance > 0 || invoiceNo.Contains(si.ServiceInvoiceNo!)) &&
+                                si.CustomerId == customerNo &&
+                                si.PostedBy != null,
                             cancellationToken))
                     .OrderBy(si => si.ServiceInvoiceId)
                     .ToList();
             }
             else
             {
-                invoices = (await _unitOfWork.FilprideServiceInvoice
-                        .GetAllAsync(si => si.Company == companyClaims
-                                           && si.CustomerId == customerNo
+                invoices = (await _unitOfWork.ServiceInvoice
+                        .GetAllAsync(si => si.CustomerId == customerNo
                                            && si.Balance > 0
                                            && si.PostedBy != null, cancellationToken))
                     .OrderBy(si => si.ServiceInvoiceId)
@@ -403,182 +310,56 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> GetInvoiceDetails(int invoiceNo, bool isSales, bool isServices, int? crId, CancellationToken cancellationToken)
         {
-            if (isSales && !isServices)
-            {
-                var si = await _unitOfWork.FilprideSalesInvoice
-                    .GetAsync(s => s.SalesInvoiceId == invoiceNo, cancellationToken);
-
-                if (si == null)
-                {
-                    return NotFound();
-                }
-
-                var vatType = si.CustomerOrderSlip?.VatType ?? si.Customer!.VatType;
-                var hasEwt = si.CustomerOrderSlip?.HasEWT ?? si.Customer!.WithHoldingTax;
-                var hasWvat = si.CustomerOrderSlip?.HasWVAT ?? si.Customer!.WithHoldingVat;
-
-                var netDiscount = si.Amount - si.Discount;
-                var netOfVatAmount = vatType == SD.VatType_Vatable
-                    ? _unitOfWork.FilprideServiceInvoice.ComputeNetOfVat(netDiscount)
-                    : netDiscount;
-                var withHoldingTaxAmount = hasEwt
-                    ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.01m)
-                    : 0;
-                var withHoldingVatAmount = hasWvat
-                    ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.05m)
-                    : 0;
-                var balance = si.Balance;
-                var amountPaid = si.AmountPaid;
-
-                // it means it is in edit
-                if (crId != null)
-                {
-                    // get the current amount of this cr
-                    var collectionReceiptHeader = await _unitOfWork.FilprideCollectionReceipt
-                        .GetAsync(cr => cr.CollectionReceiptId == crId, cancellationToken);
-                    if (collectionReceiptHeader == null)
-                    {
-                        return NotFound();
-                    }
-
-                    // retain the fresh value, see if the selected cr is the one used to pay this si
-                    if (collectionReceiptHeader.SalesInvoiceId == si.SalesInvoiceId)
-                    {
-                        amountPaid -= collectionReceiptHeader.Total;
-                        balance += collectionReceiptHeader.Total;
-                    }
-                }
-
-                return Json(new
-                {
-                    Amount = netDiscount.ToString(SD.Two_Decimal_Format),
-                    AmountPaid = amountPaid.ToString(SD.Two_Decimal_Format),
-                    Balance = balance.ToString(SD.Two_Decimal_Format),
-                    Ewt = withHoldingTaxAmount.ToString(SD.Two_Decimal_Format),
-                    Wvat = withHoldingVatAmount.ToString(SD.Two_Decimal_Format),
-                    Total = (netDiscount - (withHoldingTaxAmount + withHoldingVatAmount)).ToString(SD.Two_Decimal_Format)
-                });
-            }
-
-            if (isServices && !isSales)
-            {
-                var sv = await _unitOfWork.FilprideServiceInvoice
+            var sv = await _unitOfWork.ServiceInvoice
                     .GetAsync(s => s.ServiceInvoiceId == invoiceNo, cancellationToken);
 
-                if (sv == null)
+            if (sv == null)
+            {
+                return NotFound();
+            }
+
+            var netOfVatAmount = sv.VatType == SD.VatType_Vatable
+                ? _unitOfWork.ServiceInvoice.ComputeNetOfVat(sv.Total) - sv.Discount
+                : sv.Total - sv.Discount;
+            var withHoldingTaxAmount = sv.HasEwt
+                ? _unitOfWork.CollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.01m)
+                : 0;
+            var withHoldingVatAmount = sv.HasWvat
+                ? _unitOfWork.CollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.05m)
+                : 0;
+            var balance = sv.Balance;
+            var amountPaid = sv.AmountPaid;
+
+            // it means it is in edit
+            if (crId != null)
+            {
+                // get the current amount of this cr
+                var collectionReceiptHeader = await _unitOfWork.CollectionReceipt
+                    .GetAsync(cr => cr.CollectionReceiptId == crId, cancellationToken);
+                if (collectionReceiptHeader == null)
                 {
                     return NotFound();
                 }
 
-                var netOfVatAmount = sv.VatType == SD.VatType_Vatable
-                    ? _unitOfWork.FilprideServiceInvoice.ComputeNetOfVat(sv.Total) - sv.Discount
-                    : sv.Total - sv.Discount;
-                var withHoldingTaxAmount = sv.HasEwt
-                    ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.01m)
-                    : 0;
-                var withHoldingVatAmount = sv.HasWvat
-                    ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.05m)
-                    : 0;
-                var balance = sv.Balance;
-                var amountPaid = sv.AmountPaid;
-
-                // it means it is in edit
-                if (crId != null)
+                // retain the fresh value, see if the selected cr is the one used to pay this si
+                if (collectionReceiptHeader.ServiceInvoiceId == sv.ServiceInvoiceId)
                 {
-                    // get the current amount of this cr
-                    var collectionReceiptHeader = await _unitOfWork.FilprideCollectionReceipt
-                        .GetAsync(cr => cr.CollectionReceiptId == crId, cancellationToken);
-                    if (collectionReceiptHeader == null)
-                    {
-                        return NotFound();
-                    }
-
-                    // retain the fresh value, see if the selected cr is the one used to pay this si
-                    if (collectionReceiptHeader.ServiceInvoiceId == sv.ServiceInvoiceId)
-                    {
-                        amountPaid -= collectionReceiptHeader.Total;
-                        balance += collectionReceiptHeader.Total;
-                    }
+                    amountPaid -= collectionReceiptHeader.Total;
+                    balance += collectionReceiptHeader.Total;
                 }
-
-                return Json(new
-                {
-                    Amount = sv.Total.ToString(SD.Two_Decimal_Format),
-                    AmountPaid = amountPaid.ToString(SD.Two_Decimal_Format),
-                    Balance = balance.ToString(SD.Two_Decimal_Format),
-                    Ewt = withHoldingTaxAmount.ToString(SD.Two_Decimal_Format),
-                    Wvat = withHoldingVatAmount.ToString(SD.Two_Decimal_Format),
-                    Total = (sv.Total - (withHoldingTaxAmount + withHoldingVatAmount)).ToString(SD.Two_Decimal_Format)
-                });
             }
 
-            return Json(null);
+            return Json(new
+            {
+                Amount = sv.Total.ToString(SD.Two_Decimal_Format),
+                AmountPaid = amountPaid.ToString(SD.Two_Decimal_Format),
+                Balance = balance.ToString(SD.Two_Decimal_Format),
+                Ewt = withHoldingTaxAmount.ToString(SD.Two_Decimal_Format),
+                Wvat = withHoldingVatAmount.ToString(SD.Two_Decimal_Format),
+                Total = (sv.Total - (withHoldingTaxAmount + withHoldingVatAmount)).ToString(SD.Two_Decimal_Format)
+            });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMultipleInvoiceDetails(int[] siNo, bool isSales, CancellationToken cancellationToken)
-        {
-            if (isSales)
-            {
-                var si = await _unitOfWork.FilprideSalesInvoice
-                    .GetAsync(si => siNo.Contains(si.SalesInvoiceId), cancellationToken);
-
-                if (si == null)
-                {
-                    return Json(null);
-                }
-
-                var vatType = si.CustomerOrderSlip?.VatType ?? si.Customer!.VatType;
-                var hasEwt = si.CustomerOrderSlip?.HasEWT ?? si.Customer!.WithHoldingTax;
-                var hasWvat = si.CustomerOrderSlip?.HasWVAT ?? si.Customer!.WithHoldingVat;
-
-                var netDiscount = si.Amount - si.Discount;
-                var netOfVatAmount = vatType == SD.VatType_Vatable
-                    ? _unitOfWork.FilprideServiceInvoice.ComputeNetOfVat(netDiscount)
-                    : netDiscount;
-                var withHoldingTaxAmount = hasEwt
-                    ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.01m)
-                    : 0;
-                var withHoldingVatAmount = hasWvat
-                    ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.05m)
-                    : 0;
-
-                return Json(new
-                {
-                    Amount = netDiscount,
-                    si.AmountPaid,
-                    si.Balance,
-                    WithholdingTax = withHoldingTaxAmount,
-                    WithholdingVat = withHoldingVatAmount,
-                    Total = netDiscount - (withHoldingTaxAmount + withHoldingVatAmount)
-                });
-            }
-            else
-            {
-                var sv = await _unitOfWork.FilprideServiceInvoice
-                    .GetAsync(sv => siNo.Contains(sv.ServiceInvoiceId), cancellationToken);
-
-                if (sv == null)
-                {
-                    return Json(null);
-                }
-
-                decimal netDiscount = sv.Total - sv.Discount;
-                decimal netOfVatAmount = sv.VatType == SD.VatType_Vatable ? _unitOfWork.FilprideServiceInvoice.ComputeNetOfVat(netDiscount) : netDiscount;
-                decimal withHoldingTaxAmount = sv.HasEwt ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.01m) : 0;
-                decimal withHoldingVatAmount = sv.HasWvat ? _unitOfWork.FilprideCollectionReceipt.ComputeEwtAmount(netOfVatAmount, 0.05m) : 0;
-
-                return Json(new
-                {
-                    Amount = netDiscount,
-                    sv.AmountPaid,
-                    sv.Balance,
-                    WithholdingTax = withHoldingTaxAmount,
-                    WithholdingVat = withHoldingVatAmount,
-                    Total = netDiscount - (withHoldingTaxAmount + withHoldingVatAmount)
-                });
-            }
-        }
 
         [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
         [HttpGet]
@@ -588,7 +369,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 return NotFound();
             }
-            var existingModel = await _unitOfWork.FilprideCollectionReceipt
+            var existingModel = await _unitOfWork.CollectionReceipt
                 .GetAsync(x => x.CollectionReceiptId == id, cancellationToken);
 
             if (existingModel == null)
@@ -621,19 +402,16 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 CollectionReceiptId = existingModel.CollectionReceiptId,
                 CustomerId = existingModel.CustomerId,
-                Customers = await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims, cancellationToken),
+                Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken),
                 TransactionDate = existingModel.TransactionDate,
                 ReferenceNo = existingModel.ReferenceNo,
                 Remarks = existingModel.Remarks,
-                ServiceInvoiceId = existingModel.ServiceInvoiceId ?? 0,
-                ServiceInvoices = (await _unitOfWork.FilprideServiceInvoice
+                ServiceInvoiceId = existingModel.ServiceInvoiceId,
+                ServiceInvoices = (await _unitOfWork.ServiceInvoice
                         .GetAllAsync(si =>
-                                si.Company == companyClaims &&
-                                (
-                                    (si.Balance > 0 || invoiceNo.Contains(si.ServiceInvoiceNo!)) &&
-                                    si.CustomerId == existingModel.CustomerId &&
-                                    si.PostedBy != null
-                                ),
+                                (si.Balance > 0 || invoiceNo.Contains(si.ServiceInvoiceNo!)) &&
+                                si.CustomerId == existingModel.CustomerId &&
+                                si.PostedBy != null,
                             cancellationToken))
                     .OrderBy(si => si.ServiceInvoiceId)
                     .Select(s => new SelectListItem
@@ -653,7 +431,7 @@ namespace IBSWeb.Areas.User.Controllers
                 ManagersCheckBank = existingModel.ManagersCheckBank,
                 ManagersCheckBranch = existingModel.ManagersCheckBranch,
                 ManagersCheckAmount = existingModel.ManagersCheckAmount,
-                BankAccounts = await _unitOfWork.GetFilprideBankAccountListById(companyClaims, cancellationToken),
+                BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken),
                 EWT = existingModel.EWT,
                 WVAT = existingModel.WVAT,
                 ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken),
@@ -670,7 +448,7 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CollectionReceiptServiceViewModel viewModel, CancellationToken cancellationToken)
         {
-            var existingModel = await _unitOfWork.FilprideCollectionReceipt
+            var existingModel = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == viewModel.CollectionReceiptId, cancellationToken);
 
             if (existingModel == null)
@@ -685,16 +463,15 @@ namespace IBSWeb.Areas.User.Controllers
                 return BadRequest();
             }
 
-            viewModel.Customers = await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims, cancellationToken);
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
 
             var invoicesPaid = await _dbContext.CollectionReceiptDetails
                 .Where(crd => crd.CollectionReceiptNo == existingModel.CollectionReceiptNo)
                 .Select(crd => crd.InvoiceNo)
                 .ToListAsync(cancellationToken);
 
-            viewModel.ServiceInvoices = (await _unitOfWork.FilprideServiceInvoice
-                    .GetAllAsync(si => si.Company == companyClaims
-                                       && (si.Balance > 0 || invoicesPaid.Contains(si.ServiceInvoiceNo!))
+            viewModel.ServiceInvoices = (await _unitOfWork.ServiceInvoice
+                    .GetAllAsync(si => (si.Balance > 0 || invoicesPaid.Contains(si.ServiceInvoiceNo!))
                                        && si.CustomerId == existingModel.CustomerId
                                        && si.PostedBy != null, cancellationToken))
                 .OrderBy(si => si.ServiceInvoiceId)
@@ -707,7 +484,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
 
-            viewModel.BankAccounts = await _unitOfWork.GetFilprideBankAccountListById(companyClaims, cancellationToken);
+            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken);
 
             viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
@@ -730,7 +507,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Saving default value
 
-                var existingServiceInvoice = await _unitOfWork.FilprideServiceInvoice
+                var existingServiceInvoice = await _unitOfWork.ServiceInvoice
                     .GetAsync(si => si.ServiceInvoiceId == viewModel.ServiceInvoiceId, cancellationToken);
 
                 if (existingServiceInvoice == null)
@@ -747,7 +524,7 @@ namespace IBSWeb.Areas.User.Controllers
                     throw new NullReferenceException("Collection Receipt Details Not Found.");
                 }
 
-                await _unitOfWork.FilprideCollectionReceipt.UndoServiceInvoiceChanges(detail, cancellationToken);
+                await _unitOfWork.CollectionReceipt.UndoServiceInvoiceChanges(detail, cancellationToken);
 
                 existingModel.ServiceInvoiceId = existingServiceInvoice.ServiceInvoiceId;
                 existingModel.SVNo = existingServiceInvoice.ServiceInvoiceNo;
@@ -810,14 +587,14 @@ namespace IBSWeb.Areas.User.Controllers
                 await _dbContext.CollectionReceiptDetails.AddAsync(details, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
-                await _unitOfWork.FilprideCollectionReceipt.UpdateSV(existingModel.ServiceInvoice!.ServiceInvoiceId, existingModel.Total, 0, cancellationToken);
+                await _unitOfWork.CollectionReceipt.UpdateSV(existingModel.ServiceInvoice!.ServiceInvoiceId, existingModel.Total, cancellationToken);
 
                 #endregion --Saving default value
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(existingModel.EditedBy!, $"Edited collection receipt# {existingModel.CollectionReceiptNo}", "Collection Receipt", existingModel.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(existingModel.EditedBy!, $"Edited collection receipt# {existingModel.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -838,7 +615,7 @@ namespace IBSWeb.Areas.User.Controllers
         [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
         public async Task<IActionResult> Post(int id, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.FilprideCollectionReceipt
+            var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
@@ -858,14 +635,13 @@ namespace IBSWeb.Areas.User.Controllers
                 model.PostedBy = GetUserFullName();
                 model.PostedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.Status = nameof(CollectionReceiptStatus.Posted);
-                bool isMultipleSi = model.MultipleSIId?.Length > 0;
 
-                await _unitOfWork.FilprideCollectionReceipt.PostAsync(model, cancellationToken);
+                await _unitOfWork.CollectionReceipt.PostAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted collection receipt# {model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -889,7 +665,7 @@ namespace IBSWeb.Areas.User.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Void(int id, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.FilprideCollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
+            var model = await _unitOfWork.CollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
             {
@@ -903,33 +679,15 @@ namespace IBSWeb.Areas.User.Controllers
                 model.VoidedBy = GetUserFullName();
                 model.VoidedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.Status = nameof(CollectionReceiptStatus.Voided);
-                var series = model.SINo ?? model.SVNo;
 
-                await _unitOfWork.FilprideCollectionReceipt.RemoveRecords<CashReceiptBook>(crb => crb.RefNo == model.CollectionReceiptNo, cancellationToken);
                 await _unitOfWork.GeneralLedger.ReverseEntries(model.CollectionReceiptNo, cancellationToken);
 
-                if (model.SINo != null)
-                {
-                    await _unitOfWork.FilprideCollectionReceipt.RemoveSIPayment(model.SalesInvoice!.SalesInvoiceId, model.Total, 0, cancellationToken);
-                }
-                else if (model.SVNo != null)
-                {
-                    await _unitOfWork.FilprideCollectionReceipt.RemoveSVPayment(model.ServiceInvoice!.ServiceInvoiceId, model.Total, 0, cancellationToken);
-                }
-                else if (model.MultipleSI != null)
-                {
-                    await _unitOfWork.FilprideCollectionReceipt.RemoveMultipleSIPayment(model.MultipleSIId!, model.SIMultipleAmount!, 0, cancellationToken);
-                }
-                else
-                {
-                    TempData["info"] = "No series number found";
-                    return RedirectToAction(nameof(Index));
-                }
+                await _unitOfWork.CollectionReceipt.RemoveSVPayment(model.ServiceInvoiceId, model.Total, cancellationToken);
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided collection receipt# {model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -950,7 +708,7 @@ namespace IBSWeb.Areas.User.Controllers
         [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
         public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.FilprideCollectionReceipt
+            var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(x => x.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
@@ -972,29 +730,7 @@ namespace IBSWeb.Areas.User.Controllers
                     throw new NullReferenceException("Collection Receipt Details Not Found.");
                 }
 
-                if (model.SalesInvoiceId != null)
-                {
-                    await _unitOfWork.FilprideCollectionReceipt.UndoSalesInvoiceChanges(detail, cancellationToken);
-                }
-                else if (model.ServiceInvoiceId != null)
-                {
-                    await _unitOfWork.FilprideCollectionReceipt.UndoServiceInvoiceChanges(detail, cancellationToken);
-                }
-                else if (model.MultipleSIId != null)
-                {
-                    var listOfDetails = await _dbContext.CollectionReceiptDetails
-                        .Where(crd => crd.CollectionReceiptId == model.CollectionReceiptId)
-                        .ToListAsync(cancellationToken);
-
-                    foreach (var details in listOfDetails)
-                    {
-                        await _unitOfWork.FilprideCollectionReceipt.UndoSalesInvoiceChanges(details, cancellationToken);
-                    }
-                }
-                else
-                {
-                    throw new NullReferenceException("Collection Receipt Details Not Found.");
-                }
+                await _unitOfWork.CollectionReceipt.UndoServiceInvoiceChanges(detail, cancellationToken);
 
                 model.CanceledBy = GetUserFullName();
                 model.CanceledDate = DateTimeHelper.GetCurrentPhilippineTime();
@@ -1003,8 +739,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled collection receipt# {model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -1023,7 +759,7 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Printed(int id, CancellationToken cancellationToken)
         {
-            var cr = await _unitOfWork.FilprideCollectionReceipt
+            var cr = await _unitOfWork.CollectionReceipt
                 .GetAsync(x => x.CollectionReceiptId == id, cancellationToken);
 
             if (cr == null)
@@ -1037,8 +773,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrail = new(GetUserFullName(), $"Printed original copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt", cr.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrail, cancellationToken);
+                AuditTrail auditTrail = new(GetUserFullName(), $"Printed original copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording
             }
@@ -1046,8 +782,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt", cr.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrail, cancellationToken);
+                AuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording
             }
@@ -1058,7 +794,7 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Return(int id, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.FilprideCollectionReceipt
+            var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
@@ -1073,13 +809,13 @@ namespace IBSWeb.Areas.User.Controllers
                 model.DepositedDate = null;
                 model.Status = nameof(CollectionReceiptStatus.Returned);
 
-                await _unitOfWork.FilprideCollectionReceipt.ReturnedCheck(model.CollectionReceiptNo!, model.Company, GetUserFullName(), cancellationToken);
+                await _unitOfWork.CollectionReceipt.ReturnedCheck(model.CollectionReceiptNo, "", GetUserFullName(), cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Return checks of collection receipt#{model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Return checks of collection receipt#{model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -1102,7 +838,7 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Redeposit(int id, DateOnly redepositDate, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.FilprideCollectionReceipt
+            var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
@@ -1117,13 +853,13 @@ namespace IBSWeb.Areas.User.Controllers
                 model.DepositedDate = redepositDate;
                 model.Status = nameof(CollectionReceiptStatus.Redeposited);
 
-                await _unitOfWork.FilprideCollectionReceipt.RedepositAsync(model, cancellationToken);
+                await _unitOfWork.CollectionReceipt.RedepositAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Redeposit collection receipt#{model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Redeposit collection receipt#{model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -1146,7 +882,7 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> ApplyClearingDate(int id, DateOnly clearingDate, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.FilprideCollectionReceipt
+            var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
 
             if (model == null)
@@ -1164,8 +900,8 @@ namespace IBSWeb.Areas.User.Controllers
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Apply clearing date for collection receipt#{model.CollectionReceiptNo}", "Collection Receipt", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Apply clearing date for collection receipt#{model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -1196,8 +932,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 var companyClaims = await GetCompanyClaimAsync();
 
-                var collectionReceipts = await _unitOfWork.FilprideCollectionReceipt
-                    .GetAllAsync(sv => sv.Company == companyClaims && sv.Type == nameof(DocumentType.Documented), cancellationToken);
+                var collectionReceipts = await _unitOfWork.CollectionReceipt
+                    .GetAllAsync(sv => sv.Type == nameof(DocumentType.Documented), cancellationToken);
 
                 // Apply date range filter if provided
                 if (dateFrom.HasValue)
@@ -1223,9 +959,7 @@ namespace IBSWeb.Areas.User.Controllers
                         .Where(s =>
                             s.CollectionReceiptNo!.ToLower().Contains(searchValue) ||
                             s.TransactionDate.ToString(SD.Date_Format).ToLower().Contains(searchValue) ||
-                            s.SINo?.ToLower().Contains(searchValue) == true ||
                             s.SVNo?.ToLower().Contains(searchValue) == true ||
-                            (s.MultipleSI != null && s.MultipleSI.Any(si => si.ToLower().Contains(searchValue))) ||
                             s.Customer!.CustomerName.ToLower().Contains(searchValue) ||
                             s.Total.ToString().Contains(searchValue) ||
                             s.CreatedBy!.ToLower().Contains(searchValue) ||
@@ -1271,8 +1005,6 @@ namespace IBSWeb.Areas.User.Controllers
                         x.CollectionReceiptId,
                         x.CollectionReceiptNo,
                         x.TransactionDate,
-                        x.SINo,
-                        x.MultipleSI,
                         x.SVNo,
                         customerName = x.Customer!.CustomerName,
                         x.Total,

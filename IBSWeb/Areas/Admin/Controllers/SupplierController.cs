@@ -94,7 +94,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(cancellationToken),
-                PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken)
+                PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken)
             };
 
             return View(model);
@@ -131,7 +131,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 })
                 .ToListAsync(cancellationToken);
 
-            model.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            model.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -139,14 +139,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(model);
             }
 
-            if (await _unitOfWork.FilprideSupplier.IsSupplierExistAsync(model.SupplierName, model.Category,
+            if (await _unitOfWork.Supplier.IsSupplierExistAsync(model.SupplierName, model.Category,
                     companyClaims, cancellationToken))
             {
                 ModelState.AddModelError("SupplierName", "Supplier already exist.");
                 return View(model);
             }
 
-            if (await _unitOfWork.FilprideSupplier.IsTinNoExistAsync(model.SupplierTin, model.Branch!,
+            if (await _unitOfWork.Supplier.IsTinNoExistAsync(model.SupplierTin, model.Branch!,
                     model.Category, companyClaims, cancellationToken))
             {
                 ModelState.AddModelError("SupplierTin", "Tin number already exist.");
@@ -169,18 +169,17 @@ namespace IBSWeb.Areas.Admin.Controllers
                     model.ProofOfExemptionFilePath = await _cloudStorageService.UploadFileAsync(document, model.ProofOfExemptionFileName!);
                 }
 
-                model.SupplierCode = await _unitOfWork.FilprideSupplier.GenerateCodeAsync(cancellationToken);
+                model.SupplierCode = await _unitOfWork.Supplier.GenerateCodeAsync(cancellationToken);
                 model.CreatedBy = GetUserFullName();
-                model.Company = companyClaims;
-                await _unitOfWork.FilprideSupplier.AddAsync(model, cancellationToken);
+                await _unitOfWork.Supplier.AddAsync(model, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{model.Company}", cancellationToken);
 
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new(model.CreatedBy!,
-                    $"Create new Supplier #{model.SupplierCode}", "Supplier", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Create new Supplier #{model.SupplierCode}",
+                    "Supplier");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
@@ -202,7 +201,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var queried = _unitOfWork.FilprideSupplier
+                var queried = _unitOfWork.Supplier
                     .GetAllQuery();
 
                 var totalRecords = await queried.CountAsync(cancellationToken);
@@ -264,7 +263,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var supplier = await _unitOfWork.FilprideSupplier.GetAsync(c => c.SupplierId == id, cancellationToken);
+            var supplier = await _unitOfWork.Supplier.GetAsync(c => c.SupplierId == id, cancellationToken);
 
             if (supplier == null)
             {
@@ -291,7 +290,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 })
                 .ToListAsync(cancellationToken);
 
-            supplier.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
             return View(supplier);
         }
 
@@ -319,7 +318,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 })
                 .ToListAsync(cancellationToken);
 
-            model.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            model.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -343,14 +342,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 }
 
                 model.EditedBy = GetUserFullName();
-                await _unitOfWork.FilprideSupplier.UpdateAsync(model, cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{model.Company}", cancellationToken);
+                await _unitOfWork.Supplier.UpdateAsync(model, cancellationToken);
 
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Edited Supplier #{model.SupplierCode}", "Supplier", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited Supplier #{model.SupplierCode}",
+                    "Supplier" );
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
@@ -375,14 +374,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var supplier = await _unitOfWork.FilprideSupplier.GetAsync(c => c.SupplierId == id, cancellationToken);
+            var supplier = await _unitOfWork.Supplier.GetAsync(c => c.SupplierId == id, cancellationToken);
 
             if (supplier == null)
             {
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
 
             return View(supplier);
         }
@@ -395,14 +394,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var supplier = await _unitOfWork.FilprideSupplier.GetAsync(c => c.SupplierId == id, cancellationToken);
+            var supplier = await _unitOfWork.Supplier.GetAsync(c => c.SupplierId == id, cancellationToken);
 
             if (supplier == null)
             {
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -410,13 +409,13 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 supplier.IsActive = true;
                 await _unitOfWork.SaveAsync(cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{supplier.Company}", cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Activated Supplier #{supplier.SupplierCode}", "Supplier", (await GetCompanyClaimAsync())!);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Activated Supplier #{supplier.SupplierCode}",
+                    "Supplier");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -441,7 +440,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var supplier = await _unitOfWork.FilprideSupplier
+            var supplier = await _unitOfWork.Supplier
                 .GetAsync(c => c.SupplierId == id, cancellationToken);
 
             if (supplier == null)
@@ -449,7 +448,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
 
             return View(supplier);
         }
@@ -462,14 +461,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var supplier = await _unitOfWork.FilprideSupplier.GetAsync(c => c.SupplierId == id, cancellationToken);
+            var supplier = await _unitOfWork.Supplier.GetAsync(c => c.SupplierId == id, cancellationToken);
 
             if (supplier == null)
             {
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.FilprideTerms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -477,13 +476,13 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 supplier.IsActive = false;
                 await _unitOfWork.SaveAsync(cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{supplier.Company}", cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Deactivated Supplier #{supplier.SupplierCode}", "Supplier", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Deactivated Supplier #{supplier.SupplierCode}",
+                    "Supplier");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -510,7 +509,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var suppliers = await _unitOfWork.FilprideSupplier
+                var suppliers = await _unitOfWork.Supplier
                     .GetAllAsync(null, cancellationToken);
 
                 // Apply date range filter if provided (using CreatedDate)

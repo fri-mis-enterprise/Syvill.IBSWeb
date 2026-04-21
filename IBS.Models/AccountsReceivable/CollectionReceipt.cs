@@ -14,25 +14,11 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(13)]
         [Display(Name = "CR No")]
-        public string? CollectionReceiptNo { get; set; }
+        public string CollectionReceiptNo { get; set; } = string.Empty;
 
-        public int? SalesInvoiceId { get; set; }
+        public int ServiceInvoiceId { get; set; }
 
-        [Display(Name = "Sales Invoice No.")]
-        [StringLength(13)]
-        public string? SINo { get; set; }
-
-        public int[]? MultipleSIId { get; set; }
-
-        [Display(Name = "Sales Invoice No.")]
-        public string[]? MultipleSI { get; set; }
-
-        [ForeignKey(nameof(SalesInvoiceId))]
-        public SalesInvoice? SalesInvoice { get; set; }
-
-        public int? ServiceInvoiceId { get; set; }
-
-        [Display(Name = "Sales Invoice No.")]
+        [Display(Name = "Service Invoice No.")]
         [StringLength(13)]
         public string? SVNo { get; set; }
 
@@ -182,12 +168,6 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(100)]
         public string? F2307FileName { get; set; }
-
-        [Column(TypeName = "numeric[]")]
-        public decimal[]? SIMultipleAmount { get; set; }
-
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
 
         public bool IsPrinted { get; set; }
 

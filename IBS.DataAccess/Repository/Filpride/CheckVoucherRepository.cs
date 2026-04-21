@@ -9,7 +9,7 @@ using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class CheckVoucherRepository : Repository<FilprideCheckVoucherHeader>, ICheckVoucherRepository
+    public class CheckVoucherRepository : Repository<CheckVoucherHeader>, ICheckVoucherRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -36,9 +36,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.CheckVoucherHeaderNo!.Length)
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Category == "Trade" &&
-                    x.Type == nameof(DocumentType.Documented) &&
-                    x.Company == company,
+                    x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -61,9 +59,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.CheckVoucherHeaderNo!.Length)
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
-                        x.Category == "Trade" &&
-                        x.Type == nameof(DocumentType.Undocumented) &&
-                        x.Company == company,
+                        x.Type == nameof(DocumentType.Undocumented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -116,7 +112,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
         }
 
-        public override async Task<FilprideCheckVoucherHeader?> GetAsync(Expression<Func<FilprideCheckVoucherHeader, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<CheckVoucherHeader?> GetAsync(Expression<Func<CheckVoucherHeader, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(cv => cv.BankAccount)
@@ -125,9 +121,9 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<FilprideCheckVoucherHeader>> GetAllAsync(Expression<Func<FilprideCheckVoucherHeader, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<CheckVoucherHeader>> GetAllAsync(Expression<Func<CheckVoucherHeader, bool>>? filter, CancellationToken cancellationToken = default)
         {
-            IQueryable<FilprideCheckVoucherHeader> query = dbSet
+            IQueryable<CheckVoucherHeader> query = dbSet
                 .Include(cv => cv.BankAccount)
                 .Include(cv => cv.Employee)
                 .Include(cv => cv.Supplier);
@@ -140,9 +136,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<FilprideCheckVoucherHeader> GetAllQuery(Expression<Func<FilprideCheckVoucherHeader, bool>>? filter = null)
+        public override IQueryable<CheckVoucherHeader> GetAllQuery(Expression<Func<CheckVoucherHeader, bool>>? filter = null)
         {
-            IQueryable<FilprideCheckVoucherHeader> query = dbSet
+            IQueryable<CheckVoucherHeader> query = dbSet
                 .Include(cv => cv.BankAccount)
                 .Include(cv => cv.Employee)
                 .Include(cv => cv.Supplier)
@@ -176,8 +172,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
                         x.CvType == nameof(CVType.Invoicing) &&
-                        x.Type == nameof(DocumentType.Documented) &&
-                        x.Company == company,
+                        x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -201,8 +196,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
                         x.CvType == nameof(CVType.Invoicing) &&
-                        x.Type == nameof(DocumentType.Undocumented) &&
-                        x.Company == company,
+                        x.Type == nameof(DocumentType.Undocumented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -236,8 +230,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
                         x.CvType == nameof(CVType.Payment) &&
-                        x.Type == nameof(DocumentType.Documented) &&
-                        x.Company == company,
+                        x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -261,8 +254,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
                         x.CvType == nameof(CVType.Payment) &&
-                        x.Type == nameof(DocumentType.Undocumented) &&
-                        x.Company == company,
+                        x.Type == nameof(DocumentType.Undocumented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -277,7 +269,7 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 4) + incrementedNumber.ToString("D8");
         }
 
-        public async Task PostAsync(FilprideCheckVoucherHeader header,
+        public async Task PostAsync(CheckVoucherHeader header,
             IEnumerable<CheckVoucherDetail> details,
             CancellationToken cancellationToken = default)
         {
@@ -300,7 +292,6 @@ namespace IBS.DataAccess.Repository.Filpride
                             AccountTitle = account.AccountName,
                             Debit = detail.Debit,
                             Credit = detail.Credit,
-                            Company = header.Company,
                             CreatedBy = header.PostedBy!,
                             CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                             SubAccountType = detail.SubAccountType,

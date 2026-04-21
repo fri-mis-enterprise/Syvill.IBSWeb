@@ -13,7 +13,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Customer Code")]
         [StringLength(7)]
-        public string? CustomerCode { get; set; }
+        public string CustomerCode { get; set; } = null!;
 
         [Required]
         [Display(Name = "Customer Name")]
@@ -41,11 +41,6 @@ namespace IBS.Models.MasterFile
         public string CustomerTerms { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Customer Type")]
-        [StringLength(20)]
-        public string CustomerType { get; set; } = null!;
-
-        [Required]
         [Display(Name = "Vat Type")]
         [StringLength(10)]
         public string VatType { get; set; } = null!;
@@ -62,7 +57,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(100)]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -76,18 +71,6 @@ namespace IBS.Models.MasterFile
         [Display(Name = "Edited Date")]
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? EditedDate { get; set; }
-
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
-
-        public ClusterArea? ClusterCode { get; set; }
-
-        #region For Retail
-
-        [StringLength(3)]
-        public string? StationCode { get; set; }
-
-        #endregion
 
         [Column(TypeName = "numeric(18,4)")]
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
@@ -111,26 +94,10 @@ namespace IBS.Models.MasterFile
 
         public bool HasMultipleTerms { get; set; }
 
-        public bool IsFilpride { get; set; }
-
-        public bool IsBienes { get; set; }
-
         [StringLength(13)]
         public string Type { get; set; } = string.Empty;
 
-        [Display(Name = "Requires Price Adjustment")]
-        public bool RequiresPriceAdjustment { get; set; }
-
         [NotMapped]
         public List<SelectListItem>? PaymentTerms { get; set; }
-
-        public int? CommissioneeId { get; set; }
-
-        public decimal CommissionRate { get; set; }
-
-        [NotMapped]
-        public List<SelectListItem>? Commissionees { get; set; }
-
-        public Supplier? Commissionee { get; set; }
     }
 }

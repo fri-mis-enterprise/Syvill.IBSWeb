@@ -16,12 +16,12 @@
         selectedCompany = User.Claims.FirstOrDefault(c => c.Type == "Company")?.Value;
     }
 
-    var customerType = Model.SalesInvoice?.CustomerOrderSlip?.CustomerType ?? Model.ServiceInvoice?.Customer?.CustomerType ?? Model.Customer!.CustomerType;
-    var customerName = Model.SalesInvoice?.CustomerOrderSlip?.CustomerName ?? Model.ServiceInvoice?.CustomerName ?? Model.Customer!.CustomerName;
-    var customerAddress = Model.SalesInvoice?.CustomerOrderSlip?.CustomerAddress ?? Model.ServiceInvoice?.CustomerAddress ?? Model.Customer!.CustomerAddress;
-    var customerTin = Model.SalesInvoice?.CustomerOrderSlip?.CustomerTin ?? Model.ServiceInvoice?.CustomerTin ?? Model.Customer!.CustomerTin;
-    var customerBusinessStyle = Model.SalesInvoice?.CustomerOrderSlip?.BusinessStyle ?? Model.ServiceInvoice?.Customer!.BusinessStyle ?? Model.Customer!.BusinessStyle;
-    var decimalFormat = customerType != nameof(CustomerType.Government) ? SD.Two_Decimal_Format : SD.Four_Decimal_Format;
+    var customerType = string.Empty;
+    var customerName = Model.ServiceInvoice?.CustomerName ?? Model.Customer!.CustomerName;
+    var customerAddress = Model.ServiceInvoice?.CustomerAddress ?? Model.Customer!.CustomerAddress;
+    var customerTin = Model.ServiceInvoice?.CustomerTin ?? Model.Customer!.CustomerTin;
+    var customerBusinessStyle = Model.ServiceInvoice?.Customer!.BusinessStyle ?? Model.Customer!.BusinessStyle;
+    var decimalFormat = SD.Four_Decimal_Format;
 }
 
 <style>
@@ -169,14 +169,7 @@
             <tr>
                 <td colspan="2" style="padding-left:10px;">
                     IN FULL/PARTIAL payment of:
-                    @if (Model.SalesInvoiceId != null)
-                    {
-                        @Html.DisplayFor(model => model.SalesInvoice!.SalesInvoiceNo)
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(model => model.ServiceInvoice!.ServiceInvoiceNo)
-                    }
+                    @Html.DisplayFor(model => model.ServiceInvoice!.ServiceInvoiceNo)
                 </td>
             </tr>
             <tr>
@@ -198,24 +191,10 @@
             </tr>
             <tr class="text-center">
                 <td style="width:33%">
-                    @if (Model.SalesInvoiceId != null)
-                    {
-                        @Model.SalesInvoice?.TransactionDate.ToString(SD.Date_Format)
-                    }
-                    else
-                    {
-                        @Model.ServiceInvoice?.CreatedDate.ToString(SD.Date_Format)
-                    }
+                    @Model.ServiceInvoice?.CreatedDate.ToString(SD.Date_Format)
                 </td>
                 <td style="width:33%">
-                    @if (Model.SalesInvoiceId != null)
-                    {
-                        @Html.DisplayFor(model => model.SalesInvoice!.SalesInvoiceNo)
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(model => model.ServiceInvoice!.ServiceInvoiceNo)
-                    }
+                    @Html.DisplayFor(model => model.ServiceInvoice!.ServiceInvoiceNo)
                 </td>
                 <td style="width:33%">@Model.Total.ToString(decimalFormat)</td>
             </tr>
@@ -385,7 +364,7 @@
 
 <br>
 
-@if (Model.Type == nameof(DocumentType.Documented) && customerType != nameof(CustomerType.Retail))
+@if (Model.Type == nameof(DocumentType.Documented))
 {
     <div class="text-center w-100 compact-section" style="margin-top:10px;">
         <em><strong>"THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX"</strong></em><br/><br/>

@@ -29,81 +29,63 @@ namespace IBS.DataAccess.Repository.IRepository
 
         #region--Filpride
 
-        Filpride.IRepository.IChartOfAccountRepository FilprideChartOfAccount { get; }
-        Filpride.IRepository.ICustomerOrderSlipRepository FilprideCustomerOrderSlip { get; }
-        IDeliveryReceiptRepository FilprideDeliveryReceipt { get; }
-        Filpride.IRepository.ISupplierRepository FilprideSupplier { get; }
-        Filpride.IRepository.ICustomerRepository FilprideCustomer { get; }
-        IAuditTrailRepository FilprideAuditTrail { get; }
-        Filpride.IRepository.IEmployeeRepository FilprideEmployee { get; }
-        ICustomerBranchRepository FilprideCustomerBranch { get; }
-        ITermsRepository FilprideTerms { get; }
-        Filpride.IRepository.IGeneralLedgerRepository GeneralLedger { get; }
+        IChartOfAccountRepository ChartOfAccount { get; }
+        ISupplierRepository Supplier { get; }
+        ICustomerRepository Customer { get; }
+        IAuditTrailRepository AuditTrail { get; }
+        IEmployeeRepository Employee { get; }
+        ICustomerBranchRepository CustomerBranch { get; }
+        ITermsRepository Terms { get; }
+        IGeneralLedgerRepository GeneralLedger { get; }
         IProvisionalReceiptRepository ProvisionalReceipt { get; }
 
-        Task<List<SelectListItem>> GetFilprideCustomerListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetCustomerListAsyncById(string company, CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetFilprideSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetFilprideTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetFilprideNonTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetBankAccountListById(string company, CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetFilprideCommissioneeListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetEmployeeListById(CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetFilprideHaulerListAsyncById(string company, CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetFilprideBankAccountListById(string company, CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetFilprideEmployeeListById(CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetDistinctFilpridePickupPointListById(string company, CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetFilprideServiceListById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetServiceListById(string company, CancellationToken cancellationToken = default);
 
         #endregion
 
         #region AAS
 
         #region Accounts Receivable
-        ISalesInvoiceRepository FilprideSalesInvoice { get; }
 
-        Filpride.IRepository.IServiceInvoiceRepository FilprideServiceInvoice { get; }
+        IServiceInvoiceRepository ServiceInvoice { get; }
 
-        Filpride.IRepository.ICollectionReceiptRepository FilprideCollectionReceipt { get; }
+        ICollectionReceiptRepository CollectionReceipt { get; }
 
-        Filpride.IRepository.IDebitMemoRepository FilprideDebitMemo { get; }
+        IDebitMemoRepository DebitMemo { get; }
 
-        Filpride.IRepository.ICreditMemoRepository FilprideCreditMemo { get; }
+        ICreditMemoRepository CreditMemo { get; }
         #endregion
 
         #region Accounts Payable
 
-        Filpride.IRepository.ICheckVoucherRepository FilprideCheckVoucher { get; }
+        ICheckVoucherRepository CheckVoucher { get; }
 
-        Filpride.IRepository.IJournalVoucherRepository FilprideJournalVoucher { get; }
-
-        Filpride.IRepository.IPurchaseOrderRepository FilpridePurchaseOrder { get; }
-
-        Filpride.IRepository.IReceivingReportRepository FilprideReceivingReport { get; }
+        IJournalVoucherRepository JournalVoucher { get; }
 
         #endregion
 
         #region Books and Report
-        Filpride.IRepository.IInventoryRepository FilprideInventory { get; }
 
-        IReportRepository FilprideReport { get; }
+        IReportRepository Report { get; }
         #endregion
 
         #region Master File
 
-        Filpride.IRepository.IBankAccountRepository FilprideBankAccount { get; }
+        IBankAccountRepository BankAccount { get; }
 
-        Filpride.IRepository.IServiceRepository FilprideService { get; }
+        IServiceRepository Service { get; }
 
-        Filpride.IRepository.IPickUpPointRepository FilpridePickUpPoint { get; }
-
-        IAuthorityToLoadRepository FilprideAuthorityToLoad { get; }
+        IPickUpPointRepository PickUpPoint { get; }
 
         #endregion
 

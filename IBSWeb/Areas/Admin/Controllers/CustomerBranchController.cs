@@ -49,7 +49,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             var model = new CustomerBranch
             {
-                CustomerSelectList = await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims!, cancellationToken)
+                CustomerSelectList = await _unitOfWork.GetCustomerListAsyncById(companyClaims!, cancellationToken)
             };
 
             return View(model);
@@ -65,7 +65,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", "Make sure to fill all the required details.");
                 model.CustomerSelectList =
-                    await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims!, cancellationToken);
+                    await _unitOfWork.GetCustomerListAsyncById(companyClaims!, cancellationToken);
                 return View(model);
             }
 
@@ -73,7 +73,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                var customer = await _unitOfWork.FilprideCustomer
+                var customer = await _unitOfWork.Customer
                     .GetAsync(x => x.CustomerId == model.CustomerId, cancellationToken);
 
                 if (customer == null)
@@ -82,13 +82,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 }
 
                 customer.HasBranch = true;
-                await _unitOfWork.FilprideCustomerBranch.AddAsync(model, cancellationToken);
+                await _unitOfWork.CustomerBranch.AddAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Created Customer Branch #{model.Id}", "Customer Branch", companyClaims! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Created Customer Branch #{model.Id}",
+                    "Customer Branch");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -101,7 +102,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 _logger.LogError(ex, "Failed to create customer branch master file. Created by: {UserName}", _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                model.CustomerSelectList = await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims!, cancellationToken);
+                model.CustomerSelectList = await _unitOfWork.GetCustomerListAsyncById(companyClaims!, cancellationToken);
                 return View(model);
             }
         }
@@ -115,14 +116,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var branch = await _unitOfWork.FilprideCustomerBranch.GetAsync(b => b.Id == id, cancellationToken);
+            var branch = await _unitOfWork.CustomerBranch.GetAsync(b => b.Id == id, cancellationToken);
 
             if (branch == null)
             {
                 return NotFound();
             }
 
-            branch.CustomerSelectList = await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims!, cancellationToken);
+            branch.CustomerSelectList = await _unitOfWork.GetCustomerListAsyncById(companyClaims!, cancellationToken);
             return View(branch);
         }
 
@@ -136,7 +137,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", "Make sure to fill all the required details.");
                 model.CustomerSelectList =
-                    await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims!, cancellationToken);
+                    await _unitOfWork.GetCustomerListAsyncById(companyClaims!, cancellationToken);
                 return View(model);
             }
 
@@ -144,13 +145,14 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             try
             {
-                await _unitOfWork.FilprideCustomerBranch.UpdateAsync(model, cancellationToken);
+                await _unitOfWork.CustomerBranch.UpdateAsync(model, cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Edited Customer Branch #{model.Id}", "Customer Branch", companyClaims! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited Customer Branch #{model.Id}",
+                    "Customer Branch");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -164,7 +166,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 TempData["error"] = $"Error: '{ex.Message}'";
                 await transaction.RollbackAsync(cancellationToken);
                 model.CustomerSelectList =
-                    await _unitOfWork.GetFilprideCustomerListAsyncById(companyClaims!, cancellationToken);
+                    await _unitOfWork.GetCustomerListAsyncById(companyClaims!, cancellationToken);
                 return View(model);
             }
         }
@@ -187,7 +189,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var query = _unitOfWork.FilprideCustomerBranch
+                var query = _unitOfWork.CustomerBranch
                     .GetAllQuery();
 
                 var totalRecords = await query.CountAsync(cancellationToken);
@@ -251,7 +253,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var customer = await _unitOfWork.FilprideCustomer
+                var customer = await _unitOfWork.Customer
                     .GetAsync(c => c.CustomerId == customerId, cancellationToken);
 
                 if (customer == null)

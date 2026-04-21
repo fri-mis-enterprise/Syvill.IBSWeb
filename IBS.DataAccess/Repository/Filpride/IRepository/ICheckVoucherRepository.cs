@@ -3,7 +3,7 @@ using IBS.Models.AccountsPayable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ICheckVoucherRepository : IRepository<FilprideCheckVoucherHeader>
+    public interface ICheckVoucherRepository : IRepository<CheckVoucherHeader>
     {
         Task<string> GenerateCodeAsync(string company, string type, CancellationToken cancellationToken = default);
 
@@ -15,6 +15,6 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 
         Task UpdateMultipleInvoicingVoucher(decimal paymentAmount, int invoiceVoucherId, CancellationToken cancellationToken = default);
 
-        Task PostAsync(FilprideCheckVoucherHeader header, IEnumerable<CheckVoucherDetail> details, CancellationToken cancellationToken = default);
+        Task PostAsync(CheckVoucherHeader header, IEnumerable<CheckVoucherDetail> details, CancellationToken cancellationToken = default);
     }
 }

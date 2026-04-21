@@ -13,7 +13,7 @@ namespace IBS.Models.MasterFile
         public string Depot { get; set; } = null!;
 
         [StringLength(100)]
-        public string CreatedBy { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = null!;
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedDate { get; set; }
@@ -22,9 +22,6 @@ namespace IBS.Models.MasterFile
 
         [ForeignKey(nameof(SupplierId))]
         public Supplier? Supplier { get; set; }
-
-        [StringLength(50)]
-        public string Company { get; set; } = null!;
 
         [NotMapped]
         public List<SelectListItem>? Suppliers { get; set; }

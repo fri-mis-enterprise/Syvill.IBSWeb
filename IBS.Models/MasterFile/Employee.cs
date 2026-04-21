@@ -49,9 +49,6 @@ namespace IBS.Models.MasterFile
         [StringLength(20)]
         public string? PagibigNo { get; set; } = string.Empty;
 
-        [StringLength(20)]
-        public string? Company { get; set; } = string.Empty;
-
         [StringLength(50)]
         public string? Department { get; set; } = string.Empty;
 

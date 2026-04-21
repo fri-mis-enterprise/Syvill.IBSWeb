@@ -72,8 +72,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             var model = new PickUpPoint
             {
-                Suppliers = await _unitOfWork.FilprideSupplier.GetFilprideTradeSupplierListAsyncById(companyClaims, cancellationToken),
-                Company = companyClaims
+                Suppliers = await _unitOfWork.Supplier.GetFilprideTradeSupplierListAsyncById(companyClaims, cancellationToken),
             };
 
             return View(model);
@@ -92,7 +91,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.Suppliers = await _unitOfWork.FilprideSupplier.GetFilprideTradeSupplierListAsyncById(companyClaims, cancellationToken);
+                model.Suppliers = await _unitOfWork.Supplier.GetFilprideTradeSupplierListAsyncById(companyClaims, cancellationToken);
                 ModelState.AddModelError("", "Make sure to fill all the required details.");
                 return View(model);
             }
@@ -103,14 +102,15 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 model.CreatedBy = GetUserFullName();
                 model.CreatedDate = DateTimeHelper.GetCurrentPhilippineTime();
-                await _unitOfWork.FilpridePickUpPoint.AddAsync(model, cancellationToken);
+                await _unitOfWork.PickUpPoint.AddAsync(model, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
                 #region --Audit Trail Recording
 
                 AuditTrail auditTrailBook = new (GetUserFullName(),
-                    $"Created Pickup Point #{model.Depot}","Pickup Point", (await GetCompanyClaimAsync())! );
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Created Pickup Point #{model.Depot}",
+                    "Pickup Point");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
@@ -132,7 +132,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var query = _unitOfWork.FilpridePickUpPoint
+                var query = _unitOfWork.PickUpPoint
                     .GetAllQuery();
 
                 var totalRecords = await query.CountAsync(cancellationToken);
@@ -205,7 +205,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     return BadRequest();
                 }
 
-                var model = await _unitOfWork.FilpridePickUpPoint
+                var model = await _unitOfWork.PickUpPoint
                     .GetAsync(p => p.PickUpPointId == id, cancellationToken);
 
                 if (model == null)
@@ -213,7 +213,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     return NotFound();
                 }
 
-                model.Suppliers = await _unitOfWork.FilprideSupplier.GetFilprideTradeSupplierListAsyncById(companyClaims, cancellationToken);
+                model.Suppliers = await _unitOfWork.Supplier.GetFilprideTradeSupplierListAsyncById(companyClaims, cancellationToken);
 
                 return View(model);
             }
@@ -233,7 +233,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var selected = await _unitOfWork.FilpridePickUpPoint
+            var selected = await _unitOfWork.PickUpPoint
                 .GetAsync(p => p.PickUpPointId == model.PickUpPointId, cancellationToken);
 
             if (selected == null)
@@ -248,8 +248,9 @@ namespace IBSWeb.Areas.Admin.Controllers
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new(GetUserFullName(),
-                    $"Edited pickup point {selected.Depot} to {model.Depot}", "Customer", model.Company);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited pickup point {selected.Depot} to {model.Depot}",
+                    "Customer");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording --
 

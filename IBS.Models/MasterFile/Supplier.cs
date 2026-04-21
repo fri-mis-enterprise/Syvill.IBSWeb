@@ -12,7 +12,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Supplier Code")]
         [StringLength(7)]
-        public string? SupplierCode { get; set; }
+        public string SupplierCode { get; set; } = null!;
 
         [Display(Name = "Supplier Name")]
         [StringLength(200)]
@@ -55,7 +55,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(100)]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -72,10 +72,6 @@ namespace IBS.Models.MasterFile
 
         [StringLength(20)]
         public string Category { get; set; } = null!;
-
-        [StringLength(255)]
-        [Display(Name = "Trade Name")]
-        public string? TradeName { get; set; }
 
         [StringLength(20)]
         public string? Branch { get; set; }
@@ -109,20 +105,10 @@ namespace IBS.Models.MasterFile
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? ValidityDate { get; set; }
 
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
-
         [Required]
         [Display(Name = "Zip Code")]
         [StringLength(10)]
         public string? ZipCode { get; set; }
-
-        public bool IsFilpride { get; set; }
-
-        public bool IsBienes { get; set; }
-
-        [Display(Name = "Requires Price Adjustment")]
-        public bool RequiresPriceAdjustment { get; set; }
 
         [NotMapped]
         public List<SelectListItem>? PaymentTerms { get; set; }

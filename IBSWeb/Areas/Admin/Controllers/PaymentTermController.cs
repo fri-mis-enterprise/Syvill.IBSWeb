@@ -61,7 +61,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             try
             {
-                var queried = _unitOfWork.FilprideTerms
+                var queried = _unitOfWork.Terms
                     .GetAllQuery();
 
                 var totalRecords = await queried.CountAsync(cancellationToken);
@@ -148,14 +148,15 @@ namespace IBSWeb.Areas.Admin.Controllers
                 model.CreatedBy = getUserFullName;
                 model.CreatedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.EditedBy = string.Empty;
-                await _unitOfWork.FilprideTerms.AddAsync(model, cancellationToken);
+                await _unitOfWork.Terms.AddAsync(model, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new(getUserFullName,
-                    $"Create new Terms #{model.TermsCode}", "Terms", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Create new Terms #{model.TermsCode}",
+                    "Terms");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
@@ -180,7 +181,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var supplier = await _unitOfWork.FilprideTerms.GetAsync(c => c.TermsCode == code, cancellationToken);
+            var supplier = await _unitOfWork.Terms.GetAsync(c => c.TermsCode == code, cancellationToken);
 
             if (supplier == null)
             {
@@ -213,13 +214,14 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 model.EditedBy = getUserFullName;
-                await _unitOfWork.FilprideTerms.UpdateAsync(model, cancellationToken);
+                await _unitOfWork.Terms.UpdateAsync(model, cancellationToken);
 
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new (getUserFullName,
-                    $"Edited Terms #{model.TermsCode}", "Terms", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Edited Terms #{model.TermsCode}",
+                    "Terms");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
@@ -266,8 +268,9 @@ namespace IBSWeb.Areas.Admin.Controllers
                 #region -- Audit Trail Recording --
 
                 AuditTrail auditTrailBook = new (getUserFullName,
-                    $"Deleted Terms #{code}", "Terms", companyClaims);
-                await _unitOfWork.FilprideAuditTrail.AddAsync(auditTrailBook, cancellationToken);
+                    $"Deleted Terms #{code}",
+                    "Terms");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
 
