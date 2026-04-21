@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IBS.Models.MasterFile
 {
@@ -6,15 +7,16 @@ namespace IBS.Models.MasterFile
     {
         [Key]
         [StringLength(10)]
-        public string TermsCode { get; set; } = null!;
+        public string TermsCode { get; set; } = string.Empty;
 
         public int NumberOfDays { get; set; }
 
         public int NumberOfMonths { get; set; }
 
         [StringLength(100)]
-        public string CreatedBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = string.Empty;
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedDate { get; set; }
 
         [StringLength(100)]

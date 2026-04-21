@@ -2974,7 +2974,7 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp")
                         .HasColumnName("created_date");
 
                     b.Property<string>("EditedBy")
