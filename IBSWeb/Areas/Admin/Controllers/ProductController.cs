@@ -48,19 +48,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             return View(products);
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         [HttpGet]
         public IActionResult Create()
         {

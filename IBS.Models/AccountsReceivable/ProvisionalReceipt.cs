@@ -67,9 +67,6 @@ namespace IBS.Models.AccountsReceivable
         [Column(TypeName = "numeric(18,4)")]
         public decimal Total { get; set; }
 
-        [StringLength(20)]
-        public string Company { get; set; } = string.Empty;
-
         public bool IsPrinted { get; set; }
 
         [StringLength(20)]

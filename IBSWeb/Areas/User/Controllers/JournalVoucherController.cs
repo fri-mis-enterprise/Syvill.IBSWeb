@@ -48,19 +48,6 @@ namespace IBSWeb.Areas.User.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private async Task UpdateFilterTypeClaim(string filterType)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -93,7 +80,7 @@ namespace IBSWeb.Areas.User.Controllers
             return claims.FirstOrDefault(c => c.Type == FilterTypeClaimType)?.Value;
         }
 
-        private async Task<List<SelectListItem>> GetLiquidationCheckVoucherHeadersAsync(string companyClaims, int employeeId, int? selectedCvId, CancellationToken cancellationToken)
+        private async Task<List<SelectListItem>> GetLiquidationCheckVoucherHeadersAsync(int employeeId, int? selectedCvId, CancellationToken cancellationToken)
         {
             return await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
@@ -109,13 +96,12 @@ namespace IBSWeb.Areas.User.Controllers
                 .ToListAsync(cancellationToken);
         }
 
-        private async Task<List<SelectListItem>> GetLiquidationProvisionalReceiptsAsync(string companyClaims, int employeeId, string? selectedPrNo, CancellationToken cancellationToken)
+        private async Task<List<SelectListItem>> GetLiquidationProvisionalReceiptsAsync(int employeeId, string? selectedPrNo, CancellationToken cancellationToken)
         {
             return await _dbContext.ProvisionalReceipts
                 .OrderByDescending(pr => pr.TransactionDate)
                 .ThenByDescending(pr => pr.SeriesNumber)
                 .Where(pr =>
-                    pr.Company == companyClaims &&
                     pr.EmployeeId == employeeId &&
                     ((pr.Status != nameof(CollectionReceiptStatus.Canceled) &&
                       pr.Status != nameof(CollectionReceiptStatus.Voided)) ||
@@ -128,7 +114,7 @@ namespace IBSWeb.Areas.User.Controllers
                 .ToListAsync(cancellationToken);
         }
 
-        private async Task PopulateLiquidationDependenciesAsync(JournalVoucherViewModel viewModel, string companyClaims, CancellationToken cancellationToken, int? selectedCvId = null, string? selectedPrNo = null)
+        private async Task PopulateLiquidationDependenciesAsync(JournalVoucherViewModel viewModel, CancellationToken cancellationToken, int? selectedCvId = null, string? selectedPrNo = null)
         {
             viewModel.COA = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
             viewModel.Employees = await _unitOfWork.GetEmployeeListById(cancellationToken);
@@ -137,8 +123,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             if (viewModel.EmployeeId.HasValue)
             {
-                viewModel.CheckVoucherHeaders = await GetLiquidationCheckVoucherHeadersAsync(companyClaims, viewModel.EmployeeId.Value, selectedCvId ?? viewModel.CVId, cancellationToken);
-                viewModel.ProvisionalReceipts = await GetLiquidationProvisionalReceiptsAsync(companyClaims, viewModel.EmployeeId.Value, selectedPrNo ?? viewModel.PRNo, cancellationToken);
+                viewModel.CheckVoucherHeaders = await GetLiquidationCheckVoucherHeadersAsync(viewModel.EmployeeId.Value, selectedCvId ?? viewModel.CVId, cancellationToken);
+                viewModel.ProvisionalReceipts = await GetLiquidationProvisionalReceiptsAsync(viewModel.EmployeeId.Value, selectedPrNo ?? viewModel.PRNo, cancellationToken);
                 return;
             }
 
@@ -158,7 +144,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
                 var filterTypeClaim = await GetCurrentFilterType();
 
                 var journalVoucherHeader = _unitOfWork.JournalVoucher
@@ -240,14 +225,7 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new JournalVoucherViewModel();
 
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            await PopulateLiquidationDependenciesAsync(viewModel, companyClaims, cancellationToken);
+            await PopulateLiquidationDependenciesAsync(viewModel, cancellationToken);
 
             return View(viewModel);
         }
@@ -256,14 +234,7 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateLiquidation(JournalVoucherViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            await PopulateLiquidationDependenciesAsync(viewModel, companyClaims, cancellationToken);
+            await PopulateLiquidationDependenciesAsync(viewModel, cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -395,28 +366,14 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLiquidationCheckVouchersByEmployee(int employeeId, int? selectedCvId, CancellationToken cancellationToken = default)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            var selectList = await GetLiquidationCheckVoucherHeadersAsync(companyClaims, employeeId, selectedCvId, cancellationToken);
+            var selectList = await GetLiquidationCheckVoucherHeadersAsync(employeeId, selectedCvId, cancellationToken);
             return Json(selectList);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetProvisionalReceiptsByEmployee(int employeeId, string? selectedPrNo, CancellationToken cancellationToken = default)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            var selectList = await GetLiquidationProvisionalReceiptsAsync(companyClaims, employeeId, selectedPrNo, cancellationToken);
+            var selectList = await GetLiquidationProvisionalReceiptsAsync(employeeId, selectedPrNo, cancellationToken);
             return Json(selectList);
         }
 
@@ -448,8 +405,6 @@ namespace IBSWeb.Areas.User.Controllers
             viewModel.IsAmortization = await _dbContext
                 .JvAmortizationSettings
                 .AnyAsync(jv => jv.JvId == id.Value && jv.IsActive, cancellationToken);
-
-            var companyClaims = await GetCompanyClaimAsync();
 
             #region --Audit Trail Recording
 
@@ -615,7 +570,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> EditLiquidation(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
             try
             {
                 var existingHeaderModel = await _dbContext.JournalVoucherHeaders
@@ -662,12 +616,7 @@ namespace IBSWeb.Areas.User.Controllers
                     MinDate = minDate
                 };
 
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
-
-                await PopulateLiquidationDependenciesAsync(model, companyClaims, cancellationToken, existingHeaderModel.CVId, existingHeaderModel.CRNo);
+                await PopulateLiquidationDependenciesAsync(model, cancellationToken, existingHeaderModel.CVId, existingHeaderModel.CRNo);
 
                 return View(model);
             }
@@ -684,14 +633,7 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditLiquidation(JournalVoucherViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            await PopulateLiquidationDependenciesAsync(viewModel, companyClaims, cancellationToken, viewModel.CVId, viewModel.PRNo);
+            await PopulateLiquidationDependenciesAsync(viewModel, cancellationToken, viewModel.CVId, viewModel.PRNo);
 
             if (!ModelState.IsValid)
             {
@@ -833,8 +775,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
-
                 var journalVoucherHeaders = await _unitOfWork.JournalVoucher
                     .GetAllAsync(jv => jv.Type == nameof(DocumentType.Documented), cancellationToken);
 
@@ -997,8 +937,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new JvCreateAccrualViewModel();
 
-            var companyClaims = await GetCompanyClaimAsync();
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1021,13 +959,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAccrual(JvCreateAccrualViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1139,8 +1070,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAccrual(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
             try
             {
                 var existingHeaderModel = await _dbContext.JournalVoucherHeaders
@@ -1212,13 +1141,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAccrual(JvEditAccrualViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
@@ -1384,8 +1306,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new JvCreateAmortizationViewModel();
 
-            var companyClaims = await GetCompanyClaimAsync();
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1417,13 +1337,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAmortization(JvCreateAmortizationViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1564,8 +1477,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAmortization(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
             try
             {
                 var existingAmortizationSetting = await _dbContext.JvAmortizationSettings
@@ -1657,13 +1568,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAmortization(JvEditAmortizationViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1810,8 +1714,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new JvCreateReclassViewModel();
 
-            var companyClaims = await GetCompanyClaimAsync();
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1836,13 +1738,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateReclass(JvCreateReclassViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -1945,8 +1840,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> EditReclass(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
             try
             {
                 var existingHeaderModel = await _dbContext.JournalVoucherHeaders
@@ -2013,13 +1906,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditReclass(JvEditReclassViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             viewModel.CvList = await _dbContext.CheckVoucherHeaders
                 .OrderBy(c => c.CheckVoucherHeaderNo)
                 .Where(c =>
@@ -2230,14 +2116,7 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNonTradeSupplierSelectList(CancellationToken cancellationToken = default)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            var selectList = await _unitOfWork.GetNonTradeSupplierListAsyncById(companyClaims, cancellationToken);
+            var selectList = await _unitOfWork.GetNonTradeSupplierListAsyncById(cancellationToken);
             return Json(selectList);
         }
     }

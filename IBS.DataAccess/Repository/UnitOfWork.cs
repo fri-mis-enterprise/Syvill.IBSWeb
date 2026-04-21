@@ -174,28 +174,11 @@ namespace IBS.DataAccess.Repository
 
         #region--Filpride
 
-        // Make the function generic
-        private Expression<Func<T, bool>> GetCompanyFilter<T>(string companyName) where T : class
-        {
-            // Use reflection or property pattern matching to dynamically access properties
-            var param = Expression.Parameter(typeof(T), "x");
-
-            // Build the appropriate expression based on the company name
-            Expression propertyAccess = companyName switch
-            {
-                nameof(Filpride) => Expression.Property(param, "IsFilpride"),
-                _ => Expression.Constant(false)
-            };
-
-            return Expression.Lambda<Func<T, bool>>(propertyAccess, param);
-        }
-
-        public async Task<List<SelectListItem>> GetCustomerListAsyncById(string company, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetCustomerListAsyncById(CancellationToken cancellationToken = default)
         {
             return await _db.Customers
                 .OrderBy(c => c.CustomerName)
                 .Where(c => c.IsActive)
-                .Where(GetCompanyFilter<Customer>(company))
                 .Select(c => new SelectListItem
                 {
                     Value = c.CustomerId.ToString(),
@@ -204,12 +187,11 @@ namespace IBS.DataAccess.Repository
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetSupplierListAsyncById(string company, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetSupplierListAsyncById(CancellationToken cancellationToken = default)
         {
             return await _db.Suppliers
                 .OrderBy(s => s.SupplierCode)
                 .Where(s => s.IsActive)
-                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -218,12 +200,11 @@ namespace IBS.DataAccess.Repository
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(CancellationToken cancellationToken = default)
         {
             return await _db.Suppliers
                 .OrderBy(s => s.SupplierName)
                 .Where(s => s.IsActive && s.Category == "Non-Trade")
-                .Where(GetCompanyFilter<Supplier>(company))
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -232,10 +213,9 @@ namespace IBS.DataAccess.Repository
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetBankAccountListById(string company, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetBankAccountListById(CancellationToken cancellationToken = default)
         {
             return await _db.BankAccounts
-                .Where(GetCompanyFilter<BankAccount>(company))
                 .OrderBy(b => b.AccountNo)
                 .Select(ba => new SelectListItem
                 {
@@ -259,11 +239,10 @@ namespace IBS.DataAccess.Repository
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetServiceListById(string companyClaims, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetServiceListById( CancellationToken cancellationToken = default)
         {
             return await _db.Services
                 .OrderBy(s => s.Name)
-                .Where(GetCompanyFilter<Service>(companyClaims))
                 .Select(s => new SelectListItem
                 {
                     Value = s.ServiceId.ToString(),

@@ -37,19 +37,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var customer = await _unitOfWork.Customer
@@ -61,11 +48,6 @@ namespace IBSWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
             var model = new Customer()
             {
 
@@ -83,13 +65,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", "Make sure to fill all the required details.");
                 return View(model);
-            }
-
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
             }
 
             model.PaymentTerms = await _unitOfWork.Terms
@@ -143,20 +118,16 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var customer = await _unitOfWork.Customer.GetAsync(c => c.CustomerId == id, cancellationToken);
-            var companyClaims = await GetCompanyClaimAsync();
-            if (companyClaims == null)
+
+            if (customer == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            if (customer != null)
-            {
-                customer.PaymentTerms = await _unitOfWork.Terms
-                    .GetTermsListAsyncByCode(cancellationToken);
-                return View(customer);
-            }
+            customer.PaymentTerms = await _unitOfWork.Terms
+                .GetTermsListAsyncByCode(cancellationToken);
+            return View(customer);
 
-            return NotFound();
         }
 
         [HttpPost]

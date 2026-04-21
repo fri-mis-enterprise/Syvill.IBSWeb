@@ -31,19 +31,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             _logger = logger;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private string GetUserFullName()
         {
             return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value
@@ -73,8 +60,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                 TempData["warning"] = "The submitted information is invalid.";
                 return View(model);
             }
-
-            var companyClaims = await GetCompanyClaimAsync();
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 

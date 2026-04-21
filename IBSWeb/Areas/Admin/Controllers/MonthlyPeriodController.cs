@@ -39,19 +39,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         public IActionResult Index()
         {
             return View();
@@ -61,13 +48,6 @@ namespace IBSWeb.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TriggerMonthlyClosure(DateOnly monthDate, CancellationToken cancellationToken)
         {
-            var companyClaim = await GetCompanyClaimAsync();
-
-            if (companyClaim == null)
-            {
-                return BadRequest();
-            }
-
             try
             {
                 await _monthlyClosureService.CloseAsync(monthDate, User.Identity!.Name!, cancellationToken);
@@ -98,13 +78,6 @@ namespace IBSWeb.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TriggerMonthlyOpening(DateOnly monthDate, CancellationToken cancellationToken)
         {
-            var companyClaim = await GetCompanyClaimAsync();
-
-            if (companyClaim == null)
-            {
-                return BadRequest();
-            }
-
             try
             {
                 await _monthlyClosureService.OpenAsync(monthDate, User.Identity!.Name!, cancellationToken);

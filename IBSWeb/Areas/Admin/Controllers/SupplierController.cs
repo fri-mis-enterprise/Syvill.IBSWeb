@@ -46,19 +46,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private string GenerateFileNameToSave(string incomingFileName)
         {
             var fileName = Path.GetFileNameWithoutExtension(incomingFileName);
@@ -104,13 +91,6 @@ namespace IBSWeb.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Supplier model, IFormFile? registration, IFormFile? document, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             model.DefaultExpenses = await _dbContext.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
@@ -139,15 +119,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(model);
             }
 
-            if (await _unitOfWork.Supplier.IsSupplierExistAsync(model.SupplierName, model.Category,
-                    companyClaims, cancellationToken))
+            if (await _unitOfWork.Supplier.IsSupplierExistAsync(model.SupplierName, model.Category, cancellationToken))
             {
                 ModelState.AddModelError("SupplierName", "Supplier already exist.");
                 return View(model);
             }
 
             if (await _unitOfWork.Supplier.IsTinNoExistAsync(model.SupplierTin, model.Branch!,
-                    model.Category, companyClaims, cancellationToken))
+                    model.Category, cancellationToken))
             {
                 ModelState.AddModelError("SupplierTin", "Tin number already exist.");
                 return View(model);

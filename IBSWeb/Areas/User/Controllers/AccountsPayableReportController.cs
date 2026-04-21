@@ -51,19 +51,6 @@ namespace IBSWeb.Areas.User.Controllers
             return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value
                    ?? User.Identity?.Name!;
         }
-
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
         private static string NormalizeStatusFilter(string? statusFilter) => statusFilter switch
         {
             "All" => "All",
@@ -101,13 +88,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> GeneratedClearedDisbursementReport(ViewModelBook model, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 TempData["warning"] = "The submitted information is invalid.";
@@ -116,7 +96,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             try
             {
-                var checkVoucherHeader = await _unitOfWork.Report.GetClearedDisbursementReport(model.DateFrom, model.DateTo, companyClaims, cancellationToken);
+                var checkVoucherHeader = await _unitOfWork.Report.GetClearedDisbursementReport(model.DateFrom, model.DateTo, cancellationToken);
 
                 if (checkVoucherHeader.Count == 0)
                 {
@@ -285,15 +265,9 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
 
                 var clearedDisbursementReport =
-                    await _unitOfWork.Report.GetClearedDisbursementReport(model.DateFrom, model.DateTo,
-                        companyClaims, cancellationToken);
+                    await _unitOfWork.Report.GetClearedDisbursementReport(model.DateFrom, model.DateTo, cancellationToken);
 
                 if (clearedDisbursementReport.Count == 0)
                 {
@@ -318,7 +292,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
 
                 worksheet.Cells["A7"].Value = "Category";
                 worksheet.Cells["B7"].Value = "Subcategory";
@@ -441,12 +415,6 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
                 var nonTradeInvoiceReport =
@@ -508,7 +476,7 @@ namespace IBSWeb.Areas.User.Controllers
                 worksheet.Cells["B2"].Value =
                     $"{dateFrom.ToString("MMM dd, yyyy")} - {dateTo.ToString("MMM dd, yyyy")}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
                 worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
 
                 // Determine if we need to show void/cancel columns
@@ -653,12 +621,6 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
 
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
@@ -700,7 +662,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom.ToString("MMM dd, yyyy")} - {dateTo.ToString("MMM dd, yyyy")}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
                 worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
 
                 // Determine if we need to show void/cancel columns
@@ -859,18 +821,11 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
-
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
                 // Fetch journal voucher report data
                 var journalVoucherReport = await _unitOfWork.Report
-                    .GetJournalVoucherReport(model.DateFrom, model.DateTo, companyClaims, statusFilter, cancellationToken);
+                    .GetJournalVoucherReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
 
                 if (journalVoucherReport.Count == 0)
                 {
@@ -894,7 +849,7 @@ namespace IBSWeb.Areas.User.Controllers
                 worksheet.Cells["A3"].Value = "Extracted By: ";
                 worksheet.Cells["B3"].Value = GetUserFullName();
                 worksheet.Cells["A4"].Value = "Company: ";
-                worksheet.Cells["B4"].Value = await GetCompanyClaimAsync();
+                worksheet.Cells["B4"].Value = "Syvill";
                 worksheet.Cells["A5"].Value = "Status Filter: ";
                 worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
 

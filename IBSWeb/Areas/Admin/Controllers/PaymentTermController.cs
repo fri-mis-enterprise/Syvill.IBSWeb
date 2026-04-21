@@ -38,19 +38,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         public IActionResult Index()
         {
             return View();
@@ -131,12 +118,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var getUserFullName = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -202,12 +183,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var getUserFullName = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -247,12 +222,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             var getUserFullName = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 

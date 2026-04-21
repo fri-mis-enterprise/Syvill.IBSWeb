@@ -44,19 +44,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var level1 = await _unitOfWork.ChartOfAccount
@@ -114,7 +101,6 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 await _unitOfWork.ChartOfAccount.AddAsync(newAccount, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{await GetCompanyClaimAsync()}", cancellationToken);
 
                 #region --Audit Trail Recording
 
@@ -263,7 +249,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                 existingAccount.EditedBy = GetUserFullName();
                 existingAccount.EditedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 await _unitOfWork.SaveAsync(cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{await GetCompanyClaimAsync()}", cancellationToken);
 
                 #region --Audit Trail Recording
 

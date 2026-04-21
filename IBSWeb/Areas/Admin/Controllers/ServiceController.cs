@@ -41,19 +41,6 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var services = await _dbContext.Services.ToListAsync(cancellationToken);
@@ -118,18 +105,11 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(services);
             }
 
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
             try
             {
-                if (await _unitOfWork.Service.IsServicesExist(services.Name, companyClaims, cancellationToken))
+                if (await _unitOfWork.Service.IsServicesExist(services.Name, cancellationToken))
                 {
                     ModelState.AddModelError("Name", "Services already exist!");
                     return View(services);

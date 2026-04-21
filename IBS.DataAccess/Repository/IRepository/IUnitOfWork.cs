@@ -39,17 +39,17 @@ namespace IBS.DataAccess.Repository.IRepository
         IGeneralLedgerRepository GeneralLedger { get; }
         IProvisionalReceiptRepository ProvisionalReceipt { get; }
 
-        Task<List<SelectListItem>> GetCustomerListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetCustomerListAsyncById(CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetSupplierListAsyncById(CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetBankAccountListById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetBankAccountListById(CancellationToken cancellationToken = default);
 
         Task<List<SelectListItem>> GetEmployeeListById(CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetServiceListById(string company, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetServiceListById(CancellationToken cancellationToken = default);
 
         #endregion
 

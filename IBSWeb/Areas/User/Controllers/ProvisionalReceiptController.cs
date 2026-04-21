@@ -43,19 +43,6 @@ namespace IBSWeb.Areas.User.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private async Task PopulateFormDependenciesAsync(ProvisionalReceiptViewModel viewModel, CancellationToken cancellationToken)
         {
             viewModel.Employees = await _unitOfWork.GetEmployeeListById(cancellationToken);
@@ -124,14 +111,7 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> GetBanks(CancellationToken cancellationToken = default)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            return Json(await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken));
+            return Json(await _unitOfWork.GetBankAccountListById(cancellationToken));
         }
 
         [HttpPost]
@@ -140,15 +120,8 @@ namespace IBSWeb.Areas.User.Controllers
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
-
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
-
                 var query = _unitOfWork.ProvisionalReceipt
-                    .GetAllQuery(pr => pr.Company == companyClaims);
+                    .GetAllQuery();
 
                 var totalRecords = await query.CountAsync(cancellationToken);
 
@@ -255,13 +228,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var viewModel = new PRCreateViewModel
             {
                 TransactionDate = DateOnly.FromDateTime(DateTimeHelper.GetCurrentPhilippineTime())
@@ -275,13 +241,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PRCreateViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 await PopulateFormDependenciesAsync(viewModel, cancellationToken);
@@ -306,11 +265,10 @@ namespace IBSWeb.Areas.User.Controllers
                 var model = new ProvisionalReceipt
                 {
                     SeriesNumber = await _unitOfWork.ProvisionalReceipt
-                        .GenerateSeriesNumberAsync(companyClaims, viewModel.Type, cancellationToken),
+                        .GenerateSeriesNumberAsync(viewModel.Type, cancellationToken),
                     CreatedBy = userFullName,
                     CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
                     Status = nameof(CollectionReceiptStatus.Pending),
-                    Company = companyClaims
                 };
 
                 MapFormToEntity(viewModel, model);
@@ -347,15 +305,8 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -377,13 +328,6 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PREditViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 await PopulateFormDependenciesAsync(viewModel, cancellationToken);
@@ -392,7 +336,7 @@ namespace IBSWeb.Areas.User.Controllers
             }
 
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == viewModel.Id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == viewModel.Id, cancellationToken);
 
             if (model == null)
             {
@@ -439,15 +383,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Print(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -459,15 +396,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Printed(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -506,15 +436,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Post(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -553,15 +476,8 @@ namespace IBSWeb.Areas.User.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Void(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -602,15 +518,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -649,16 +558,9 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Deposit(int id, int bankId, DateOnly depositDate, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var bank = await _unitOfWork.BankAccount.GetAsync(b => b.BankAccountId == bankId, cancellationToken);
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (bank == null || model == null)
             {
@@ -701,15 +603,8 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Return(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -726,7 +621,6 @@ namespace IBSWeb.Areas.User.Controllers
 
                 await _unitOfWork.ProvisionalReceipt.ReturnedCheck(
                     model.SeriesNumber,
-                    model.Company,
                     GetUserFullName(),
                     cancellationToken);
 
@@ -753,15 +647,8 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Redeposit(int id, DateOnly redepositDate, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {
@@ -801,15 +688,8 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> ApplyClearingDate(int id, DateOnly clearingDate, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var model = await _unitOfWork.ProvisionalReceipt
-                .GetAsync(pr => pr.Id == id && pr.Company == companyClaims, cancellationToken);
+                .GetAsync(pr => pr.Id == id, cancellationToken);
 
             if (model == null)
             {

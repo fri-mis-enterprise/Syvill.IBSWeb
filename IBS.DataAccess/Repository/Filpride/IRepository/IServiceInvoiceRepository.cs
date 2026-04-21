@@ -5,7 +5,7 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
     public interface IServiceInvoiceRepository : IRepository<ServiceInvoice>
     {
-        Task<string> GenerateCodeAsync(string company, string type, CancellationToken cancellationToken = default);
+        Task<string> GenerateCodeAsync(string type, CancellationToken cancellationToken = default);
 
         Task PostAsync(ServiceInvoice model, CancellationToken cancellationToken = default);
     }

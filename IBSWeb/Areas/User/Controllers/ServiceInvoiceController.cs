@@ -45,19 +45,6 @@ namespace IBSWeb.Areas.User.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         public IActionResult Index(string? view)
         {
             return View();
@@ -68,8 +55,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
-
                 var serviceInvoices = _unitOfWork.ServiceInvoice
                     .GetAllQuery();
 
@@ -136,17 +121,10 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var viewModel = new ServiceInvoiceViewModel
             {
-                Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken),
-                Services = await _unitOfWork.GetServiceListById(companyClaims, cancellationToken)
+                Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken),
+                Services = await _unitOfWork.GetServiceListById(cancellationToken)
             };
 
             return View(viewModel);
@@ -156,15 +134,8 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ServiceInvoiceViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
-            viewModel.Services = await _unitOfWork.GetServiceListById(companyClaims, cancellationToken);
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
+            viewModel.Services = await _unitOfWork.GetServiceListById(cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -193,7 +164,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var model = new ServiceInvoice
                 {
-                    ServiceInvoiceNo = await _unitOfWork.ServiceInvoice.GenerateCodeAsync(companyClaims, viewModel.Type, cancellationToken),
+                    ServiceInvoiceNo = await _unitOfWork.ServiceInvoice.GenerateCodeAsync(viewModel.Type, cancellationToken),
                     ServiceId = service.ServiceId,
                     ServiceName = service.Name,
                     ServicePercent = service.Percent,
@@ -248,8 +219,6 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 return NotFound();
             }
-
-            var companyClaims = await GetCompanyClaimAsync();
 
             #region --Audit Trail Recording
 
@@ -405,13 +374,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var existingModel = await _unitOfWork.ServiceInvoice
                 .GetAsync(sv => sv.ServiceInvoiceId == id, cancellationToken);
 
@@ -424,9 +386,9 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 ServiceInvoiceId = existingModel.ServiceInvoiceId,
                 CustomerId = existingModel.CustomerId,
-                Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken),
+                Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken),
                 ServiceId = existingModel.ServiceId,
-                Services = await _unitOfWork.GetServiceListById(companyClaims, cancellationToken),
+                Services = await _unitOfWork.GetServiceListById(cancellationToken),
                 DueDate = existingModel.DueDate,
                 Instructions = existingModel.Instructions,
                 Period = existingModel.Period,
@@ -448,8 +410,8 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById("", cancellationToken);
-            viewModel.Services = await _unitOfWork.GetServiceListById("", cancellationToken);
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
+            viewModel.Services = await _unitOfWork.GetServiceListById(cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -564,8 +526,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
-
                 var serviceInvoices = await _unitOfWork.ServiceInvoice
                     .GetAllAsync(sv => sv.Type == nameof(DocumentType.Documented), cancellationToken);
 

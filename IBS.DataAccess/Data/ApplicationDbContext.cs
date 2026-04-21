@@ -259,8 +259,7 @@ namespace IBS.DataAccess.Data
 
                 pr.HasIndex(d => new
                 {
-                    d.SeriesNumber,
-                    d.Company
+                    d.SeriesNumber
                 }).IsUnique();
             });
 

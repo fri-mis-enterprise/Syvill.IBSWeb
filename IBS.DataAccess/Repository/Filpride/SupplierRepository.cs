@@ -39,13 +39,13 @@ namespace IBS.DataAccess.Repository.Filpride
             return $"{lastCode[0]}{incrementedNumber:D6}"; //e.g S000002
         }
 
-        public async Task<bool> IsSupplierExistAsync(string supplierName, string category, string company, CancellationToken cancellationToken = default)
+        public async Task<bool> IsSupplierExistAsync(string supplierName, string category, CancellationToken cancellationToken = default)
         {
             return await _db.Suppliers
                 .AnyAsync(s => s.SupplierName == supplierName && s.Category == category, cancellationToken);
         }
 
-        public async Task<bool> IsTinNoExistAsync(string tin, string branch, string category, string company, CancellationToken cancellationToken = default)
+        public async Task<bool> IsTinNoExistAsync(string tin, string branch, string category, CancellationToken cancellationToken = default)
         {
             if (tin == "000-000-000-00000")
             {

@@ -134,7 +134,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 var currentUser = User.FindFirstValue(ClaimTypes.Name) ?? "System";
-                var company = User.FindFirstValue("Company") ?? "System";
 
                 if (string.IsNullOrEmpty(model.Id))
                 {
@@ -165,8 +164,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         await LogAuditTrail(
                             currentUser,
                             $"Created new user: {model.Username} with role {model.Role}",
-                            "User Management",
-                            company
+                            "User Management"
                         );
 
                         var safeUsername = (model.Username ?? string.Empty)
@@ -246,11 +244,10 @@ namespace IBSWeb.Areas.Admin.Controllers
                             await LogAuditTrail(
                                 currentUser,
                                 $"Updated user {model.Username}: {string.Join("; ", changes)}",
-                                "User Management",
-                                company
+                                "User Management"
                             );
                         }
-                        var safeUsername = (model.Username ?? string.Empty)
+                        var safeUsername = model.Username
                             .Replace("\r", string.Empty)
                             .Replace("\n", string.Empty);
 
@@ -307,8 +304,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     await LogAuditTrail(
                         currentUser,
                         $"User {user.UserName} {action}",
-                        "User Management",
-                        company
+                        "User Management"
                     );
 
                     var safeUsername = (user.UserName ?? string.Empty)
@@ -360,8 +356,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     await LogAuditTrail(
                         currentUser,
                         $"Password reset for user {user.UserName}",
-                        "User Management",
-                        company
+                        "User Management"
                     );
 
                     var safeUsername = (user.UserName ?? string.Empty)
@@ -386,7 +381,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         #region HELPER METHODS
 
-        private async Task LogAuditTrail(string username, string activity, string documentType, string company)
+        private async Task LogAuditTrail(string username, string activity, string documentType)
         {
             var auditTrail = new AuditTrail(username, activity, documentType);
             await _dbContext.AuditTrails.AddAsync(auditTrail);

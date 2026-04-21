@@ -42,19 +42,6 @@ namespace IBSWeb.Areas.User.Controllers
             _logger = logger;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private string GetUserFullName()
         {
             return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value
@@ -70,13 +57,6 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> GeneralLedgerBookReport(ViewModelBook model, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 TempData["warning"] = "The submitted information is invalid.";
@@ -85,7 +65,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             try
             {
-                var generalLedgerBooks = await _unitOfWork.Report.GetGeneralLedgerBooks(model.DateFrom, model.DateTo, companyClaims);
+                var generalLedgerBooks = await _unitOfWork.Report.GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
 
                 if (!generalLedgerBooks.Any())
                 {
@@ -247,11 +227,6 @@ namespace IBSWeb.Areas.User.Controllers
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
             var extractedBy = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
@@ -262,7 +237,7 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var generalBooks = await _unitOfWork.Report
-                .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, companyClaims, cancellationToken);
+                .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
 
                 if (generalBooks.Count == 0)
                 {
@@ -290,7 +265,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
 
                 worksheet.Cells["A7"].Value = "Date";
                 worksheet.Cells["B7"].Value = "Reference";
@@ -408,13 +383,6 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> GenerateGeneralLedgerReportByAccountNumber(GeneralLedgerReportViewModel model, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 TempData["warning"] = "The submitted information is invalid.";
@@ -642,12 +610,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
             try
             {
                 var selectedAccountNo = model.AccountNo?
@@ -907,13 +869,8 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
 
-                var generalBooks = await _unitOfWork.Report.GetGeneralLedgerBooks(model.DateFrom, model.DateTo, companyClaims);
+                var generalBooks = await _unitOfWork.Report.GetGeneralLedgerBooks(model.DateFrom, model.DateTo);
                 if (generalBooks.Count == 0)
                 {
                     TempData["info"] = "No Record Found";
@@ -1003,12 +960,6 @@ namespace IBSWeb.Areas.User.Controllers
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
             var extractedBy = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
@@ -1027,7 +978,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 // Get general ledger books data
                 var generalBooks = await _unitOfWork.Report
-                    .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, companyClaims, cancellationToken);
+                    .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
 
                 // Filter for "Update Price" in description (case-insensitive)
                 var filteredData = generalBooks
@@ -1062,7 +1013,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
 
                 worksheet.Cells["A7"].Value = "Date";
                 worksheet.Cells["B7"].Value = "Reference";
@@ -1178,12 +1129,6 @@ namespace IBSWeb.Areas.User.Controllers
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
             var extractedBy = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
@@ -1202,7 +1147,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 // Get general ledger books data
                 var generalBooks = await _unitOfWork.Report
-                    .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, companyClaims, cancellationToken);
+                    .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
 
                 // Filter for "Update Cost" in description (case-insensitive)
                 var filteredData = generalBooks
@@ -1237,7 +1182,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
 
                 worksheet.Cells["A7"].Value = "Date";
                 worksheet.Cells["B7"].Value = "Reference";
@@ -1366,12 +1311,6 @@ namespace IBSWeb.Areas.User.Controllers
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
             var extractedBy = GetUserFullName();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
@@ -1434,7 +1373,7 @@ namespace IBSWeb.Areas.User.Controllers
                 worksheet.Cells["B3"].Value = selectedAccount?.AccountNumber ?? "All";
                 worksheet.Cells["B4"].Value = selectedAccount?.AccountName ?? "All";
                 worksheet.Cells["B5"].Value = extractedBy;
-                worksheet.Cells["B6"].Value = companyClaims;
+                worksheet.Cells["B6"].Value = "Syvill";
 
                 // Column Headers
                 string[] headers =

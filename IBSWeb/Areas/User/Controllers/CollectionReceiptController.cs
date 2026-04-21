@@ -53,19 +53,6 @@ namespace IBSWeb.Areas.User.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private string GenerateFileNameToSave(string incomingFileName)
         {
             var fileName = Path.GetFileNameWithoutExtension(incomingFileName);
@@ -166,14 +153,7 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> GetBanks(CancellationToken cancellationToken = default)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            return Json(await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken));
+            return Json(await _unitOfWork.GetBankAccountListById(cancellationToken));
         }
 
         [HttpGet]
@@ -244,8 +224,6 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            var companyClaims = await GetCompanyClaimAsync();
-
             #region --Audit Trail Recording
 
             AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
@@ -259,8 +237,6 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> GetServiceInvoices(int customerNo, int? crId, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
             List<ServiceInvoice> invoices;
 
             if (crId != null)
@@ -377,13 +353,6 @@ namespace IBSWeb.Areas.User.Controllers
                 throw new ArgumentException($"Cannot edit this record because the period {existingModel.TransactionDate:MMM yyyy} is already closed.");
             }
 
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             var invoicesPaid = await _dbContext.CollectionReceiptDetails
                 .Where(crd => crd.CollectionReceiptId == id)
                 .ToListAsync(cancellationToken);
@@ -395,7 +364,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 CollectionReceiptId = existingModel.CollectionReceiptId,
                 CustomerId = existingModel.CustomerId,
-                Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken),
+                Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken),
                 TransactionDate = existingModel.TransactionDate,
                 ReferenceNo = existingModel.ReferenceNo,
                 Remarks = existingModel.Remarks,
@@ -424,7 +393,7 @@ namespace IBSWeb.Areas.User.Controllers
                 ManagersCheckBank = existingModel.ManagersCheckBank,
                 ManagersCheckBranch = existingModel.ManagersCheckBranch,
                 ManagersCheckAmount = existingModel.ManagersCheckAmount,
-                BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken),
+                BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken),
                 EWT = existingModel.EWT,
                 WVAT = existingModel.WVAT,
                 ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken),
@@ -449,14 +418,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
 
             var invoicesPaid = await _dbContext.CollectionReceiptDetails
                 .Where(crd => crd.CollectionReceiptNo == existingModel.CollectionReceiptNo)
@@ -477,7 +439,7 @@ namespace IBSWeb.Areas.User.Controllers
 
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
 
-            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken);
+            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken);
 
             viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
@@ -923,8 +885,6 @@ namespace IBSWeb.Areas.User.Controllers
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
-
                 var collectionReceipts = await _unitOfWork.CollectionReceipt
                     .GetAllAsync(sv => sv.Type == nameof(DocumentType.Documented), cancellationToken);
 
@@ -1032,16 +992,9 @@ namespace IBSWeb.Areas.User.Controllers
         public async Task<IActionResult> Create(CancellationToken cancellationToken)
         {
             var viewModel = new CollectionReceiptServiceViewModel();
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
-            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken);
+            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken);
             viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
             return View(viewModel);
@@ -1051,15 +1004,8 @@ namespace IBSWeb.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CollectionReceiptServiceViewModel viewModel, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
-            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
-            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken);
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
+            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken);
 
             viewModel.ServiceInvoices = (await _unitOfWork.ServiceInvoice
                 .GetAllAsync(si => si.Balance > 0

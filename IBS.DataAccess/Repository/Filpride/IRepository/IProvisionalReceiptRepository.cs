@@ -5,8 +5,8 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
     public interface IProvisionalReceiptRepository : IRepository<ProvisionalReceipt>
     {
-        Task<string> GenerateSeriesNumberAsync(string company, string type, CancellationToken cancellationToken = default);
+        Task<string> GenerateSeriesNumberAsync(string type, CancellationToken cancellationToken = default);
         Task DepositAsync(ProvisionalReceipt provisionalReceipt, CancellationToken cancellationToken = default);
-        Task ReturnedCheck(string prNo, string company, string userName, CancellationToken cancellationToken = default);
+        Task ReturnedCheck(string prNo,string userName, CancellationToken cancellationToken = default);
     }
 }

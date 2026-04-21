@@ -54,19 +54,6 @@ namespace IBSWeb.Areas.User.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task<string?> GetCompanyClaimAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.FirstOrDefault(c => c.Type == "Company")?.Value;
-        }
-
         private static string NormalizeStatusFilter(string? statusFilter) => statusFilter switch
         {
             "All" => "All",
@@ -102,16 +89,10 @@ namespace IBSWeb.Areas.User.Controllers
                     var dateFrom = model.DateFrom;
                     var dateTo = model.DateTo;
                     var extractedBy = GetUserFullName();
-                    var companyClaims = await GetCompanyClaimAsync();
-                    if (companyClaims == null)
-                    {
-                        return BadRequest();
-                    }
-
                     var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
                     var collectionReceiptReport = await _unitOfWork.Report
-                        .GetCollectionReceiptReport(model.DateFrom, model.DateTo, companyClaims, statusFilter, cancellationToken);
+                        .GetCollectionReceiptReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
 
                     using var package = new ExcelPackage();
                     var worksheet = package.Workbook.Worksheets.Add("COLLECTION");
@@ -128,7 +109,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                     worksheet.Cells["B3"].Value = $"{extractedBy}";
-                    worksheet.Cells["B4"].Value = $"{companyClaims}";
+                    worksheet.Cells["B4"].Value = $"Syvill";
                     worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
 
                     bool showVoidCancelColumns = statusFilter != "ValidOnly";
@@ -272,7 +253,6 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
 
                 var serviceInvoices = await _unitOfWork.ServiceInvoice
                     .GetAllAsync(si => si.PostedBy != null
@@ -282,10 +262,6 @@ namespace IBSWeb.Areas.User.Controllers
                 {
                     TempData["info"] = "No Record Found";
                     return RedirectToAction(nameof(AgingReport));
-                }
-                if (companyClaims == null)
-                {
-                    return BadRequest();
                 }
 
                 // Create the Excel package
@@ -305,7 +281,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
 
                 worksheet.Cells["A7"].Value = "MONTH";
                 worksheet.Cells["B7"].Value = "CUSTOMER NAME";
@@ -514,15 +490,9 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> ArPerCustomer()
         {
-            var companyClaims = await GetCompanyClaimAsync();
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             ViewModelBook viewmodel = new()
             {
-                CustomerList = await _unitOfWork.GetCustomerListAsyncById(companyClaims)
+                CustomerList = await _unitOfWork.GetCustomerListAsyncById()
             };
 
             return View(viewmodel);
@@ -543,16 +513,11 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
 
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
                 var salesInvoice = await _unitOfWork.Report
-                    .GetARPerCustomerReport(model.DateFrom, model.DateTo, companyClaims, model.Customers, statusFilter, cancellationToken);
+                    .GetARPerCustomerReport(model.DateFrom, model.DateTo, model.Customers, statusFilter, cancellationToken);
 
                 if (!salesInvoice.Any())
                 {
@@ -582,7 +547,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom.ToString(SD.Date_Format)} - {dateTo.ToString(SD.Date_Format)}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
                 worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
 
                 worksheet.Cells["A7"].Value = "CUSTOMER No.";
@@ -879,14 +844,6 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> GeneratedServiceInvoiceReport(ViewModelBook model, CancellationToken cancellationToken)
         {
-            var companyClaims = await GetCompanyClaimAsync();
-
-
-            if (companyClaims == null)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 TempData["warning"] = "The submitted information is invalid.";
@@ -898,7 +855,7 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var serviceInvoice = await _unitOfWork.Report
-                    .GetServiceInvoiceReport(model.DateFrom, model.DateTo, companyClaims, statusFilter, cancellationToken);
+                    .GetServiceInvoiceReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
 
                 if (!serviceInvoice.Any())
                 {
@@ -1087,14 +1044,9 @@ namespace IBSWeb.Areas.User.Controllers
                 var dateFrom = model.DateFrom;
                 var dateTo = model.DateTo;
                 var extractedBy = GetUserFullName();
-                var companyClaims = await GetCompanyClaimAsync();
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
-                var serviceReport = await _unitOfWork.Report.GetServiceInvoiceReport(model.DateFrom, model.DateTo, companyClaims, statusFilter, cancellationToken);
+                var serviceReport = await _unitOfWork.Report.GetServiceInvoiceReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
 
                 if (serviceReport.Count == 0)
                 {
@@ -1123,7 +1075,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
-                worksheet.Cells["B4"].Value = $"{companyClaims}";
+                worksheet.Cells["B4"].Value = $"Syvill";
                 worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
 
                 worksheet.Cells["A7"].Value = "Transaction Date";
