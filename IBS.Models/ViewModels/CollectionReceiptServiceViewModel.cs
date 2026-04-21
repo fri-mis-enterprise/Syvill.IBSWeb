@@ -15,7 +15,7 @@ namespace IBS.Models.ViewModels
         public DateOnly TransactionDate { get; set; }
 
         [StringLength(50)]
-        public string ReferenceNo { get; set; } = null!;
+        public string ReferenceNo { get; set; } = string.Empty;
 
         [StringLength(100)]
         public string? Remarks { get; set; }
@@ -76,6 +76,6 @@ namespace IBS.Models.ViewModels
 
         public DateTime MinDate { get; set; }
 
-        public string BatchNumber { get; set; } = null!;
+        public string BatchNumber { get; set; } = string.Empty;
     }
 }

@@ -13,7 +13,7 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(13)]
         [Display(Name = "SV No")]
-        public string ServiceInvoiceNo { get; set; } = null!;
+        public string ServiceInvoiceNo { get; set; } = string.Empty;
 
         #region Customer properties
 

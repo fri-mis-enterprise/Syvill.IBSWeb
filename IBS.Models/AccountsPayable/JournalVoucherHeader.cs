@@ -13,7 +13,7 @@ namespace IBS.Models.AccountsPayable
         public int JournalVoucherHeaderId { get; set; }
 
         [StringLength(13)]
-        public string? JournalVoucherHeaderNo { get; set; }
+        public string JournalVoucherHeaderNo { get; set; } = string.Empty;
 
         [Display(Name = "Transaction Date")]
         [Column(TypeName = "date")]

@@ -11,13 +11,13 @@ namespace IBS.Models.AccountsPayable
         public int JournalVoucherDetailId { get; set; }
 
         [StringLength(20)]
-        public string AccountNo { get; set; } = " ";
+        public string AccountNo { get; set; } = string.Empty;
 
         [StringLength(200)]
-        public string AccountName { get; set; } = " ";
+        public string AccountName { get; set; } = string.Empty;
 
         [StringLength(13)]
-        public string TransactionNo { get; set; } = " ";
+        public string TransactionNo { get; set; } = string.Empty;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]

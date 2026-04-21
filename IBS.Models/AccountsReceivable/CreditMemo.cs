@@ -13,7 +13,7 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(13)]
         [Display(Name = "CM No")]
-        public string CreditMemoNo { get; set; } = null!;
+        public string CreditMemoNo { get; set; } = string.Empty;
 
         [Column(TypeName = "date")]
         [Display(Name = "Transaction Date")]
@@ -36,7 +36,7 @@ namespace IBS.Models.AccountsReceivable
             set => _description = value.Trim();
         }
 
-        private string _description = null!;
+        private string _description = string.Empty;
 
         [Display(Name = "Credit Amount")]
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
@@ -45,7 +45,7 @@ namespace IBS.Models.AccountsReceivable
 
         [Required]
         [StringLength(20)]
-        public string Source { get; set; } = null!;
+        public string Source { get; set; } = string.Empty;
 
         [StringLength(1000)]
         public string? Remarks

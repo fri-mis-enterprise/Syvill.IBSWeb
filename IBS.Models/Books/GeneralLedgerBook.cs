@@ -15,17 +15,17 @@ namespace IBS.Models.Books
         public DateOnly Date { get; set; }
 
         [Column(TypeName = "varchar(20)")]
-        public string Reference { get; set; } = null!;
+        public string Reference { get; set; } = string.Empty;
 
         [Display(Name = "Account Number")]
         [Column(TypeName = "varchar(50)")]
-        public string AccountNo { get; set; } = null!;
+        public string AccountNo { get; set; } = string.Empty;
 
         [Display(Name = "Account Title")]
         [Column(TypeName = "varchar(200)")]
-        public string AccountTitle { get; set; } = null!;
+        public string AccountTitle { get; set; } = string.Empty;
 
-        public string Description { get; set; } = null!;
+        public string Description { get; set; } = string.Empty;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = true)]
         [Column(TypeName = "numeric(18,4)")]

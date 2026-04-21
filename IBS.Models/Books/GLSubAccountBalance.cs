@@ -21,7 +21,7 @@ namespace IBS.Models.Books
         public int SubAccountId { get; set; }
 
         [Column(TypeName = "varchar(200)")]
-        public string SubAccountName { get; set; } = null!;
+        public string SubAccountName { get; set; } = string.Empty;
 
         [Column(TypeName = "date")]
         public DateOnly PeriodStartDate { get; set; }

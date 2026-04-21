@@ -22,7 +22,7 @@ namespace IBS.Models.AccountsReceivable
 
         [StringLength(13)]
         [Display(Name = "DM No")]
-        public string DebitMemoNo { get; set; } = null!;
+        public string DebitMemoNo { get; set; } = string.Empty;
 
         [Column(TypeName = "date")]
         [Display(Name = "Transaction Date")]
@@ -41,10 +41,10 @@ namespace IBS.Models.AccountsReceivable
             set => _description = value.Trim();
         }
 
-        private string _description = null!;
+        private string _description = string.Empty;
 
         [StringLength(20)]
-        public string Source { get; set; } = null!;
+        public string Source { get; set; } = string.Empty;
 
         [Required]
         [StringLength(1000)]

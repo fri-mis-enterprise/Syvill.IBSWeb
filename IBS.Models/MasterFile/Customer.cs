@@ -13,23 +13,23 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Customer Code")]
         [StringLength(7)]
-        public string CustomerCode { get; set; } = null!;
+        public string CustomerCode { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Customer Name")]
         [StringLength(100)]
-        public string CustomerName { get; set; } = null!;
+        public string CustomerName { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Customer Address")]
         [StringLength(200)]
-        public string CustomerAddress { get; set; } = null!;
+        public string CustomerAddress { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "TIN No")]
         [RegularExpression(@"\d{3}-\d{3}-\d{3}-\d{5}", ErrorMessage = "Invalid TIN number format.")]
         [StringLength(20)]
-        public string CustomerTin { get; set; } = null!;
+        public string CustomerTin { get; set; } = string.Empty;
 
         [Display(Name = "Business Style")]
         [StringLength(100)]
@@ -38,12 +38,12 @@ namespace IBS.Models.MasterFile
         [Required]
         [Display(Name = "Payment Terms")]
         [StringLength(10)]
-        public string CustomerTerms { get; set; } = null!;
+        public string CustomerTerms { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Vat Type")]
         [StringLength(10)]
-        public string VatType { get; set; } = null!;
+        public string VatType { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Creditable Withholding VAT 2306 ")]
@@ -57,7 +57,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(100)]
-        public string CreatedBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]

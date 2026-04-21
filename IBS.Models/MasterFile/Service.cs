@@ -12,7 +12,7 @@ namespace IBS.Models.MasterFile
 
         [StringLength(5)]
         [Display(Name = "Service No")]
-        public string ServiceNo { get; set; } = null!;
+        public string ServiceNo { get; set; } = string.Empty;
 
         [StringLength(20)]
         public string? CurrentAndPreviousNo { get; set; }
@@ -42,14 +42,14 @@ namespace IBS.Models.MasterFile
         [Required]
         [Display(Name = "Service Name")]
         [StringLength(50)]
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         public int Percent { get; set; }
 
         [Display(Name = "Created By")]
         [StringLength(100)]
-        public string CreatedBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]

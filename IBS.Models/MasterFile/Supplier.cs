@@ -12,32 +12,32 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Supplier Code")]
         [StringLength(7)]
-        public string SupplierCode { get; set; } = null!;
+        public string SupplierCode { get; set; } = string.Empty;
 
         [Display(Name = "Supplier Name")]
         [StringLength(200)]
-        public string SupplierName { get; set; } = null!;
+        public string SupplierName { get; set; } = string.Empty;
 
         [Display(Name = "Supplier Address")]
         [StringLength(200)]
-        public string SupplierAddress { get; set; } = null!;
+        public string SupplierAddress { get; set; } = string.Empty;
 
         [StringLength(20)]
         [RegularExpression(@"\d{3}-\d{3}-\d{3}-\d{5}", ErrorMessage = "Invalid TIN number format.")]
         [Display(Name = "Tin No")]
-        public string SupplierTin { get; set; } = null!;
+        public string SupplierTin { get; set; } = string.Empty;
 
         [StringLength(10)]
         [Display(Name = "Supplier Terms")]
-        public string SupplierTerms { get; set; } = null!;
+        public string SupplierTerms { get; set; } = string.Empty;
 
         [StringLength(10)]
         [Display(Name = "VAT Type")]
-        public string VatType { get; set; } = null!;
+        public string VatType { get; set; } = string.Empty;
 
         [StringLength(20)]
         [Display(Name = "TAX Type")]
-        public string TaxType { get; set; } = null!;
+        public string TaxType { get; set; } = string.Empty;
 
         [StringLength(1024)]
         public string? ProofOfRegistrationFilePath { get; set; }
@@ -55,7 +55,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(100)]
-        public string CreatedBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -71,7 +71,7 @@ namespace IBS.Models.MasterFile
         public DateTime? EditedDate { get; set; }
 
         [StringLength(20)]
-        public string Category { get; set; } = null!;
+        public string Category { get; set; } = string.Empty;
 
         [StringLength(20)]
         public string? Branch { get; set; }

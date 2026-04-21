@@ -661,7 +661,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Saving the default entries
 
-                existingHeaderModel.JournalVoucherHeaderNo = viewModel.JVNo;
+                existingHeaderModel.JournalVoucherHeaderNo = viewModel.JVNo!;
                 existingHeaderModel.Date = viewModel.TransactionDate;
                 existingHeaderModel.References = viewModel.References;
                 existingHeaderModel.CVId = viewModel.CVId;

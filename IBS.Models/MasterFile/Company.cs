@@ -11,33 +11,33 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Company Code")]
         [Column(TypeName = "varchar(3)")]
-        public string CompanyCode { get; set; } = null!;
+        public string CompanyCode { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Company Name")]
         [Column(TypeName = "varchar(50)")]
-        public string CompanyName { get; set; } = null!;
+        public string CompanyName { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Company Address")]
         [Column(TypeName = "varchar(200)")]
-        public string CompanyAddress { get; set; } = null!;
+        public string CompanyAddress { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "TIN No")]
         [Column(TypeName = "varchar(20)")]
-        public string CompanyTin { get; set; } = null!;
+        public string CompanyTin { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Business Style")]
         [Column(TypeName = "varchar(20)")]
-        public string BusinessStyle { get; set; } = null!;
+        public string BusinessStyle { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
 
         [Display(Name = "Created By")]
         [Column(TypeName = "varchar(50)")]
-        public string CreatedBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]

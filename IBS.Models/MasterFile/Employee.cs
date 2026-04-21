@@ -10,7 +10,7 @@ namespace IBS.Models.MasterFile
         public int EmployeeId { get; set; }
 
         [StringLength(10)]
-        public string EmployeeNumber { get; set; } = null!;
+        public string EmployeeNumber { get; set; } = string.Empty;
 
         [StringLength(5)]
         public string? Initial { get; set; }
@@ -59,18 +59,18 @@ namespace IBS.Models.MasterFile
         public DateOnly? DateResigned { get; set; }
 
         [StringLength(50)]
-        public string Position { get; set; } = null!;
+        public string Position { get; set; } = string.Empty;
 
         public bool IsManagerial { get; set; }
 
         [StringLength(20)]
-        public string Supervisor { get; set; } = null!;
+        public string Supervisor { get; set; } = string.Empty;
 
         [StringLength(50)]
-        public string Status { get; set; } = null!;
+        public string Status { get; set; } = string.Empty;
 
         [StringLength(20)]
-        public string? Paygrade { get; set; } = string.Empty;
+        public string? Paygrade { get; set; }
 
         [Column(TypeName = "numeric(18,2)")]
         public decimal Salary { get; set; }

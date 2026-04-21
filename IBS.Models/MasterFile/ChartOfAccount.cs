@@ -15,19 +15,19 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Account Number")]
         [StringLength(20)]
-        public string? AccountNumber { get; set; }
+        public string AccountNumber { get; set; } = string.Empty;
 
         [Display(Name = "Account Name")]
         [StringLength(200)]
-        public string AccountName { get; set; } = null!;
+        public string AccountName { get; set; } = string.Empty;
 
         [StringLength(25)]
         [Display(Name = "Account Type")]
-        public string AccountType { get; set; } = null!;
+        public string AccountType { get; set; } = string.Empty;
 
         [StringLength(20)]
         [Display(Name = "Normal Balance")]
-        public string NormalBalance { get; set; } = null!;
+        public string NormalBalance { get; set; } = string.Empty;
 
         public int Level { get; set; }
 
@@ -39,7 +39,7 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Created By")]
         [StringLength(50)]
-        public string CreatedBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Created Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -57,7 +57,7 @@ namespace IBS.Models.MasterFile
         public bool HasChildren { get; set; }
 
         [StringLength(20)]
-        public string FinancialStatementType { get; set; } = null!;
+        public string FinancialStatementType { get; set; } = string.Empty;
 
         // Select List
 

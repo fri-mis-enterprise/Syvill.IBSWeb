@@ -12,7 +12,7 @@ namespace IBS.Models.AccountsReceivable
         public int Id { get; set; }
 
         [StringLength(20)]
-        public string SeriesNumber { get; set; } = null!;
+        public string SeriesNumber { get; set; } = string.Empty;
 
         public DateOnly TransactionDate { get; set; }
 
@@ -21,9 +21,9 @@ namespace IBS.Models.AccountsReceivable
         [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; } = null!;
 
-        public string ReferenceNo { get; set; } = null!;
+        public string ReferenceNo { get; set; } = string.Empty;
 
-        public string Remarks { get; set; } = null!;
+        public string Remarks { get; set; } = string.Empty;
 
         [Column(TypeName = "numeric(18,4)")]
         public decimal CashAmount { get; set; }

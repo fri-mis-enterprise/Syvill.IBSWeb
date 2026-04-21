@@ -10,18 +10,18 @@ namespace IBS.Models.MasterFile
         public int BankAccountId { get; set; }
 
         [StringLength(10)]
-        public string Bank { get; set; } = null!;
+        public string Bank { get; set; } = string.Empty;
 
         [StringLength(200)]
-        public string Branch { get; set; } = null!;
+        public string Branch { get; set; } = string.Empty;
 
         [StringLength(20)]
         [Display(Name = "Account No")]
-        public string AccountNo { get; set; } = null!;
+        public string AccountNo { get; set; } = string.Empty;
 
         [StringLength(200)]
         [Display(Name = "Account Name")]
-        public string AccountName { get; set; } = null!;
+        public string AccountName { get; set; } = string.Empty;
 
         [Display(Name = "Created By")]
         [StringLength(100)]

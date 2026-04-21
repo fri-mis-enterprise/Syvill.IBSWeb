@@ -11,15 +11,15 @@ namespace IBS.Models.MasterFile
 
         [Display(Name = "Product Code")]
         [Column(TypeName = "varchar(10)")]
-        public string ProductCode { get; set; } = null!;
+        public string ProductCode { get; set; } = string.Empty;
 
         [Display(Name = "Product Name")]
         [Column(TypeName = "varchar(50)")]
-        public string ProductName { get; set; } = null!;
+        public string ProductName { get; set; } = string.Empty;
 
         [Display(Name = "Product Unit")]
         [Column(TypeName = "varchar(2)")]
-        public string ProductUnit { get; set; } = null!;
+        public string ProductUnit { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
 
