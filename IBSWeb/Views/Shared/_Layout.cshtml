@@ -260,8 +260,40 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">General Master File</a>
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Master File</a>
                                 <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Customer" asp-action="Index">Customer</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="CustomerBranch" asp-action="Index">Customer Branch</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Supplier" asp-action="Index">Supplier</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="BankAccount" asp-action="Index">Bank Account</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Service" asp-action="Index">Service</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="ChartOfAccount" asp-action="Index">Chart of Accounts</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Employee" asp-action="Index">Employee</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="PaymentTerm" asp-action="Index">Payment Terms</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li class="nav-item">
                                         <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
                                     </li>

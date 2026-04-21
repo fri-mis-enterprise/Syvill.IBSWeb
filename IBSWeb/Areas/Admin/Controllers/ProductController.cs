@@ -39,13 +39,9 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var products = await _unitOfWork
-                .Product
-                .GetAllAsync();
-
-            return View(products);
+            return View();
         }
 
         [HttpGet]
@@ -63,11 +59,11 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(model);
             }
 
-            bool IsProductExist = await _unitOfWork
+            bool isProductExist = await _unitOfWork
                 .Product
                 .IsProductExist(model.ProductName, cancellationToken);
 
-            if (IsProductExist)
+            if (isProductExist)
             {
                 ModelState.AddModelError("ProductName", "Product name already exist.");
                 return View(model);

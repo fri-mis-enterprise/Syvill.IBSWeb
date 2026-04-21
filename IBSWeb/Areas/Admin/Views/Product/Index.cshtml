@@ -1,6 +1,4 @@
-﻿@model IEnumerable<Product>
-
-@{
+﻿@{
     ViewData["Title"] = "Product";
 }
 
@@ -51,7 +49,7 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center bg-secondary p-3 rounded shadow">
         <h2 class="text-white m-0">@ViewData["Title"]</h2>
-        <a asp-area="User" asp-controller="Product" asp-action="Create" class="btn btn-light">
+        <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="btn btn-light">
             <i class="bi bi-plus-circle"></i> Create New Product
         </a>
     </div>
@@ -78,9 +76,9 @@
     <script>
         // Event listeners
         $(document).ready(function () {
-            const editUrl = '@Url.Action("Edit", "Product", new { area = "User" })';
-            const deactivateUrl = '@Url.Action("Deactivate", "Product", new { area = "User" })';
-            const activateUrl = '@Url.Action("Activate", "Product", new { area = "User" })';
+            const editUrl = '@Url.Action("Edit", "Product", new { area = "Admin" })';
+            const deactivateUrl = '@Url.Action("Deactivate", "Product", new { area = "Admin" })';
+            const activateUrl = '@Url.Action("Activate", "Product", new { area = "Admin" })';
 
             var table = $('#paginatedTable').DataTable({
                 "order": [[0, 'asc']],
@@ -98,7 +96,7 @@
                                  </div>`
                 },
                 "ajax": {
-                    "url": "@Url.Action("GetProductList", "Product", new { area = "User" })",
+                    "url": "@Url.Action("GetProductList", "Product", new { area = "Admin" })",
                     "type": "POST",
                     "data": function (d) {
                         return $.extend({}, d, {
