@@ -2783,14 +2783,6 @@ namespace IBS.DataAccess.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("current_and_previous_title");
 
-                    b.Property<bool>("IsBienes")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_bienes");
-
-                    b.Property<bool>("IsFilpride")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_filpride");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -3307,14 +3299,14 @@ namespace IBS.DataAccess.Migrations
 
             modelBuilder.Entity("IBS.Models.AccountsReceivable.CollectionReceiptDetail", b =>
                 {
-                    b.HasOne("IBS.Models.AccountsReceivable.CollectionReceipt", "FilprideCollectionReceipt")
+                    b.HasOne("IBS.Models.AccountsReceivable.CollectionReceipt", "CollectionReceipt")
                         .WithMany("ReceiptDetails")
                         .HasForeignKey("CollectionReceiptId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_collection_receipt_details_collection_receipts_collection_r");
 
-                    b.Navigation("FilprideCollectionReceipt");
+                    b.Navigation("CollectionReceipt");
                 });
 
             modelBuilder.Entity("IBS.Models.AccountsReceivable.CreditMemo", b =>
