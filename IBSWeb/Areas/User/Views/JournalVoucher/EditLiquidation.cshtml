@@ -234,7 +234,7 @@
                         <button type="submit" class="btn btn-primary form-control" onclick="return validateDebitAndCredit(event)">Save</button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-area="Filpride" asp-controller="JournalVoucher" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
+                        <a asp-area="User" asp-controller="JournalVoucher" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
                     </div>
                 </div>
             </div>
@@ -328,7 +328,7 @@
 
         function showSupplierSelectList() {
             $.ajax({
-                url: '@Url.Action("GetNonTradeSupplierSelectList", "JournalVoucher", new { area = "Filpride" })',
+                url: '@Url.Action("GetNonTradeSupplierSelectList", "JournalVoucher", new { area = "User" })',
                 type: "GET",
                 success: function (data) {
                     if (Array.isArray(data) && data.length > 0) {
@@ -555,7 +555,7 @@
             }
 
             $.ajax({
-                url: '@Url.Action("GetCV", "JournalVoucher", new { area = "Filpride" })',
+                url: '@Url.Action("GetCV", "JournalVoucher", new { area = "User" })',
                 method: "GET",
                 data: { id: cvId },
                 success: function (data) {
@@ -632,14 +632,14 @@
                 return;
             }
 
-            $.get('@Url.Action("GetLiquidationCheckVouchersByEmployee", "JournalVoucher", new { area = "Filpride" })',
+            $.get('@Url.Action("GetLiquidationCheckVouchersByEmployee", "JournalVoucher", new { area = "User" })',
                 { employeeId: employeeId, selectedCvId: selectedCvId })
                 .done(function (data) {
                     populateSelectOptions("#CVId", data, selectedCvId);
                     cvDetails($("#CVId").val());
                 });
 
-            $.get('@Url.Action("GetProvisionalReceiptsByEmployee", "JournalVoucher", new { area = "Filpride" })',
+            $.get('@Url.Action("GetProvisionalReceiptsByEmployee", "JournalVoucher", new { area = "User" })',
                 { employeeId: employeeId, selectedPrNo: selectedPrNo })
                 .done(function (data) {
                     populateSelectOptions("#PRNo", data, selectedPrNo);

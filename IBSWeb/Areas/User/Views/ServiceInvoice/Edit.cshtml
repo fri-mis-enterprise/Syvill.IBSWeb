@@ -39,9 +39,9 @@
             </div>
             <div id="drDiv" class="form-group mb-3" style="display: none">
                 <label asp-for="DeliveryReceiptId" class="control-label">DR<span class="required">*</span></label>
-                <select asp-for="DeliveryReceiptId" 
-                        class="form-control js-select2" 
-                        asp-items="@Model.DeliveryReceipts" 
+                <select asp-for="DeliveryReceiptId"
+                        class="form-control js-select2"
+                        asp-items="@Model.DeliveryReceipts"
                         style="width:100%">
                     <option></option>
                 </select>
@@ -80,7 +80,7 @@
                     <button type="submit" class="btn btn-primary form-control">Save</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Filpride" asp-controller="ServiceInvoice" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="User" asp-controller="ServiceInvoice" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>
@@ -112,7 +112,7 @@
                     $drFormGroup.show();
 
                     $.ajax({
-                        url: '@Url.Action("GetDRsByCustomer", "ServiceInvoice", new { area = "Filpride" })',
+                        url: '@Url.Action("GetDRsByCustomer", "ServiceInvoice", new { area = "User" })',
                         type: 'GET',
                         data: { customerId: customerId, previousSelectedDr : selectedDRId },
                         beforeSend: function () {

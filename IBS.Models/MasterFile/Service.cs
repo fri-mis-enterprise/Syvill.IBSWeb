@@ -55,9 +55,5 @@ namespace IBS.Models.MasterFile
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedDate { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
             TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila"));
-
-        public bool IsFilpride { get; set; }
-
-        public bool IsBienes { get; set; }
     }
 }

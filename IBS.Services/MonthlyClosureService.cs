@@ -165,7 +165,7 @@ namespace IBS.Services
 
                 var generalLedgers = await _dbContext.GeneralLedgerBooks
                     .Include(gl => gl.Account)
-                    .ThenInclude(filprideChartOfAccount => filprideChartOfAccount.ParentAccount) // Level 4
+                    .ThenInclude(coa => coa.ParentAccount) // Level 4
                     .Where(gl =>
                         gl.Date.Month == periodMonth.Month &&
                         gl.Date.Year == periodMonth.Year)

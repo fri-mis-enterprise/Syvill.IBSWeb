@@ -49,7 +49,7 @@
     <script>
         async function addDepositInfo(collectionReceiptId) {
             // Fetch banks
-            const response = await fetch('@Url.Action("GetBanks", "CollectionReceipt", new { area = "Filpride" })');
+            const response = await fetch('@Url.Action("GetBanks", "CollectionReceipt", new { area = "User" })');
             const banks = await response.json();
 
             // Build <option>s
@@ -126,7 +126,7 @@
                         confirmButtonText: 'Confirm'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            window.location.href = `@Url.Action("Deposit", "CollectionReceipt", new { area = "Filpride" })/${collectionReceiptId}?depositDate=${encodeURIComponent(depositDate)}&bankId=${encodeURIComponent(bankId)}`;
+                            window.location.href = `@Url.Action("Deposit", "CollectionReceipt", new { area = "User" })/${collectionReceiptId}?depositDate=${encodeURIComponent(depositDate)}&bankId=${encodeURIComponent(bankId)}`;
                         }
                     });
                 }
@@ -147,7 +147,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Replace with the actual URL that you want to redirect to
-                    var url = `@Url.Action("Void", "CollectionReceipt", new { area = "Filpride" })/${id}`;
+                    var url = `@Url.Action("Void", "CollectionReceipt", new { area = "User" })/${id}`;
                     window.location.href = url;
                 }
             })
@@ -173,7 +173,7 @@
                     // Encode the cancellationRemarks to make it URL safe
                     var encodedRemarks = encodeURIComponent(cancellationRemarks);
                     // Append the encoded remarks as a parameter in the URL
-                    var url = `@Url.Action("Cancel", "CollectionReceipt", new { area = "Filpride" })?id=${id}&cancellationRemarks=${encodedRemarks}`;
+                    var url = `@Url.Action("Cancel", "CollectionReceipt", new { area = "User" })?id=${id}&cancellationRemarks=${encodedRemarks}`;
                     window.location.href = url;
                 }
             })
@@ -230,7 +230,7 @@
                         confirmButtonText: 'Confirm'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            window.location.href = `@Url.Action("Redeposit", "CollectionReceipt", new { area = "Filpride" })/${collectionReceiptId}?redepositDate=${encodeURIComponent(depositDate)}`;
+                            window.location.href = `@Url.Action("Redeposit", "CollectionReceipt", new { area = "User" })/${collectionReceiptId}?redepositDate=${encodeURIComponent(depositDate)}`;
                         }
                     });
                 }
@@ -250,7 +250,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Replace with the actual URL that you want to redirect to
-                    var url = `@Url.Action("Return", "CollectionReceipt", new { area = "Filpride" })/${id}`;
+                    var url = `@Url.Action("Return", "CollectionReceipt", new { area = "User" })/${id}`;
                     window.location.href = url;
                 }
             })
@@ -307,7 +307,7 @@
                         confirmButtonText: 'Confirm'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            window.location.href = `@Url.Action("ApplyClearingDate", "CollectionReceipt", new { area = "Filpride" })/${collectionReceiptId}?clearingDate=${encodeURIComponent(clearingDate)}`;
+                            window.location.href = `@Url.Action("ApplyClearingDate", "CollectionReceipt", new { area = "User" })/${collectionReceiptId}?clearingDate=${encodeURIComponent(clearingDate)}`;
                         }
                     });
                 }
@@ -332,7 +332,7 @@
                                  </div>`
                 },
                 "ajax": {
-                    "url": "@Url.Action("GetCollectionReceipts", "CollectionReceipt", new { area = "Filpride" })",
+                    "url": "@Url.Action("GetCollectionReceipts", "CollectionReceipt", new { area = "User" })",
                     "type": "POST",
                     "data": function (d) {
                         return $.extend({}, d, {
@@ -427,8 +427,8 @@
 
                             if (row.postedBy == null) {
                                 dropdownHtml += `
-                                        <li><a href="@Url.Action("EditForService", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Edit</a></li>
-                                        <li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
+                                        <li><a href="@Url.Action("Edit", "CollectionReceipt", new { area = "User" })/${row.collectionReceiptId}" class="dropdown-item">Edit</a></li>
+                                        <li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "User" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmCancel(${row.collectionReceiptId})">Cancel</a></li>`;
                             } else {
                                 const hasDeposit = row.depositedDate && row.depositedDate !== "";
@@ -445,7 +445,7 @@
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="returnCheck(${row.collectionReceiptId})">Return Check</a></li>`;
                                 }
 
-                                dropdownHtml += `<li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "Filpride" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
+                                dropdownHtml += `<li><a href="@Url.Action("Print", "CollectionReceipt", new { area = "User" })/${row.collectionReceiptId}" class="dropdown-item">Preview</a></li>`;
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmVoid(${row.collectionReceiptId})">Void</a></li>`;
                             }
                             dropdownHtml += `</ul></div>`;

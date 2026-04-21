@@ -82,7 +82,7 @@
                     <button type="submit" class="btn btn-primary form-control">Save</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Filpride" asp-controller="DebitMemo" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="User" asp-controller="DebitMemo" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>
@@ -144,7 +144,7 @@
             if (svId !== "") {
                 // Make an AJAX request to get the customer details based on the selected CustomerId
                 $.ajax({
-                    url: '@Url.Action("GetSVDetails", "DebitMemo", new { area = "Filpride" })', // Replace with the actual controller and action names
+                    url: '@Url.Action("GetSVDetails", "DebitMemo", new { area = "User" })', // Replace with the actual controller and action names
                     method: "GET",
                     data: { svId: svId },
                     success: function (data) {

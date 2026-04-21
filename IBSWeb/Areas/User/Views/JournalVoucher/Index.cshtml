@@ -56,7 +56,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '@Url.Action("Void", "JournalVoucher", new { area = "Filpride" })',
+                        url: '@Url.Action("Void", "JournalVoucher", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
@@ -81,7 +81,7 @@
                         error: function() {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
-                    }); 
+                    });
                 }
             })
         }
@@ -103,7 +103,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '@Url.Action("Cancel", "JournalVoucher", new { area = "Filpride" })',
+                        url: '@Url.Action("Cancel", "JournalVoucher", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
@@ -128,7 +128,7 @@
                         error: function() {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
-                    });  
+                    });
                 }
             })
         }
@@ -151,7 +151,7 @@
                                  </div>`
                  },
                  "ajax": {
-                     "url": "@Url.Action("GetJournalVouchers", "JournalVoucher", new { area = "Filpride" })",
+                     "url": "@Url.Action("GetJournalVouchers", "JournalVoucher", new { area = "User" })",
                      "type": "POST",
                      "data": function (d) {
                          return $.extend({}, d, {
@@ -183,10 +183,10 @@
                          "render": function (data, type, row) {
                              // Assuming 'Date' is in ISO format like "2024-07-12T00:00:00"
                              var date = new Date(data);
-                            return date.toLocaleDateString('en-US', { 
+                            return date.toLocaleDateString('en-US', {
                                 year: 'numeric',
-                                month: 'short', 
-                                day: '2-digit' 
+                                month: 'short',
+                                day: '2-digit'
                             });
                          }
                      },
@@ -211,19 +211,19 @@
                          "render": function (data, type, row) {
                              const isAdmin = @User.IsInRole("Admin").ToString().ToLower();
                              return `<div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
-                                                 <button class="btn btn-light btn-sm dropdown-toggle w-100" 
-                                                        type="button" 
-                                                        data-bs-toggle="dropdown" 
+                                                 <button class="btn btn-light btn-sm dropdown-toggle w-100"
+                                                        type="button"
+                                                        data-bs-toggle="dropdown"
                                                         aria-expanded="false">
                                                     <i class="bi bi-three-dots"></i>
                                                  </button>
                                                  <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                                      ${row.postedBy == null ? `
                                                          <li><a class="dropdown-item" href="${getEditUrl(row.jvType, data)}">Edit</a></li>
-                                                         <li><a class="dropdown-item" href="@Url.Action("Print", "JournalVoucher", new { area = "Filpride" })/${data}">Preview</a></li>
+                                                         <li><a class="dropdown-item" href="@Url.Action("Print", "JournalVoucher", new { area = "User" })/${data}">Preview</a></li>
                                                          <li><a class="dropdown-item" href="javascript:void(0);" onclick="confirmCancel(${data})">Cancel</a></li>
                                                      ` : `
-                                                         <li><a class="dropdown-item" href="@Url.Action("Print", "JournalVoucher", new { area = "Filpride" })/${data}">Preview</a></li>
+                                                         <li><a class="dropdown-item" href="@Url.Action("Print", "JournalVoucher", new { area = "User" })/${data}">Preview</a></li>
                                                          ${isAdmin ? `
                                                              <li><a class="dropdown-item" href="javascript:void(0);" onclick="confirmVoid(${data})">Void</a></li>
                                                          ` : `
@@ -247,10 +247,10 @@
 
             function getEditUrl(jvType, id) {
                 const routes = {
-                    'Liquidation': '@Url.Action("EditLiquidation", "JournalVoucher", new { area = "Filpride" })',
-                    'Accrual': '@Url.Action("EditAccrual", "JournalVoucher", new { area = "Filpride" })',
-                    'Amortization': '@Url.Action("EditAmortization", "JournalVoucher", new { area = "Filpride" })',
-                    'Reclass': '@Url.Action("EditReclass", "JournalVoucher", new { area = "Filpride" })'
+                    'Liquidation': '@Url.Action("EditLiquidation", "JournalVoucher", new { area = "User" })',
+                    'Accrual': '@Url.Action("EditAccrual", "JournalVoucher", new { area = "User" })',
+                    'Amortization': '@Url.Action("EditAmortization", "JournalVoucher", new { area = "User" })',
+                    'Reclass': '@Url.Action("EditReclass", "JournalVoucher", new { area = "User" })'
                 };
                 return `${routes[jvType] || routes['Liquidation']}/${id}`;
             }
@@ -274,10 +274,10 @@
                     let selectedKey = document.getElementById("journalSelect").value;
                     if (selectedKey) {
                         let routes = {
-                            'liquidation': '@Url.Action("CreateLiquidation", "JournalVoucher", new { area = "Filpride" })',
-                            'accrual': '@Url.Action("CreateAccrual", "JournalVoucher", new { area = "Filpride" })',
-                            'amortization': '@Url.Action("CreateAmortization", "JournalVoucher", new { area = "Filpride" })',
-                            'reclass': '@Url.Action("CreateReclass", "JournalVoucher", new { area = "Filpride" })'
+                            'liquidation': '@Url.Action("CreateLiquidation", "JournalVoucher", new { area = "User" })',
+                            'accrual': '@Url.Action("CreateAccrual", "JournalVoucher", new { area = "User" })',
+                            'amortization': '@Url.Action("CreateAmortization", "JournalVoucher", new { area = "User" })',
+                            'reclass': '@Url.Action("CreateReclass", "JournalVoucher", new { area = "User" })'
                         };
                         window.location.href = routes[selectedKey];
                     } else {

@@ -94,7 +94,7 @@ Balance:        <span id="balance"></span>
            </pre>
                 </div>
             </div>
-            
+
             <div class="table-responsive">
                 <table class="table-bordered w-100" style="min-width: 750px">
                     <tbody>
@@ -218,7 +218,7 @@ Balance:        <span id="balance"></span>
                     <button id="submitButton" type="submit" class="btn btn-primary form-control">Update</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Filpride" asp-controller="CollectionReceipt" asp-action="ServiceInvoiceIndex" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="User" asp-controller="CollectionReceipt" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>
@@ -264,13 +264,13 @@ Balance:        <span id="balance"></span>
     }
     <script>
         let collectionReceiptId = @Html.Raw(Json.Serialize(Model.CollectionReceiptId));
-        
+
         $(document).ready(function () {
             $("#CustomerId").change(function () {
                 var customerNo = $(this).val();
 
                 $.ajax({
-                    url: '@Url.Action("GetServiceInvoices", "CollectionReceipt", new { area = "Filpride" })',
+                    url: '@Url.Action("GetServiceInvoices", "CollectionReceipt", new { area = "User" })',
                     type: "GET",
                     data: { customerNo: customerNo, crId: collectionReceiptId },
                     success: function (data) {
@@ -363,7 +363,7 @@ Balance:        <span id="balance"></span>
             let serviceInvoice = $("#serviceInvoice").val();
 
             $.ajax({
-                url: '@Url.Action("GetInvoiceDetails", "CollectionReceipt", new { area = "Filpride" })',
+                url: '@Url.Action("GetInvoiceDetails", "CollectionReceipt", new { area = "User" })',
                 type: "GET",
                 data: {
                     invoiceNo: serviceInvoice,
@@ -385,7 +385,7 @@ Balance:        <span id="balance"></span>
         $(document).ready(function () {
             // Call the handleInvoiceChange function on page load
             handleInvoiceChange();
-            
+
             $("#serviceInvoice").change(function () {
                 // Call the handleInvoiceChange function when the dropdown changes
                 handleInvoiceChange();

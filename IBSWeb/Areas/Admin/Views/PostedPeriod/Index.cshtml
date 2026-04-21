@@ -33,10 +33,6 @@
 
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <label for="Company" class="form-label">Company</label>
-                                <input type="text" class="form-control" name="Company" value="Filpride" readonly />
-                            </div>
-                            <div class="col-md-3">
                                 <label for="Month" class="form-label">Month</label>
                                 <select name="Month" id="monthSelect" class="form-select" required>
                                     @for (int i = 1; i <= 12; i++)
@@ -189,7 +185,7 @@
         moduleContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading modules...</div>';
 
         // Use Url.Action to properly generate the URL with area
-        const url = '@Url.Action("GetAvailableModules", "PostedPeriod", new { area = "Filpride" })';
+        const url = '@Url.Action("GetAvailableModules", "PostedPeriod", new { area = "Admin" })';
 
         fetch(`${url}?month=${month}&year=${year}`)
             .then(response => response.json())

@@ -23,7 +23,7 @@
                     <a class="dropdown-item responsive-index-button" id="newAdvancesBtn">
                         <i class="bi bi-plus-circle"></i> New Advances
                     </a>
-                    <a class="dropdown-item responsive-index-button" asp-area="Filpride" asp-controller="CheckVoucherNonTradePayment" asp-action="Create">
+                    <a class="dropdown-item responsive-index-button" asp-area="User" asp-controller="CheckVoucherNonTradePayment" asp-action="Create">
                         <i class="bi bi-plus-circle"></i> New Payment
                     </a>
                 </li>
@@ -85,7 +85,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                      $.ajax({
-                        url: '@Url.Action("Void", "CheckVoucherNonTradePayment", new { area = "Filpride" })',
+                        url: '@Url.Action("Void", "CheckVoucherNonTradePayment", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
@@ -131,7 +131,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                      $.ajax({
-                         url: '@Url.Action("Cancel", "CheckVoucherNonTradePayment", new { area = "Filpride" })',
+                         url: '@Url.Action("Cancel", "CheckVoucherNonTradePayment", new { area = "User" })',
                          type: 'POST',
                          data: {
                              id: id,
@@ -181,7 +181,7 @@
                     // Encode the cancellationRemarks to make it URL safe
                     var encodedLiquidationDate = encodeURIComponent(liquidationDate);
                     // Append the encoded remarks as a parameter in the URL
-                    var url = `@Url.Action("LiquidateAdvances", "CheckVoucherNonTradePayment", new { area = "Filpride" })?id=${id}&liquidateDate=${encodedLiquidationDate}`;
+                    var url = `@Url.Action("LiquidateAdvances", "CheckVoucherNonTradePayment", new { area = "User" })?id=${id}&liquidateDate=${encodedLiquidationDate}`;
                     window.location.href = url;
                 }
             })
@@ -205,7 +205,7 @@
                                  </div>`
                 },
                 "ajax": {
-                    "url": "@Url.Action("GetPaymentCheckVouchers", "CheckVoucherNonTradePayment", new { area = "Filpride" })",
+                    "url": "@Url.Action("GetPaymentCheckVouchers", "CheckVoucherNonTradePayment", new { area = "User" })",
                     "type": "POST",
                     "data": function (d) {
                         return $.extend({}, d, {
@@ -293,19 +293,19 @@
                                                    <a class="dropdown-item" href="${
                                                                                 row.isAdvances
                                                                                     ? (row.employeeId
-                                                                                        ? '@Url.Action("EditAdvancesToEmployee", "CheckVoucherNonTradePayment", new { area = "Filpride" })/'
-                                                                                        : '@Url.Action("EditAdvancesToSupplier", "CheckVoucherNonTradePayment", new { area = "Filpride" })/')
-                                                                                    : '@Url.Action("Edit", "CheckVoucherNonTradePayment", new { area = "Filpride" })/'
+                                                                                        ? '@Url.Action("EditAdvancesToEmployee", "CheckVoucherNonTradePayment", new { area = "User" })/'
+                                                                                        : '@Url.Action("EditAdvancesToSupplier", "CheckVoucherNonTradePayment", new { area = "User" })/')
+                                                                                    : '@Url.Action("Edit", "CheckVoucherNonTradePayment", new { area = "User" })/'
                                                                             }${row.checkVoucherHeaderId}">Edit</a>
                                                  </li>
                                                  <li>
-                                                   <a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}">Preview</a>
+                                                   <a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "User" })?id=${row.checkVoucherHeaderId}">Preview</a>
                                                  </li>
                                                  <li>
                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="confirmCancel(${row.checkVoucherHeaderId})">Cancel</a>
                                                  </li>` :
                                                 `<li>
-                                                   <a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}">Preview</a>
+                                                   <a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "User" })?id=${row.checkVoucherHeaderId}">Preview</a>
                                                  </li>
                                                  <li>
                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="confirmVoid(${row.checkVoucherHeaderId})">Void</a>
@@ -365,8 +365,8 @@
                     let selectedKey = document.getElementById("advancesSelect").value;
                     if (selectedKey) {
                         let routes = {
-                            'employee': '@Url.Action("CreateAdvancesToEmployee", "CheckVoucherNonTradePayment", new { area = "Filpride" })',
-                            'supplier': '@Url.Action("CreateAdvancesToSupplier", "CheckVoucherNonTradePayment", new { area = "Filpride" })'
+                            'employee': '@Url.Action("CreateAdvancesToEmployee", "CheckVoucherNonTradePayment", new { area = "User" })',
+                            'supplier': '@Url.Action("CreateAdvancesToSupplier", "CheckVoucherNonTradePayment", new { area = "User" })'
                         };
 
                         window.location.href = routes[selectedKey];

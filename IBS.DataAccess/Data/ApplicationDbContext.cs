@@ -235,7 +235,7 @@ namespace IBS.DataAccess.Data
 
             builder.Entity<CollectionReceiptDetail>(crd =>
             {
-                crd.HasOne(d => d.FilprideCollectionReceipt)
+                crd.HasOne(d => d.CollectionReceipt)
                     .WithMany(d => d.ReceiptDetails)
                     .HasForeignKey(d => d.CollectionReceiptId)
                     .OnDelete(DeleteBehavior.Restrict);

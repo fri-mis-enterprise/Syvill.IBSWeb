@@ -256,7 +256,7 @@
     }
 
     <div class="col-6 col-md-3">
-        <a asp-area="Filpride" asp-controller="CreditMemo" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
+        <a asp-area="User" asp-controller="CreditMemo" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
     </div>
 </div>
 
@@ -274,7 +274,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Replace with the actual URL that you want to redirect to
-                    var url = `@Url.Action("Post", "CreditMemo", new { area = "Filpride" })/${id}`;
+                    var url = `@Url.Action("Post", "CreditMemo", new { area = "User" })/${id}`;
                     window.location.href = url;
                 }
             })
@@ -329,7 +329,7 @@
     }
     <script>
         function controllerThenPrint(id) {
-            var url = `@Url.Action("Printed", "CreditMemo", new { area = "Filpride" })/${id}`;
+            var url = `@Url.Action("Printed", "CreditMemo", new { area = "User" })/${id}`;
             window.location.href = url;
         }
     </script>

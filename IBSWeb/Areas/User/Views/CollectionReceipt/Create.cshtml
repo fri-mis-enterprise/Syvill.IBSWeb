@@ -31,7 +31,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card-body p-4">
             <form id="myForm" asp-action="CreateForService" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
@@ -97,7 +97,7 @@ Balance:        <span id="balance"></span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="table-responsive">
                     <table class="table-bordered w-100" style="min-width: 750px;">
                         <tbody>
@@ -207,7 +207,7 @@ Balance:        <span id="balance"></span>
                     <button type="submit" id="submitButton" class="btn btn-primary form-control">Create</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Filpride" asp-controller="CollectionReceipt" asp-action="ServiceInvoiceIndex" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="User" asp-controller="CollectionReceipt" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
             </form>
@@ -259,7 +259,7 @@ Balance:        <span id="balance"></span>
                     var customerNo = $(this).val();
 
                     $.ajax({
-                    url: '@Url.Action("GetServiceInvoices", "CollectionReceipt", new { area = "Filpride" })',
+                    url: '@Url.Action("GetServiceInvoices", "CollectionReceipt", new { area = "User" })',
                         type: "GET",
                         data: { customerNo: customerNo },
                         success: function (data) {
@@ -290,7 +290,7 @@ Balance:        <span id="balance"></span>
                     });
                 });
             });
-        
+
         </script>
 
         <script>
@@ -351,7 +351,7 @@ Balance:        <span id="balance"></span>
 
                 if (invoiceNo != "") {
                     $.ajax({
-                    url: '@Url.Action("GetInvoiceDetails", "CollectionReceipt", new { area = "Filpride" })',
+                    url: '@Url.Action("GetInvoiceDetails", "CollectionReceipt", new { area = "User" })',
                         type: "GET",
                         data: {
                             invoiceNo: invoiceNo,

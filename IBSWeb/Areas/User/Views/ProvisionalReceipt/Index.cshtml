@@ -9,7 +9,7 @@
     @Html.AntiForgeryToken()
     <div class="d-flex justify-content-between align-items-center bg-secondary p-3 rounded shadow">
         <h2 class="text-white m-0">@ViewData["Title"]</h2>
-        <a asp-area="Filpride" asp-controller="ProvisionalReceipt" asp-action="Create" class="btn btn-light">
+        <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Create" class="btn btn-light">
             <i class="bi bi-plus-circle"></i> New Receipt
         </a>
     </div>
@@ -39,7 +39,7 @@
 @section Scripts {
     <script>
         async function addDepositInfo(provisionalReceiptId) {
-            const response = await fetch('@Url.Action("GetBanks", "ProvisionalReceipt", new { area = "Filpride" })');
+            const response = await fetch('@Url.Action("GetBanks", "ProvisionalReceipt", new { area = "User" })');
             const banks = await response.json();
             let bankOptions = '<option value="">Select a bank</option>' + banks.map(b => `<option value="${b.value}">${b.text}</option>`).join('');
             let bankSelect = `<select id="swal-input2" class="swal2-select w-75" style="width: 75%;">${bankOptions}</select>`;
@@ -74,7 +74,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     const { depositDate, bankId } = result.value;
-                    window.location.href = `@Url.Action("Deposit", "ProvisionalReceipt", new { area = "Filpride" })/${provisionalReceiptId}?depositDate=${encodeURIComponent(depositDate)}&bankId=${encodeURIComponent(bankId)}`;
+                    window.location.href = `@Url.Action("Deposit", "ProvisionalReceipt", new { area = "User" })/${provisionalReceiptId}?depositDate=${encodeURIComponent(depositDate)}&bankId=${encodeURIComponent(bankId)}`;
                 }
             });
         }
@@ -102,7 +102,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     let depositDate = result.value;
-                    window.location.href = `@Url.Action("Redeposit", "ProvisionalReceipt", new { area = "Filpride" })/${provisionalReceiptId}?redepositDate=${encodeURIComponent(depositDate)}`;
+                    window.location.href = `@Url.Action("Redeposit", "ProvisionalReceipt", new { area = "User" })/${provisionalReceiptId}?redepositDate=${encodeURIComponent(depositDate)}`;
                 }
             });
         }
@@ -118,7 +118,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `@Url.Action("Return", "ProvisionalReceipt", new { area = "Filpride" })/${id}`;
+                    window.location.href = `@Url.Action("Return", "ProvisionalReceipt", new { area = "User" })/${id}`;
                 }
             });
         }
@@ -146,7 +146,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     let clearingDate = result.value;
-                    window.location.href = `@Url.Action("ApplyClearingDate", "ProvisionalReceipt", new { area = "Filpride" })/${provisionalReceiptId}?clearingDate=${encodeURIComponent(clearingDate)}`;
+                    window.location.href = `@Url.Action("ApplyClearingDate", "ProvisionalReceipt", new { area = "User" })/${provisionalReceiptId}?clearingDate=${encodeURIComponent(clearingDate)}`;
                 }
             });
         }
@@ -162,7 +162,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `@Url.Action("Void", "ProvisionalReceipt", new { area = "Filpride" })/${id}`;
+                    window.location.href = `@Url.Action("Void", "ProvisionalReceipt", new { area = "User" })/${id}`;
                 }
             });
         }
@@ -182,7 +182,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var encodedRemarks = encodeURIComponent($("#cancellationRemarks").val() || "");
-                    window.location.href = `@Url.Action("Cancel", "ProvisionalReceipt", new { area = "Filpride" })?id=${id}&cancellationRemarks=${encodedRemarks}`;
+                    window.location.href = `@Url.Action("Cancel", "ProvisionalReceipt", new { area = "User" })?id=${id}&cancellationRemarks=${encodedRemarks}`;
                 }
             });
         }
@@ -193,7 +193,7 @@
                 serverSide: true,
                 stateSave: true,
                 ajax: {
-                    url: "@Url.Action("GetProvisionalReceipts", "ProvisionalReceipt", new { area = "Filpride" })",
+                    url: "@Url.Action("GetProvisionalReceipts", "ProvisionalReceipt", new { area = "User" })",
                     type: "POST",
                     data: function (d) {
                         d.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
@@ -252,9 +252,9 @@
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">`;
 
                             if (row.postedBy == null) {
-                                dropdownHtml += `<li><a href="@Url.Action("Edit", "ProvisionalReceipt", new { area = "Filpride" })/${row.id}" class="dropdown-item">Edit</a></li>`;
+                                dropdownHtml += `<li><a href="@Url.Action("Edit", "ProvisionalReceipt", new { area = "User" })/${row.id}" class="dropdown-item">Edit</a></li>`;
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmCancel(${row.id})">Cancel</a></li>`;
-                                dropdownHtml += `<li><a href="@Url.Action("Print", "ProvisionalReceipt", new { area = "Filpride" })/${row.id}" class="dropdown-item">Preview</a></li>`;
+                                dropdownHtml += `<li><a href="@Url.Action("Print", "ProvisionalReceipt", new { area = "User" })/${row.id}" class="dropdown-item">Preview</a></li>`;
                             } else {
                                 const hasDeposit = row.depositedDate && row.depositedDate !== "";
                                 const postedStatus = "@nameof(CollectionReceiptStatus.Posted)";
@@ -271,7 +271,7 @@
                                     dropdownHtml += `<li><a class="dropdown-item" href="javascript:void(0);" onclick="returnCheck(${row.id})">Return Check</a></li>`;
                                 }
 
-                                dropdownHtml += `<li><a href="@Url.Action("Print", "ProvisionalReceipt", new { area = "Filpride" })/${row.id}" class="dropdown-item">Preview</a></li>`;
+                                dropdownHtml += `<li><a href="@Url.Action("Print", "ProvisionalReceipt", new { area = "User" })/${row.id}" class="dropdown-item">Preview</a></li>`;
                                 dropdownHtml += `<li><a class="dropdown-item" onclick="confirmVoid(${row.id})">Void</a></li>`;
                             }
 

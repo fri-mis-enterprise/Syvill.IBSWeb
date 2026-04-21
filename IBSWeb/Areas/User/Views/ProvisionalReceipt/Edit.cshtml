@@ -142,7 +142,7 @@
                     <button type="submit" class="btn btn-primary form-control">Save</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Filpride" asp-controller="ProvisionalReceipt" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
+                    <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
                 </div>
             </div>
         </form>
@@ -153,7 +153,7 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             $("#submitButton").on("click");

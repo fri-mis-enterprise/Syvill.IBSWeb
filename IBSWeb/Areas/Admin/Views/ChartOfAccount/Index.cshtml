@@ -215,7 +215,7 @@
                         console.log(accountName);
 
                         $.ajax({
-                            url: '@Url.Action("Create", "ChartOfAccount", new { area = "Filpride" })',
+                            url: '@Url.Action("Create", "ChartOfAccount", new { area = "Admin" })',
                             type: "GET",
                             data: { parentId: parentId, accountName: accountName },
                             success: function (response) {
@@ -261,7 +261,7 @@
                         console.log(accountName);
 
                         $.ajax({
-                            url: '@Url.Action("Edit", "ChartOfAccount", new { area = "Filpride" })',
+                            url: '@Url.Action("Edit", "ChartOfAccount", new { area = "Admin" })',
                             type: "GET",
                             data: { accountId: accountId, accountName: accountName },
                             success: function (response) {

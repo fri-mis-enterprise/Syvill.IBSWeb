@@ -135,10 +135,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 );
 
                 await _dbContext.AuditTrails.AddAsync(auditTrailBook, cancellationToken);
-
-
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                await _cacheService.RemoveAsync($"coa:{request.Company}", cancellationToken);
 
                 TempData["SuccessMessage"] = $"Successfully posted {postedPeriods.Count} module(s) for period {request.Month}/{request.Year}.";
                 return RedirectToAction(nameof(Index));

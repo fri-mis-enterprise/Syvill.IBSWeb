@@ -142,7 +142,7 @@
                         <button type="submit" class="btn btn-primary form-control">Create</button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-area="Filpride" asp-controller="CheckVoucherNonTradePayment" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                        <a asp-area="User" asp-controller="CheckVoucherNonTradePayment" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@
         function getSupplierDetails(supplierId) {
             if (supplierId !== "") {
                 $.ajax({
-                    url: '@Url.Action("GetSupplierDetails", "CheckVoucherNonTradePayment", new { area = "Filpride" })',
+                    url: '@Url.Action("GetSupplierDetails", "CheckVoucherNonTradePayment", new { area = "User" })',
                     method: "GET",
                     data: { supplierId: supplierId },
                     success: function (data) {
@@ -291,7 +291,7 @@
             var checkNo = $(this).val();
             if (checkNo) {
                 $.ajax({
-                    url: '@Url.Action("CheckNoIsExist", "CheckVoucherNonTradePayment", new { area = "Filpride" })',
+                    url: '@Url.Action("CheckNoIsExist", "CheckVoucherNonTradePayment", new { area = "User" })',
                     type: "GET",
                     data: { checkNo: checkNo },
                     success: function(exists) {

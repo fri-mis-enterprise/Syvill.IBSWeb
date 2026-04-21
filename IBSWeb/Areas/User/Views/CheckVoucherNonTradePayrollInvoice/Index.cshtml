@@ -12,7 +12,7 @@
             <h2 class="text-white m-0">@ViewData["Title"]</h2>
         </div>
         <div class="dropdown actions-dropdown">
-            <a asp-area="Filpride" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Create" class="btn btn-light">
+            <a asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Create" class="btn btn-light">
                 <i class="bi bi-plus-circle"></i> New Invoice
             </a>
         </div>
@@ -71,7 +71,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '@Url.Action("Void", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })',
+                        url: '@Url.Action("Void", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })',
                         data: {
                             id: id
                         },
@@ -116,7 +116,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '@Url.Action("Cancel", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })',
+                        url: '@Url.Action("Cancel", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
@@ -164,7 +164,7 @@
                                  </div>`
                 },
                 "ajax": {
-                    "url": "@Url.Action("GetInvoiceCheckVouchers", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })",
+                    "url": "@Url.Action("GetInvoiceCheckVouchers", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })",
                     "type": "POST",
                     "data": function (d) {
                         return $.extend({}, d, {
@@ -261,15 +261,15 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                         ${row.status === "@nameof(CheckVoucherInvoiceStatus.ForApproval)" ? `
-                                            <li><a class="dropdown-item" href="@Url.Action("Edit", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })/${row.checkVoucherHeaderId}">Edit</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}&supplierId=${row.subAccountId}">Preview</a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("Edit", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })/${row.checkVoucherHeaderId}">Edit</a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${row.checkVoucherHeaderId}&supplierId=${row.subAccountId}">Preview</a></li>
                                             <li><a class="dropdown-item" href="javascript:void(0);" onclick="confirmCancel(${row.checkVoucherHeaderId})">Cancel</a></li>
                                         ` : row.status === "@nameof(CheckVoucherInvoiceStatus.ForPosting)" ? `
-                                            <li><a class="dropdown-item" href="@Url.Action("Edit", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })/${row.checkVoucherHeaderId}">Edit</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}&supplierId=${row.subAccountId}">Preview</a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("Edit", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })/${row.checkVoucherHeaderId}">Edit</a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${row.checkVoucherHeaderId}&supplierId=${row.subAccountId}">Preview</a></li>
                                             <li><a class="dropdown-item" href="javascript:void(0);" onclick="confirmCancel(${row.checkVoucherHeaderId})">Cancel</a></li>
                                         ` : `
-                                            <li><a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}&supplierId=${row.subAccountId}">Preview</a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${row.checkVoucherHeaderId}&supplierId=${row.subAccountId}">Preview</a></li>
                                             ${!row.isPaid ? `
                                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="confirmVoid(${row.checkVoucherHeaderId})">Void</a></li>
                                             ` : `

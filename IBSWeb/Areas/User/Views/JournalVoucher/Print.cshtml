@@ -263,7 +263,7 @@
     }
 
     <div class="col-6 col-md-3">
-        <a asp-area="Filpride" asp-controller="JournalVoucher" asp-action="Index" asp-route-filterType="@ViewBag.FilterType" class="btn btn-outline-primary border form-control buttons">Back to List</a>
+        <a asp-area="User" asp-controller="JournalVoucher" asp-action="Index" asp-route-filterType="@ViewBag.FilterType" class="btn btn-outline-primary border form-control buttons">Back to List</a>
     </div>
 </div>
 
@@ -292,7 +292,7 @@
                 confirmButtonText: 'Post'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var url = `@Url.Action("Post", "JournalVoucher", new { area = "Filpride" })/${id}`;
+                    var url = `@Url.Action("Post", "JournalVoucher", new { area = "User" })/${id}`;
                     window.location.href = url;
                 }
             })
@@ -309,7 +309,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var url = `@Url.Action("Unpost", "JournalVoucher", new { area = "Filpride" })/${id}`;
+                    var url = `@Url.Action("Unpost", "JournalVoucher", new { area = "User" })/${id}`;
                     window.location.href = url;
                 }
             })
@@ -326,7 +326,7 @@
                 confirmButtonText: 'Approve'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var url = `@Url.Action("Approve", "JournalVoucher", new { area = "Filpride" })/${id}`;
+                    var url = `@Url.Action("Approve", "JournalVoucher", new { area = "User" })/${id}`;
                     window.location.href = url;
                 }
             })
@@ -380,7 +380,7 @@
     }
     <script>
         function controllerThenPrint(id) {
-            var url = `@Url.Action("Printed", "JournalVoucher", new { area = "Filpride" })/${id}`;
+            var url = `@Url.Action("Printed", "JournalVoucher", new { area = "User" })/${id}`;
             window.location.href = url;
         }
     </script>

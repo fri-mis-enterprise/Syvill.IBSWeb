@@ -243,5 +243,47 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int accountId, string accountName, CancellationToken cancellationToken)
+        {
+            var existingAccount = await _unitOfWork.ChartOfAccount
+                .GetAsync(x => x.AccountId == accountId, cancellationToken);
+
+            if (existingAccount == null)
+            {
+                return NotFound();
+            }
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+            try
+            {
+                existingAccount.AccountName = accountName;
+                existingAccount.EditedBy = GetUserFullName();
+                existingAccount.EditedDate = DateTimeHelper.GetCurrentPhilippineTime();
+                await _unitOfWork.SaveAsync(cancellationToken);
+                await _cacheService.RemoveAsync($"coa:{await GetCompanyClaimAsync()}", cancellationToken);
+
+                #region --Audit Trail Recording
+
+                AuditTrail auditTrailBook = new (GetUserFullName(),
+                    $"Edited Account #{existingAccount.AccountNumber}", "Chart of Accounts");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
+
+                #endregion --Audit Trail Recording
+
+                await transaction.CommitAsync(cancellationToken);
+                TempData["success"] = "Account Edited Successfully";
+                return Json(new { redirectUrl = Url.Action("Index", "ChartOfAccount", new { area = "Admin" }) });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to edit chart of account. Edited by: {UserName}", _userManager.GetUserName(User));
+                await transaction.RollbackAsync(cancellationToken);
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
 }

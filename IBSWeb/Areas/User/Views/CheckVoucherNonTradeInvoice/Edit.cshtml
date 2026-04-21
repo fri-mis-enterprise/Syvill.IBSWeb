@@ -165,7 +165,7 @@
                         <button id="submitButton" class="btn btn-success me-2" type="submit">
                             <i class="bi bi-check-circle"></i> Save
                         </button>
-                        <a asp-area="Filpride" asp-controller="CheckVoucherNonTradeInvoice" asp-action="Index"
+                        <a asp-area="User" asp-controller="CheckVoucherNonTradeInvoice" asp-action="Index"
                            class="btn btn-outline-primary d-flex align-items-center">
                             <i class="bi bi-arrow-left-circle me-2"></i> Back to List
                         </a>
@@ -549,7 +549,7 @@
             if (!supplierId) return;
 
             $.ajax({
-                url: '@Url.Action("GetSupplierDetails", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })',
+                url: '@Url.Action("GetSupplierDetails", "CheckVoucherNonTradeInvoice", new { area = "User" })',
                 type: 'GET',
                 data: { supplierId: supplierId },
                 success: function (data) {
@@ -634,11 +634,11 @@
         // Initialize the master file selector with URLs
         $(document).ready(function() {
             const masterFileSelector = new MasterFileSelector({
-                getBankAccounts: '@Url.Action("GetBankAccounts", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })',
-                getCompanies: '@Url.Action("GetCompanies", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })',
-                getEmployees: '@Url.Action("GetEmployees", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })',
-                getCustomers: '@Url.Action("GetCustomers", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })',
-                getSuppliers: '@Url.Action("GetSuppliers", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })',
+                getBankAccounts: '@Url.Action("GetBankAccounts", "CheckVoucherNonTradeInvoice", new { area = "User" })',
+                getCompanies: '@Url.Action("GetCompanies", "CheckVoucherNonTradeInvoice", new { area = "User" })',
+                getEmployees: '@Url.Action("GetEmployees", "CheckVoucherNonTradeInvoice", new { area = "User" })',
+                getCustomers: '@Url.Action("GetCustomers", "CheckVoucherNonTradeInvoice", new { area = "User" })',
+                getSuppliers: '@Url.Action("GetSuppliers", "CheckVoucherNonTradeInvoice", new { area = "User" })',
             });
 
             // Handle selection button clicks
@@ -697,7 +697,7 @@
         }
 
         function fetchAccountDetails(action, paramKey, paramValue, accountSelect) {
-            let url = '@Url.Action("PLACEHOLDER", "CheckVoucherNonTradeInvoice", new { area = "Filpride" })';
+            let url = '@Url.Action("PLACEHOLDER", "CheckVoucherNonTradeInvoice", new { area = "User" })';
             url = url.replace("PLACEHOLDER", action);
 
             $.ajax({

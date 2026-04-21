@@ -435,7 +435,7 @@
     }
 
     <div class="col-6 col-md-3">
-        <a asp-area="Filpride" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-route-filterType="@ViewBag.FilterType" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
+        <a asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-route-filterType="@ViewBag.FilterType" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
     </div>
 </div>
 
@@ -452,7 +452,7 @@
                 confirmButtonText: 'Approve'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var url = `@Url.Action("Approve", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${id}&supplierId=${@supplierId}`;
+                    var url = `@Url.Action("Approve", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${id}&supplierId=${@supplierId}`;
                     window.location.href = url;
                 }
             })
@@ -470,7 +470,7 @@
                 confirmButtonText: 'Post'
             }).then((result) => {
                 if (result.isConfirmed) {
-                     var url = `@Url.Action("Post", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${id}&supplierId=${@supplierId}`;
+                     var url = `@Url.Action("Post", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${id}&supplierId=${@supplierId}`;
                      window.location.href = url;
 
                 }
@@ -489,7 +489,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var url = `@Url.Action("Unpost", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${id}&supplierId=${@supplierId}`;
+                    var url = `@Url.Action("Unpost", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${id}&supplierId=${@supplierId}`;
                      window.location.href = url;
                 }
             })
@@ -544,7 +544,7 @@
     }
     <script>
         function controllerThenPrint(id) {
-            var url = `@Url.Action("Printed", "CheckVoucherNonTradePayrollInvoice", new { area = "Filpride" })?id=${id}&supplierId=${@supplierId}`;
+            var url = `@Url.Action("Printed", "CheckVoucherNonTradePayrollInvoice", new { area = "User" })?id=${id}&supplierId=${@supplierId}`;
             window.location.href = url;
         }
     </script>

@@ -11,7 +11,7 @@ namespace IBS.Models.AccountsReceivable
 
         public int CollectionReceiptId { get; set; }
 
-        public CollectionReceipt? FilprideCollectionReceipt { get; set; }
+        public CollectionReceipt? CollectionReceipt { get; set; }
 
         [StringLength(13)]
         public string CollectionReceiptNo { get; set; } = null!;

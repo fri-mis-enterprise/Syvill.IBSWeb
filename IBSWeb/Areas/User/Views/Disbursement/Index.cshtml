@@ -66,7 +66,7 @@
                                  </div>`
                 },
                 "ajax": {
-                    "url": "@Url.Action("GetDisbursements", "Disbursement", new { area = "Filpride" })",
+                    "url": "@Url.Action("GetDisbursements", "Disbursement", new { area = "User" })",
                     "type": "POST",
                     "data": function (d){
                         return $.extend({}, d,  {
@@ -169,12 +169,7 @@
                                 }
                             }
 
-                            if (row.category === "Non-Trade") {
-                                actions += `<li><a target="_blank" class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}">Preview</a></li>`;
-                            }
-                            else{
-                                 actions += `<li><a target="_blank" class="dropdown-item" href="@Url.Action("Print", "CheckVoucherTrade", new { area = "Filpride" })?id=${row.checkVoucherHeaderId}">Preview</a></li>`;
-                            }
+                            actions += `<li><a target="_blank" class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "User" })?id=${row.checkVoucherHeaderId}">Preview</a></li>`;
 
                             actions += `</ul></div>`;
                             return actions;
@@ -356,7 +351,7 @@
 
         function updateDCPDate(cvId, dcpDate) {
             $.ajax({
-                url: '@Url.Action("UpdateDCPDate", "Disbursement", new { area = "Filpride" })',
+                url: '@Url.Action("UpdateDCPDate", "Disbursement", new { area = "User" })',
                 type: 'POST',
                 data: {
                     cvId: cvId,
@@ -379,7 +374,7 @@
 
         function updateDCRDate(cvId, dcrDate) {
             $.ajax({
-                url: '@Url.Action("UpdateDCRDate", "Disbursement", new { area = "Filpride" })',
+                url: '@Url.Action("UpdateDCRDate", "Disbursement", new { area = "User" })',
                 type: 'POST',
                 data: {
                     cvId: cvId,

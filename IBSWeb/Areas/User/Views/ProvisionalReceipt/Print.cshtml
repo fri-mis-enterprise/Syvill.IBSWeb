@@ -202,11 +202,11 @@
     else
     {
         <div class="col-6 col-md-3">
-            <a asp-area="Filpride" asp-controller="ProvisionalReceipt" asp-action="Printed" asp-route-id="@Model.Id" onclick="window.print()" class="btn btn-primary form-control buttons">Print</a>
+            <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Printed" asp-route-id="@Model.Id" onclick="window.print()" class="btn btn-primary form-control buttons">Print</a>
         </div>
     }
     <div class="col-6 col-md-3">
-        <a asp-area="Filpride" asp-controller="ProvisionalReceipt" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
+        <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
     </div>
 </div>
 
@@ -224,7 +224,7 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `@Url.Action("Post", "ProvisionalReceipt", new { area = "Filpride" })/${id}`;
+                    window.location.href = `@Url.Action("Post", "ProvisionalReceipt", new { area = "User" })/${id}`;
                 }
             });
         }
