@@ -72,7 +72,6 @@ namespace IBS.DataAccess.Repository
         #region--Filpride
         public Filpride.IRepository.ICustomerRepository Customer { get; private set; }
         public Filpride.IRepository.ISupplierRepository Supplier { get; private set; }
-        public Filpride.IRepository.IPickUpPointRepository PickUpPoint { get; private set; }
         public Filpride.IRepository.IChartOfAccountRepository ChartOfAccount { get; private set; }
         public IAuditTrailRepository AuditTrail { get; private set; }
         public Filpride.IRepository.IEmployeeRepository Employee { get; private set; }
@@ -128,7 +127,6 @@ namespace IBS.DataAccess.Repository
 
             Customer = new CustomerRepository(_db);
             Supplier = new SupplierRepository(_db);
-            PickUpPoint = new PickUpPointRepository(_db);
             ChartOfAccount = new ChartOfAccountRepository(_db);
             AuditTrail = new AuditTrailRepository(_db);
             Employee = new EmployeeRepository(_db);
@@ -257,20 +255,6 @@ namespace IBS.DataAccess.Repository
                 {
                     Value = e.EmployeeId.ToString(),
                     Text = $"{e.EmployeeNumber} - {e.FirstName} {e.LastName}"
-                })
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<List<SelectListItem>> GetDistinctFilpridePickupPointListById(string companyClaims, CancellationToken cancellationToken = default)
-        {
-            return await _db.PickUpPoints
-                .Where(GetCompanyFilter<PickUpPoint>(companyClaims))
-                .GroupBy(p => p.Depot)
-                .OrderBy(g => g.Key)
-                .Select(g => new SelectListItem
-                {
-                    Value = g.First().PickUpPointId.ToString(),
-                    Text = g.Key // g.Key is the Depot name
                 })
                 .ToListAsync(cancellationToken);
         }

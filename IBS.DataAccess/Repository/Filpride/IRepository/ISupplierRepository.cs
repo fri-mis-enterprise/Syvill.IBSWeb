@@ -16,7 +16,5 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
         Task<string> SaveProofOfRegistration(IFormFile file, string localPath, CancellationToken cancellationToken = default);
 
         Task UpdateAsync(Supplier model, CancellationToken cancellationToken = default);
-
-        Task<List<SelectListItem>> GetFilprideTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default);
     }
 }

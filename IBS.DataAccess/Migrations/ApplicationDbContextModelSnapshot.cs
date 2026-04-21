@@ -2696,52 +2696,6 @@ namespace IBS.DataAccess.Migrations
                     b.ToTable("employees", (string)null);
                 });
 
-            modelBuilder.Entity("IBS.Models.MasterFile.PickUpPoint", b =>
-                {
-                    b.Property<int>("PickUpPointId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("pick_up_point_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PickUpPointId"));
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<string>("Depot")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("depot");
-
-                    b.Property<bool>("IsBienes")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_bienes");
-
-                    b.Property<bool>("IsFilpride")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_filpride");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer")
-                        .HasColumnName("supplier_id");
-
-                    b.HasKey("PickUpPointId")
-                        .HasName("pk_pick_up_points");
-
-                    b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_pick_up_points_supplier_id");
-
-                    b.ToTable("pick_up_points", (string)null);
-                });
-
             modelBuilder.Entity("IBS.Models.MasterFile.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -3505,18 +3459,6 @@ namespace IBS.DataAccess.Migrations
                         .HasConstraintName("fk_customer_branches_customers_customer_id");
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("IBS.Models.MasterFile.PickUpPoint", b =>
-                {
-                    b.HasOne("IBS.Models.MasterFile.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_pick_up_points_suppliers_supplier_id");
-
-                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

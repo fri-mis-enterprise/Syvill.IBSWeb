@@ -51,7 +51,7 @@ namespace IBS.DataAccess.Repository.Filpride
             }
         }
 
-        public async Task<List<SelectListItem>> GetFilprideTermsListAsyncByCode(CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetTermsListAsyncByCode(CancellationToken cancellationToken = default)
         {
             return await _db.Terms
                 .OrderBy(x => x.TermsCode)

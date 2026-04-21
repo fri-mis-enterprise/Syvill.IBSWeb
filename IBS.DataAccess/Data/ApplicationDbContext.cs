@@ -47,8 +47,6 @@ namespace IBS.DataAccess.Data
 
         public DbSet<Supplier> Suppliers { get; set; }
 
-        public DbSet<PickUpPoint> PickUpPoints { get; set; }
-
         public DbSet<Employee> Employees { get; set; }
 
         public DbSet<Terms> Terms { get; set; }
@@ -160,15 +158,6 @@ namespace IBS.DataAccess.Data
             builder.Entity<Employee>(c =>
             {
                 c.HasIndex(c => c.EmployeeNumber);
-            });
-
-            // FilpridePickUpPoint
-            builder.Entity<PickUpPoint>(p =>
-            {
-                p.HasOne(p => p.Supplier)
-                    .WithMany()
-                    .HasForeignKey(p => p.SupplierId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<GLPeriodBalance>(b =>

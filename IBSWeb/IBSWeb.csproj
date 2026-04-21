@@ -49,4 +49,10 @@
     <ProjectReference Include="..\IBS.Utility\IBS.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\PickupPoint\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\PickupPoint\Edit.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\PickupPoint\Index.cshtml" />
+  </ItemGroup>
+
 </Project>

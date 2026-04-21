@@ -116,18 +116,5 @@ namespace IBS.DataAccess.Repository.Filpride
                 throw new InvalidOperationException("No data changes!");
             }
         }
-
-        public async Task<List<SelectListItem>> GetFilprideTradeSupplierListAsyncById(string company, CancellationToken cancellationToken = default)
-        {
-            return await _db.Suppliers
-                .OrderBy(s => s.SupplierCode)
-                .Where(s => s.IsActive && s.Category == "Trade" && company == nameof(Filpride))
-                .Select(s => new SelectListItem
-                {
-                    Value = s.SupplierId.ToString(),
-                    Text = s.SupplierCode + " " + s.SupplierName
-                })
-                .ToListAsync(cancellationToken);
-        }
     }
 }

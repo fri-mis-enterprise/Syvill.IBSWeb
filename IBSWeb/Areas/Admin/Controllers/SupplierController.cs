@@ -94,7 +94,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(cancellationToken),
-                PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken)
+                PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken)
             };
 
             return View(model);
@@ -131,7 +131,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 })
                 .ToListAsync(cancellationToken);
 
-            model.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            model.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -290,7 +290,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 })
                 .ToListAsync(cancellationToken);
 
-            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
             return View(supplier);
         }
 
@@ -318,7 +318,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 })
                 .ToListAsync(cancellationToken);
 
-            model.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            model.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
 
             if (!ModelState.IsValid)
             {
@@ -381,7 +381,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
 
             return View(supplier);
         }
@@ -401,7 +401,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -448,7 +448,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
 
             return View(supplier);
         }
@@ -468,7 +468,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            supplier.PaymentTerms = await _unitOfWork.Terms.GetFilprideTermsListAsyncByCode(cancellationToken);
+            supplier.PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 

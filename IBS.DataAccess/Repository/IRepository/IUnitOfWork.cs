@@ -85,8 +85,6 @@ namespace IBS.DataAccess.Repository.IRepository
 
         IServiceRepository Service { get; }
 
-        IPickUpPointRepository PickUpPoint { get; }
-
         #endregion
 
         #endregion

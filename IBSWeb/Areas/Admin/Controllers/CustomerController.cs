@@ -70,7 +70,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
 
                 PaymentTerms = await _unitOfWork.Terms
-                    .GetFilprideTermsListAsyncByCode(cancellationToken),
+                    .GetTermsListAsyncByCode(cancellationToken),
             };
             return View(model);
         }
@@ -93,7 +93,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             model.PaymentTerms = await _unitOfWork.Terms
-                .GetFilprideTermsListAsyncByCode(cancellationToken);
+                .GetTermsListAsyncByCode(cancellationToken);
 
             var isTinExist = await _unitOfWork.Customer.IsTinNoExistAsync(model.CustomerTin, cancellationToken);
 
@@ -152,7 +152,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             if (customer != null)
             {
                 customer.PaymentTerms = await _unitOfWork.Terms
-                    .GetFilprideTermsListAsyncByCode(cancellationToken);
+                    .GetTermsListAsyncByCode(cancellationToken);
                 return View(customer);
             }
 
@@ -169,7 +169,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             model.PaymentTerms = await _unitOfWork.Terms
-                .GetFilprideTermsListAsyncByCode(cancellationToken);
+                .GetTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -274,7 +274,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             customer.PaymentTerms = await _unitOfWork.Terms
-                .GetFilprideTermsListAsyncByCode(cancellationToken);
+                .GetTermsListAsyncByCode(cancellationToken);
 
             return View(customer);
         }
@@ -297,7 +297,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             customer.PaymentTerms = await _unitOfWork.Terms
-                .GetFilprideTermsListAsyncByCode(cancellationToken);
+                .GetTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -345,7 +345,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             if (customer != null)
             {
                 customer.PaymentTerms = await _unitOfWork.Terms
-                    .GetFilprideTermsListAsyncByCode(cancellationToken);
+                    .GetTermsListAsyncByCode(cancellationToken);
 
                 return View(customer);
             }
@@ -371,7 +371,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
 
             customer.PaymentTerms = await _unitOfWork.Terms
-                .GetFilprideTermsListAsyncByCode(cancellationToken);
+                .GetTermsListAsyncByCode(cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
