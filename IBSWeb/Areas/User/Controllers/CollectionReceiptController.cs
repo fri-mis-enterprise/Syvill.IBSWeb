@@ -81,17 +81,10 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetCollectionReceipts([FromForm] DataTablesParameters parameters, DateOnly filterDate, string invoiceType, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCollectionReceipts([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
         {
             try
             {
-                var companyClaims = await GetCompanyClaimAsync();
-
-                if (companyClaims == null)
-                {
-                    return BadRequest();
-                }
-
                 var collectionReceipts = _unitOfWork.CollectionReceipt
                     .GetAllQuery();
 
@@ -1031,6 +1024,168 @@ namespace IBSWeb.Areas.User.Controllers
                     ex.Message, ex.StackTrace);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
+        [HttpGet]
+        public async Task<IActionResult> Create(CancellationToken cancellationToken)
+        {
+            var viewModel = new CollectionReceiptServiceViewModel();
+            var companyClaims = await GetCompanyClaimAsync();
+
+            if (companyClaims == null)
+            {
+                return BadRequest();
+            }
+
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
+            viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
+            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken);
+            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CollectionReceiptServiceViewModel viewModel, CancellationToken cancellationToken)
+        {
+            var companyClaims = await GetCompanyClaimAsync();
+
+            if (companyClaims == null)
+            {
+                return BadRequest();
+            }
+
+            viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(companyClaims, cancellationToken);
+            viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(companyClaims, cancellationToken);
+
+            viewModel.ServiceInvoices = (await _unitOfWork.ServiceInvoice
+                .GetAllAsync(si => si.Balance > 0
+                                   && si.CustomerId == viewModel.CustomerId
+                                   && si.PostedBy != null, cancellationToken))
+                .OrderBy(si => si.ServiceInvoiceId)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ServiceInvoiceId.ToString(),
+                    Text = s.ServiceInvoiceNo
+                })
+                .ToList();
+
+            viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
+            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+
+            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT + viewModel.WVAT;
+            if (total == 0)
+            {
+                TempData["warning"] = "Please input at least one type form of payment";
+                return View(viewModel);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                TempData["warning"] = "The information you submitted is not valid!";
+                return View(viewModel);
+            }
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+            try
+            {
+                #region --Saving default value
+
+                var existingServiceInvoice = await _dbContext.ServiceInvoices
+                    .FirstOrDefaultAsync(si => si.ServiceInvoiceId == viewModel.ServiceInvoiceId,
+                        cancellationToken);
+
+                if (existingServiceInvoice == null)
+                {
+                    return NotFound();
+                }
+
+                var model = new CollectionReceipt
+                {
+                    CollectionReceiptNo = await _unitOfWork.CollectionReceipt
+                        .GenerateCodeAsync(existingServiceInvoice.Type, cancellationToken),
+                    ServiceInvoiceId = existingServiceInvoice.ServiceInvoiceId,
+                    SVNo = existingServiceInvoice.ServiceInvoiceNo,
+                    CustomerId = viewModel.CustomerId,
+                    TransactionDate = viewModel.TransactionDate,
+                    ReferenceNo = viewModel.ReferenceNo,
+                    Remarks = viewModel.Remarks,
+                    CashAmount = viewModel.CashAmount,
+                    CheckNo = viewModel.CheckNo,
+                    CheckBranch = viewModel.CheckBranch,
+                    CheckDate = viewModel.CheckDate,
+                    CheckAmount = viewModel.CheckAmount,
+                    CheckBank = viewModel.CheckBank,
+                    ManagersCheckDate = viewModel.ManagersCheckDate,
+                    ManagersCheckNo = viewModel.ManagersCheckNo,
+                    ManagersCheckBank = viewModel.ManagersCheckBank,
+                    ManagersCheckBranch = viewModel.ManagersCheckBranch,
+                    ManagersCheckAmount = viewModel.ManagersCheckAmount,
+                    EWT = viewModel.EWT,
+                    WVAT = viewModel.WVAT,
+                    Total = total,
+                    CreatedBy = GetUserFullName(),
+                    Type = existingServiceInvoice.Type,
+                    BatchNumber = viewModel.BatchNumber
+                };
+
+                if (viewModel.Bir2306 != null && viewModel.Bir2306.Length > 0)
+                {
+                    model.F2306FileName = GenerateFileNameToSave(viewModel.Bir2306.FileName);
+                    model.F2306FilePath =
+                        await _cloudStorageService.UploadFileAsync(viewModel.Bir2306, model.F2306FileName!);
+                    model.IsCertificateUpload = true;
+                }
+
+                if (viewModel.Bir2307 != null && viewModel.Bir2307.Length > 0)
+                {
+                    model.F2307FileName = GenerateFileNameToSave(viewModel.Bir2307.FileName);
+                    model.F2307FilePath =
+                        await _cloudStorageService.UploadFileAsync(viewModel.Bir2307, model.F2307FileName!);
+                    model.IsCertificateUpload = true;
+                }
+
+                await _unitOfWork.CollectionReceipt.AddAsync(model, cancellationToken);
+
+                var details = new CollectionReceiptDetail
+                {
+                    CollectionReceiptId = model.CollectionReceiptId,
+                    CollectionReceiptNo = model.CollectionReceiptNo,
+                    InvoiceDate = DateOnly.FromDateTime(existingServiceInvoice.CreatedDate),
+                    InvoiceNo = existingServiceInvoice.ServiceInvoiceNo,
+                    Amount = model.Total
+                };
+
+                await _dbContext.CollectionReceiptDetails.AddAsync(details, cancellationToken);
+
+                await _unitOfWork.CollectionReceipt.UpdateSV(model.ServiceInvoice!.ServiceInvoiceId, model.Total, cancellationToken);
+
+                #endregion --Saving default value
+
+                #region --Audit Trail Recording
+
+                AuditTrail auditTrailBook = new(model.CreatedBy!,
+                    $"Create new collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
+
+                #endregion --Audit Trail Recording
+
+                await transaction.CommitAsync(cancellationToken);
+                TempData["success"] = $"Collection receipt #{model.CollectionReceiptNo} created successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Failed to create service invoice collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                    ex.Message, ex.StackTrace, _userManager.GetUserName(User));
+                await transaction.RollbackAsync(cancellationToken);
+                TempData["error"] = ex.Message;
+                return View(viewModel);
             }
         }
     }
