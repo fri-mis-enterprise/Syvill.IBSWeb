@@ -6,8 +6,9 @@
 @Html.AntiForgeryToken()
 
 <!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"/>
 
 <style>
     .container {
@@ -66,17 +67,17 @@
             <div class="table-responsive" style="max-height: 70vh">
                 <table id="userTable" class="table table-hover mb-0">
                     <thead class="bg-light">
-                        <tr>
-                            <th class="text-start">Username</th>
-                            <th class="text-start">Full Name</th>
-                            <th class="text-start">Department</th>
-                            <th class="text-start">Role</th>
-                            <th class="text-start">Station</th>
-                            <th class="text-start">Status</th>
-                            <th class="text-start">Created</th>
-                            <th class="text-start">Modified</th>
-                            <th class="text-start">Actions</th>
-                        </tr>
+                    <tr>
+                        <th class="text-start">Username</th>
+                        <th class="text-start">Full Name</th>
+                        <th class="text-start">Department</th>
+                        <th class="text-start">Role</th>
+                        <th class="text-start">Station</th>
+                        <th class="text-start">Status</th>
+                        <th class="text-start">Created</th>
+                        <th class="text-start">Modified</th>
+                        <th class="text-start">Actions</th>
+                    </tr>
                     </thead>
                 </table>
             </div>
@@ -94,24 +95,26 @@
             </div>
             <div class="modal-body">
                 <form id="userForm">
-                    <input type="hidden" id="userId" />
+                    <input type="hidden" id="userId"/>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="username" required />
+                            <input type="text" class="form-control" id="username" required/>
                             <small class="text-muted">Cannot be changed after creation</small>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="name" oninput="this.value = this.value.toUpperCase()" required />
+                            <input type="text" class="form-control" id="name"
+                                   oninput="this.value = this.value.toUpperCase()" required/>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                            <label for="department" class="form-label">Department <span
+                                    class="text-danger">*</span></label>
                             <select class="form-select js-select2" id="department" required>
                                 <option value="">Select department</option>
                                 <option value="Accounting">Accounting</option>
@@ -144,7 +147,8 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3" id="stationDiv" style="display: none;">
-                            <label for="stationAccess" class="form-label">Station <span class="text-danger">*</span></label>
+                            <label for="stationAccess" class="form-label">Station <span
+                                    class="text-danger">*</span></label>
                             <select class="form-select js-select2" id="stationAccess">
                                 <option value="">Select station</option>
                             </select>
@@ -153,7 +157,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="isActive" class="form-label">Status</label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="isActive" checked />
+                                <input class="form-check-input" type="checkbox" id="isActive" checked/>
                                 <label class="form-check-label" for="isActive">
                                     <span id="statusLabel">Active</span>
                                 </label>
@@ -164,13 +168,15 @@
                     <div id="passwordSection">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password <span class="text-danger" id="passwordRequired">*</span></label>
-                                <input type="password" class="form-control" id="password" />
+                                <label for="password" class="form-label">Password <span class="text-danger"
+                                                                                        id="passwordRequired">*</span></label>
+                                <input type="password" class="form-control" id="password"/>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger" id="confirmRequired">*</span></label>
-                                <input type="password" class="form-control" id="confirmPassword" />
+                                <label for="confirmPassword" class="form-label">Confirm Password <span
+                                        class="text-danger" id="confirmRequired">*</span></label>
+                                <input type="password" class="form-control" id="confirmPassword"/>
                             </div>
                         </div>
                     </div>
@@ -196,17 +202,19 @@
             </div>
             <div class="modal-body">
                 <form id="resetPasswordForm">
-                    <input type="hidden" id="resetUserId" />
+                    <input type="hidden" id="resetUserId"/>
                     <p>Reset password for: <strong id="resetUsername"></strong></p>
 
                     <div class="mb-3">
-                        <label for="newPassword" class="form-label">New Password <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="newPassword" required />
+                        <label for="newPassword" class="form-label">New Password <span
+                                class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="newPassword" required/>
                     </div>
 
                     <div class="mb-3">
-                        <label for="confirmNewPassword" class="form-label">Confirm New Password <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="confirmNewPassword" required />
+                        <label for="confirmNewPassword" class="form-label">Confirm New Password <span
+                                class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="confirmNewPassword" required/>
                     </div>
                 </form>
             </div>
@@ -233,7 +241,7 @@
         }
 
         $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
+            beforeSend: function (xhr, settings) {
                 if (settings.type === 'POST' || settings.type === 'PUT' || settings.type === 'DELETE') {
                     xhr.setRequestHeader('RequestVerificationToken', getAntiforgeryToken());
                 }
@@ -249,7 +257,7 @@
             userTable = $('#userTable').DataTable({
                 "order": [[6, 'desc']],
                 "columnDefs": [
-                    { "orderable": false, "targets": [8] }
+                    {"orderable": false, "targets": [8]}
                 ],
                 "processing": true,
                 "stateDuration": 86400,
@@ -264,7 +272,7 @@
                 ajax: {
                     url: '/Admin/User/GetAll',
                     dataSrc: 'data',
-                    error: function(xhr, error, code) {
+                    error: function (xhr, error, code) {
                         console.error('DataTable error:', error);
                         Swal.fire({
                             icon: 'error',
@@ -281,11 +289,11 @@
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 },
                 columns: [
-                    { data: 'username', render: data => escapeHtml(data) },
-                    { data: 'name', render: data => escapeHtml(data) },
-                    { data: 'department', render: data => escapeHtml(data) },
-                    { data: 'role', render: data => escapeHtml(data) },
-                    { data: 'stationAccess', render: data => escapeHtml(data) },
+                    {data: 'username', render: data => escapeHtml(data)},
+                    {data: 'name', render: data => escapeHtml(data)},
+                    {data: 'department', render: data => escapeHtml(data)},
+                    {data: 'role', render: data => escapeHtml(data)},
+                    {data: 'stationAccess', render: data => escapeHtml(data)},
                     {
                         data: 'isActive',
                         render: function (data) {
@@ -294,11 +302,11 @@
                                 : '<span class="badge bg-danger">Inactive</span>';
                         }
                     },
-                    { data: 'createdDate' },
-                    { 
+                    {data: 'createdDate'},
+                    {
                         data: null,
-                        render: function(data) {
-                            return data.modifiedDate !== 'N/A' 
+                        render: function (data) {
+                            return data.modifiedDate !== 'N/A'
                                 ? `${escapeHtml(data.modifiedDate)}<br/><small class="text-muted">by ${escapeHtml(data.modifiedBy)}</small>`
                                 : 'N/A';
                         }
@@ -311,14 +319,14 @@
                                 <button class="btn btn-sm btn-info btn-edit-user" data-user-id="${escapeHtml(data.id)}" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-sm ${data.isActive ? 'btn-warning' : 'btn-success'} btn-toggle-status" 
-                                        data-user-id="${escapeHtml(data.id)}" 
+                                <button class="btn btn-sm ${data.isActive ? 'btn-warning' : 'btn-success'} btn-toggle-status"
+                                        data-user-id="${escapeHtml(data.id)}"
                                         data-username="${escapeHtml(data.username)}"
                                         title="${data.isActive ? 'Deactivate' : 'Activate'}">
                                     <i class="bi bi-${data.isActive ? 'x-circle' : 'check-circle'}"></i>
                                 </button>
-                                <button class="btn btn-sm btn-secondary btn-reset-password" 
-                                        data-user-id="${escapeHtml(data.id)}" 
+                                <button class="btn btn-sm btn-secondary btn-reset-password"
+                                        data-user-id="${escapeHtml(data.id)}"
                                         data-username="${escapeHtml(data.username)}"
                                         title="Reset Password">
                                     <i class="bi bi-key"></i>
@@ -335,15 +343,15 @@
                 }
             });
 
-            $('#userTable').on('click', '.btn-edit-user', function() {
+            $('#userTable').on('click', '.btn-edit-user', function () {
                 openUpsertModal($(this).data('user-id'));
             });
 
-            $('#userTable').on('click', '.btn-toggle-status', function() {
+            $('#userTable').on('click', '.btn-toggle-status', function () {
                 toggleStatus($(this).data('user-id'), $(this).data('username'));
             });
 
-            $('#userTable').on('click', '.btn-reset-password', function() {
+            $('#userTable').on('click', '.btn-reset-password', function () {
                 openResetPasswordModal($(this).data('user-id'), $(this).data('username'));
             });
 
@@ -385,11 +393,13 @@
                 '"': '&quot;',
                 "'": '&#039;'
             };
-            return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+            return String(text).replace(/[&<>"']/g, function (m) {
+                return map[m];
+            });
         }
 
         function initializeSelect2() {
-            $('.js-select2').each(function() {
+            $('.js-select2').each(function () {
                 if ($(this).hasClass('select2-hidden-accessible')) {
                     $(this).select2('destroy');
                 }
@@ -399,7 +409,7 @@
                 theme: 'bootstrap-5',
                 width: '100%',
                 dropdownParent: $('#upsertModal'),
-                placeholder: function() {
+                placeholder: function () {
                     return $(this).find('option:first').text();
                 },
                 allowClear: false
@@ -419,7 +429,7 @@
                         initializeSelect2();
                     }
                 })
-                .fail(function() {
+                .fail(function () {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -441,7 +451,7 @@
                         initializeSelect2();
                     }
                 })
-                .fail(function() {
+                .fail(function () {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -486,7 +496,7 @@
                             $('#username').val(user.username).prop('readonly', true);
                             $('#name').val(user.name);
                             $('#department').val(user.department).trigger('change');
-                            
+
                             setTimeout(() => {
                                 $('#role').val(user.role).trigger('change');
                                 setTimeout(() => {
@@ -495,7 +505,7 @@
                                     }
                                 }, 100);
                             }, 100);
-                            
+
                             $('#isActive').prop('checked', user.isActive);
                             $('#statusLabel').text(user.isActive ? 'Active' : 'Inactive');
                             $('#modalTitle').text('Edit User');
@@ -510,7 +520,7 @@
                             });
                         }
                     })
-                    .fail(function() {
+                    .fail(function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -591,10 +601,10 @@
                 data: JSON.stringify(userData),
                 success: function (response) {
                     saveBtn.prop('disabled', false).html('<i class="bi bi-save"></i> Save User');
-                    
+
                     if (response.success) {
                         shouldRefreshOnClose = true;
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
@@ -614,7 +624,7 @@
                 },
                 error: function (xhr) {
                     saveBtn.prop('disabled', false).html('<i class="bi bi-save"></i> Save User');
-                    
+
                     const message = xhr.responseJSON?.message || 'An error occurred while saving the user';
                     Swal.fire({
                         icon: 'error',
@@ -666,7 +676,7 @@
                                 });
                             }
                         })
-                        .fail(function(xhr) {
+                        .fail(function (xhr) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
@@ -720,10 +730,10 @@
                 }),
                 success: function (response) {
                     resetBtn.prop('disabled', false).html('<i class="bi bi-key"></i> Reset Password');
-                    
+
                     if (response.success) {
                         shouldRefreshOnClose = true;
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
@@ -743,7 +753,7 @@
                 },
                 error: function (xhr) {
                     resetBtn.prop('disabled', false).html('<i class="bi bi-key"></i> Reset Password');
-                    
+
                     const message = xhr.responseJSON?.message || 'An error occurred while resetting password';
                     Swal.fire({
                         icon: 'error',

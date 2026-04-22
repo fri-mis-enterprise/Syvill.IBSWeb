@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.Models.AccountsPayable
 {
-    public class JournalVoucherHeader : BaseEntity
+    public class JournalVoucherHeader: BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int JournalVoucherHeaderId { get; set; }
 
-        [StringLength(13)]
-        public string JournalVoucherHeaderNo { get; set; } = string.Empty;
+        [StringLength(13)] public string JournalVoucherHeaderNo { get; set; } = string.Empty;
 
         [Display(Name = "Transaction Date")]
         [Column(TypeName = "date")]
@@ -29,14 +28,11 @@ namespace IBS.Models.AccountsPayable
 
         private string? _references;
 
-        [Display(Name = "Check Voucher Id")]
-        public int? CVId { get; set; }
+        [Display(Name = "Check Voucher Id")] public int? CVId { get; set; }
 
-        [ForeignKey(nameof(CVId))]
-        public CheckVoucherHeader? CheckVoucherHeader { get; set; }
+        [ForeignKey(nameof(CVId))] public CheckVoucherHeader? CheckVoucherHeader { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? CheckVoucherHeaders { get; set; }
+        [NotMapped] public List<SelectListItem>? CheckVoucherHeaders { get; set; }
 
         [StringLength(1000)]
         public string Particulars
@@ -67,16 +63,13 @@ namespace IBS.Models.AccountsPayable
 
         private string _jvReason = null!;
 
-        [NotMapped]
-        public List<SelectListItem>? COA { get; set; }
+        [NotMapped] public List<SelectListItem>? COA { get; set; }
 
         public bool IsPrinted { get; set; }
 
-        [StringLength(50)]
-        public string Status { get; set; } = nameof(JvStatus.ForApproval);
+        [StringLength(50)] public string Status { get; set; } = nameof(JvStatus.ForApproval);
 
-        [StringLength(13)]
-        public string Type { get; set; } = string.Empty;
+        [StringLength(13)] public string Type { get; set; } = string.Empty;
 
         public ICollection<JournalVoucherDetail>? Details { get; set; }
 

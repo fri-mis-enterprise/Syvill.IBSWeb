@@ -10,12 +10,13 @@ namespace IBS.Services
         Task<SubAccountInfoDto?> ResolveAsync(SubAccountType type,
             int subAccountId,
             CancellationToken cancellationToken = default);
+
         Task<bool> ValidateExistsAsync(SubAccountType type,
             int subAccountId,
             CancellationToken cancellationToken = default);
     }
 
-    public class SubAccountResolver : ISubAccountResolver
+    public class SubAccountResolver: ISubAccountResolver
     {
         private readonly ApplicationDbContext _context;
 
@@ -35,9 +36,7 @@ namespace IBS.Services
                         .Where(c => c.CustomerId == subAccountId)
                         .Select(c => new SubAccountInfoDto
                         {
-                            Type = SubAccountType.Customer,
-                            Id = c.CustomerId,
-                            Name = c.CustomerName
+                            Type = SubAccountType.Customer, Id = c.CustomerId, Name = c.CustomerName
                         })
                         .FirstOrDefaultAsync(cancellationToken);
                     return customer;
@@ -47,9 +46,7 @@ namespace IBS.Services
                         .Where(s => s.SupplierId == subAccountId)
                         .Select(s => new SubAccountInfoDto
                         {
-                            Type = SubAccountType.Supplier,
-                            Id = s.SupplierId,
-                            Name = s.SupplierName
+                            Type = SubAccountType.Supplier, Id = s.SupplierId, Name = s.SupplierName
                         })
                         .FirstOrDefaultAsync(cancellationToken);
                     return supplier;
@@ -59,9 +56,7 @@ namespace IBS.Services
                         .Where(e => e.EmployeeId == subAccountId)
                         .Select(e => new SubAccountInfoDto
                         {
-                            Type = SubAccountType.Employee,
-                            Id = e.EmployeeId,
-                            Name = $"{e.FirstName} {e.LastName}"
+                            Type = SubAccountType.Employee, Id = e.EmployeeId, Name = $"{e.FirstName} {e.LastName}"
                         })
                         .FirstOrDefaultAsync(cancellationToken);
                     return employee;
@@ -83,9 +78,7 @@ namespace IBS.Services
                         .Where(c => c.CompanyId == subAccountId)
                         .Select(c => new SubAccountInfoDto
                         {
-                            Type = SubAccountType.Company,
-                            Id = c.CompanyId,
-                            Name = c.CompanyName
+                            Type = SubAccountType.Company, Id = c.CompanyId, Name = c.CompanyName
                         })
                         .FirstOrDefaultAsync(cancellationToken);
                     return company;

@@ -39,17 +39,13 @@ namespace IBS.Models.MasterFile
         [Display(Name = "TAX Type")]
         public string TaxType { get; set; } = string.Empty;
 
-        [StringLength(1024)]
-        public string? ProofOfRegistrationFilePath { get; set; }
+        [StringLength(1024)] public string? ProofOfRegistrationFilePath { get; set; }
 
-        [StringLength(200)]
-        public string? ProofOfRegistrationFileName { get; set; }
+        [StringLength(200)] public string? ProofOfRegistrationFileName { get; set; }
 
-        [StringLength(1024)]
-        public string? ProofOfExemptionFilePath { get; set; }
+        [StringLength(1024)] public string? ProofOfExemptionFilePath { get; set; }
 
-        [StringLength(200)]
-        public string? ProofOfExemptionFileName { get; set; }
+        [StringLength(200)] public string? ProofOfExemptionFileName { get; set; }
 
         public bool IsActive { get; set; } = true;
 
@@ -70,18 +66,15 @@ namespace IBS.Models.MasterFile
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? EditedDate { get; set; }
 
-        [StringLength(20)]
-        public string Category { get; set; } = string.Empty;
+        [StringLength(20)] public string Category { get; set; } = string.Empty;
 
-        [StringLength(20)]
-        public string? Branch { get; set; }
+        [StringLength(20)] public string? Branch { get; set; }
 
         [StringLength(100)]
         [Display(Name = "Default Expense")]
         public string? DefaultExpenseNumber { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? DefaultExpenses { get; set; }
+        [NotMapped] public List<SelectListItem>? DefaultExpenses { get; set; }
 
         [Column(TypeName = "numeric(18,4)")]
         [Display(Name = "Withholding Tax Percent")]
@@ -91,15 +84,13 @@ namespace IBS.Models.MasterFile
         [Display(Name = "Withholding Tax Title")]
         public string? WithholdingTaxTitle { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? WithholdingTaxList { get; set; }
+        [NotMapped] public List<SelectListItem>? WithholdingTaxList { get; set; }
 
         [Display(Name = "Reason")]
         [StringLength(100)]
         public string? ReasonOfExemption { get; set; }
 
-        [StringLength(20)]
-        public string? Validity { get; set; }
+        [StringLength(20)] public string? Validity { get; set; }
 
         [Display(Name = "Validity Date")]
         [Column(TypeName = "timestamp without time zone")]
@@ -110,7 +101,6 @@ namespace IBS.Models.MasterFile
         [StringLength(10)]
         public string? ZipCode { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? PaymentTerms { get; set; }
+        [NotMapped] public List<SelectListItem>? PaymentTerms { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class PaymentTermController : Controller
+    public class PaymentTermController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SupplierController> _logger;
@@ -44,7 +44,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPaymentTerms([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPaymentTerms([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -59,10 +60,10 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var searchValue = parameters.Search.Value.ToLower();
 
                     queried = queried
-                    .Where(s =>
-                        s.TermsCode.ToLower().Contains(searchValue) ||
-                        s.NumberOfDays.ToString().Contains(searchValue) ||
-                        s.NumberOfMonths.ToString().Contains(searchValue)
+                        .Where(s =>
+                            s.TermsCode.ToLower().Contains(searchValue) ||
+                            s.NumberOfDays.ToString().Contains(searchValue) ||
+                            s.NumberOfMonths.ToString().Contains(searchValue)
                         );
                 }
 
@@ -74,7 +75,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
 
                     queried = queried
-                        .OrderBy($"{columnName} {sortDirection}") ;
+                        .OrderBy($"{columnName} {sortDirection}");
                 }
 
                 var totalFilteredRecords = await queried.CountAsync(cancellationToken);
@@ -193,7 +194,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region -- Audit Trail Recording --
 
-                AuditTrail auditTrailBook = new (getUserFullName,
+                AuditTrail auditTrailBook = new(getUserFullName,
                     $"Edited Terms #{model.TermsCode}",
                     "Terms");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -206,7 +207,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit supplier master file. Edited by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit supplier master file. Edited by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = $"Error: '{ex.Message}'";
                 return View(model);
@@ -236,7 +238,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region -- Audit Trail Recording --
 
-                AuditTrail auditTrailBook = new (getUserFullName,
+                AuditTrail auditTrailBook = new(getUserFullName,
                     $"Deleted Terms #{code}",
                     "Terms");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);

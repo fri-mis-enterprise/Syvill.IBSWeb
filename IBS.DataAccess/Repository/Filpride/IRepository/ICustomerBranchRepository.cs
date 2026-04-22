@@ -3,7 +3,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ICustomerBranchRepository : IRepository<CustomerBranch>
+    public interface ICustomerBranchRepository: IRepository<CustomerBranch>
     {
         Task UpdateAsync(CustomerBranch model, CancellationToken cancellationToken);
     }

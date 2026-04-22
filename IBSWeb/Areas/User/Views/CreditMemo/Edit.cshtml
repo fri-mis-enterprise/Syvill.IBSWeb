@@ -27,13 +27,17 @@
                 <legend>Select Source</legend>
 
                 <div class="form-check form-check-inline mb-3">
-                    <input class="form-check-input" type="radio" asp-for="Source" id="inlineRadio1" value="Sales Invoice" aria-labelledby="labelInlineRadio1" onclick="toggleSelect('siList')" disabled readonly>
+                    <input class="form-check-input" type="radio" asp-for="Source" id="inlineRadio1"
+                           value="Sales Invoice" aria-labelledby="labelInlineRadio1" onclick="toggleSelect('siList')"
+                           disabled readonly>
                     <input type="hidden" asp-for="Source"/>
                     <label class="form-check-label" for="inlineRadio1" id="labelInlineRadio1">Sales Invoice</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" asp-for="Source" id="inlineRadio2" value="Service Invoice" aria-labelledby="labelInlineRadio2" onclick="toggleSelect('svList')" disabled readonly>
+                    <input class="form-check-input" type="radio" asp-for="Source" id="inlineRadio2"
+                           value="Service Invoice" aria-labelledby="labelInlineRadio2" onclick="toggleSelect('svList')"
+                           disabled readonly>
                     <label class="form-check-label" for="inlineRadio2" id="labelInlineRadio2">Service Invoice</label>
                 </div>
                 <br/>
@@ -50,7 +54,8 @@
             <div class="form-group" id="svList" style="display: none;">
                 <div class="form-group mb-3">
                     <label asp-for="ServiceInvoiceId" class="control-label"></label>
-                    <select asp-for="ServiceInvoiceId" asp-items="@Model.ServiceInvoices" class="form-control js-select2" style="width:100%" required>
+                    <select asp-for="ServiceInvoiceId" asp-items="@Model.ServiceInvoices"
+                            class="form-control js-select2" style="width:100%" required>
                         <option></option>
                     </select>
                     <span asp-validation-for="ServiceInvoiceId" class="text-danger"></span>
@@ -63,19 +68,22 @@
                     </div>
                     <div class="col-sm">
                         <label asp-for="Amount" class="control-label"></label>
-                        <input asp-for="Amount" class="form-control money amount" value="@Model.Amount" placeholder="0.000" required/>
+                        <input asp-for="Amount" class="form-control money amount" value="@Model.Amount"
+                               placeholder="0.000" required/>
                         <span asp-validation-for="Amount" class="text-danger"></span>
                     </div>
                 </div>
             </div>
 
             <div class="form-floating mb-3">
-                <input asp-for="Description" id="floatingInput" type="text" class="form-control" placeholder="Optional"/>
+                <input asp-for="Description" id="floatingInput" type="text" class="form-control"
+                       placeholder="Optional"/>
                 <label for="floatingInput" class="control-label">Description</label>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <textarea asp-for="Remarks" class="form-control" placeholder="Leave a remarks here" style="height: 100px"></textarea>
+                <textarea asp-for="Remarks" class="form-control" placeholder="Leave a remarks here"
+                          style="height: 100px"></textarea>
                 <label asp-for="Remarks" class="control-label">Remarks</label>
                 <span asp-validation-for="Remarks" class="text-danger"></span>
             </div>
@@ -84,7 +92,8 @@
                     <button type="submit" class="btn btn-primary form-control">Save</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="User" asp-controller="CreditMemo" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="User" asp-controller="CreditMemo" asp-action="Index"
+                       class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>
@@ -144,7 +153,7 @@
                 $.ajax({
                     url: '@Url.Action("GetSVDetails", "CreditMemo", new { area = "User" })', // Replace with the actual controller and action names
                     method: "GET",
-                    data: { svId: svId },
+                    data: {svId: svId},
                     success: function (data) {
                         if (data) {
                             var forrmattedDate = formatDateToMonth(data.period);

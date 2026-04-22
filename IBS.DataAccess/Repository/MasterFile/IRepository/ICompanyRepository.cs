@@ -3,7 +3,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.MasterFile.IRepository
 {
-    public interface ICompanyRepository : IRepository<Company>
+    public interface ICompanyRepository: IRepository<Company>
     {
         Task<bool> IsCompanyExistAsync(string companyName, CancellationToken cancellationToken = default);
 

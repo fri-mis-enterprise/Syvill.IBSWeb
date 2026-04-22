@@ -21,11 +21,14 @@
         {
             <li class="nav-item">
                 @*<a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>*@
-                <a id="manage" class="nav-link" href="#" title="You're currently login to this company.">@company.ToUpper() @stationCode?.ToUpper()</a>
+                <a id="manage" class="nav-link" href="#"
+                   title="You're currently login to this company.">@company.ToUpper() @stationCode?.ToUpper()</a>
             </li>
         }
+
         <li class="nav-item">
-            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                 <button id="logout" type="submit" class="nav-link btn btn-link border-0">Logout</button>
             </form>
         </li>
@@ -33,7 +36,8 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link" id="login" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="">Login</a>
+            <a class="nav-link" id="login" asp-area="Identity" asp-page="/Account/Login"
+               asp-route-returnUrl="">Login</a>
         </li>
     }
 </ul>

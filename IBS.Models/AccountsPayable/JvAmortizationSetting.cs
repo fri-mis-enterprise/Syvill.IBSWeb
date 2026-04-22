@@ -6,13 +6,11 @@ namespace IBS.Models.AccountsPayable
 {
     public class JvAmortizationSetting
     {
-        [Key]
-        public int Id { get; set; }
+        [Key] public int Id { get; set; }
 
         public int JvId { get; set; }
 
-        [ForeignKey(nameof(JvId))]
-        public JournalVoucherHeader JvHeader { get; set; } = null!;
+        [ForeignKey(nameof(JvId))] public JournalVoucherHeader JvHeader { get; set; } = null!;
 
         public JvFrequency JvFrequency { get; set; } = JvFrequency.Monthly;
 

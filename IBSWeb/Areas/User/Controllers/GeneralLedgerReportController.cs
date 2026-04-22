@@ -21,7 +21,7 @@ using QuestPDF.Infrastructure;
 namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
-    public class GeneralLedgerReportController : Controller
+    public class GeneralLedgerReportController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -33,7 +33,9 @@ namespace IBSWeb.Areas.User.Controllers
 
         private readonly ILogger<GeneralLedgerReportController> _logger;
 
-        public GeneralLedgerReportController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, ILogger<GeneralLedgerReportController> logger)
+        public GeneralLedgerReportController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment,
+            ILogger<GeneralLedgerReportController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -55,7 +57,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         #region -- Generated General Ledger by Transaction as Quest PDF
 
-        public async Task<IActionResult> GeneralLedgerBookReport(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GeneralLedgerBookReport(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -65,7 +68,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             try
             {
-                var generalLedgerBooks = await _unitOfWork.Report.GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
+                var generalLedgerBooks =
+                    await _unitOfWork.Report.GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
 
                 if (!generalLedgerBooks.Any())
                 {
@@ -90,7 +94,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                         #region -- Header
 
-                        var imgFilprideLogoPath = Path.Combine(_webHostEnvironment.WebRootPath, "img", "Filpride-logo.png");
+                        var imgFilprideLogoPath =
+                            Path.Combine(_webHostEnvironment.WebRootPath, "img", "Filpride-logo.png");
 
                         page.Header().Height(50).Row(row =>
                         {
@@ -144,14 +149,22 @@ namespace IBSWeb.Areas.User.Controllers
 
                             table.Header(header =>
                             {
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Date").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Reference").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Description").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Account No").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Account Name").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Sub-Account").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Debit").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Credit").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Date").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Reference").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Description").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Account No").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Account Name").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Sub-Account").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Debit").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Credit").SemiBold();
                             });
 
                             #endregion -- Table Header
@@ -166,17 +179,38 @@ namespace IBSWeb.Areas.User.Controllers
                                 table.Cell().Border(0.5f).Padding(3).Text(record.AccountNo);
                                 table.Cell().Border(0.5f).Padding(3).Text(record.AccountTitle);
                                 table.Cell().Border(0.5f).Padding(3).Text(record.SubAccountName);
-                                table.Cell().Border(0.5f).Padding(3).AlignRight().Text(record.Debit != 0 ? record.Debit < 0 ? $"({Math.Abs(record.Debit).ToString(SD.Two_Decimal_Format)})" : record.Debit.ToString(SD.Two_Decimal_Format) : null).FontColor(record.Debit < 0 ? Colors.Red.Medium : Colors.Black);
-                                table.Cell().Border(0.5f).Padding(3).AlignRight().Text(record.Credit != 0 ? record.Credit < 0 ? $"({Math.Abs(record.Credit).ToString(SD.Two_Decimal_Format)})" : record.Credit.ToString(SD.Two_Decimal_Format) : null).FontColor(record.Credit < 0 ? Colors.Red.Medium : Colors.Black);
+                                table.Cell().Border(0.5f).Padding(3).AlignRight()
+                                    .Text(record.Debit != 0
+                                        ? record.Debit < 0
+                                            ? $"({Math.Abs(record.Debit).ToString(SD.Two_Decimal_Format)})"
+                                            : record.Debit.ToString(SD.Two_Decimal_Format)
+                                        : null).FontColor(record.Debit < 0 ? Colors.Red.Medium : Colors.Black);
+                                table.Cell().Border(0.5f).Padding(3).AlignRight()
+                                    .Text(record.Credit != 0
+                                        ? record.Credit < 0
+                                            ? $"({Math.Abs(record.Credit).ToString(SD.Two_Decimal_Format)})"
+                                            : record.Credit.ToString(SD.Two_Decimal_Format)
+                                        : null).FontColor(record.Credit < 0 ? Colors.Red.Medium : Colors.Black);
                             }
 
                             #endregion -- Loop to Show Records
 
                             #region -- Create Table Cell for Totals
 
-                            table.Cell().ColumnSpan(6).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text("TOTAL:").SemiBold();
-                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(totalDebit != 0 ? totalDebit < 0 ? $"({Math.Abs(totalDebit).ToString(SD.Two_Decimal_Format)})" : totalDebit.ToString(SD.Two_Decimal_Format) : null).SemiBold().FontColor(totalDebit < 0 ? Colors.Red.Medium : Colors.Black);
-                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(totalCredit != 0 ? totalCredit < 0 ? $"({Math.Abs(totalCredit).ToString(SD.Two_Decimal_Format)})" : totalCredit.ToString(SD.Two_Decimal_Format) : null).SemiBold().FontColor(totalCredit < 0 ? Colors.Red.Medium : Colors.Black);
+                            table.Cell().ColumnSpan(6).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3)
+                                .AlignRight().Text("TOTAL:").SemiBold();
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(totalDebit != 0
+                                    ? totalDebit < 0
+                                        ? $"({Math.Abs(totalDebit).ToString(SD.Two_Decimal_Format)})"
+                                        : totalDebit.ToString(SD.Two_Decimal_Format)
+                                    : null).SemiBold().FontColor(totalDebit < 0 ? Colors.Red.Medium : Colors.Black);
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(totalCredit != 0
+                                    ? totalCredit < 0
+                                        ? $"({Math.Abs(totalCredit).ToString(SD.Two_Decimal_Format)})"
+                                        : totalCredit.ToString(SD.Two_Decimal_Format)
+                                    : null).SemiBold().FontColor(totalCredit < 0 ? Colors.Red.Medium : Colors.Black);
 
                             #endregion -- Create Table Cell for Totals
                         });
@@ -199,7 +233,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by transaction report quest pdf", "General Ledger Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    "Generate general ledger by transaction report quest pdf", "General Ledger Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -210,7 +245,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate general ledger by transaction report quest pdf. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate general ledger by transaction report quest pdf. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(GeneralLedgerBook));
             }
@@ -222,7 +258,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateGeneralLedgerBookExcelFile(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateGeneralLedgerBookExcelFile(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
@@ -237,13 +274,14 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var generalBooks = await _unitOfWork.Report
-                .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
+                    .GetGeneralLedgerBooks(model.DateFrom, model.DateTo, cancellationToken);
 
                 if (generalBooks.Count == 0)
                 {
                     TempData["info"] = "No Record Found";
                     return RedirectToAction(nameof(GeneralLedgerBook));
                 }
+
                 var totalDebit = generalBooks.Sum(gb => gb.Debit);
                 var totalCredit = generalBooks.Sum(gb => gb.Credit);
 
@@ -340,7 +378,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by transaction report excel file", "General Ledger Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    "Generate general ledger by transaction report excel file", "General Ledger Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -348,12 +387,14 @@ namespace IBSWeb.Areas.User.Controllers
                 // Convert the Excel package to a byte array
                 var excelBytes = await package.GetAsByteArrayAsync(cancellationToken);
 
-                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"GeneralLedgerBook_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
+                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"GeneralLedgerBook_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate general ledger by transaction excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate general ledger by transaction excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(GeneralLedgerBook));
             }
@@ -370,8 +411,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .OrderBy(coa => coa.AccountNumber)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.AccountNumber + " " + s.AccountName,
-                        Text = s.AccountNumber + " " + s.AccountName
+                        Value = s.AccountNumber + " " + s.AccountName, Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(),
             };
@@ -381,7 +421,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         #region -- Generated Ganeral Ledger by Account number as Quest PDF
 
-        public async Task<IActionResult> GenerateGeneralLedgerReportByAccountNumber(GeneralLedgerReportViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateGeneralLedgerReportByAccountNumber(GeneralLedgerReportViewModel model,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -420,7 +461,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                         #region -- Header
 
-                        var imgFilprideLogoPath = Path.Combine(_webHostEnvironment.WebRootPath, "img", "Filpride-logo.png");
+                        var imgFilprideLogoPath =
+                            Path.Combine(_webHostEnvironment.WebRootPath, "img", "Filpride-logo.png");
 
                         page.Header().Height(50).Row(row =>
                         {
@@ -475,14 +517,22 @@ namespace IBSWeb.Areas.User.Controllers
 
                             table.Header(header =>
                             {
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Date").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Particular").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Account No").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Account Name").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Sub-Account").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Debit").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Credit").SemiBold();
-                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Balance").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Date").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Particular").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Account No").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Account Name").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Sub-Account").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Debit").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Credit").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Balance").SemiBold();
                             });
 
                             #endregion -- Table Header
@@ -497,13 +547,15 @@ namespace IBSWeb.Areas.User.Controllers
 
                             #region -- Loop to Show Records
 
-                            foreach (var grouped in generalLedgerByAccountNo.OrderBy(g => g.AccountNo).GroupBy(g => g.AccountTitle))
+                            foreach (var grouped in generalLedgerByAccountNo.OrderBy(g => g.AccountNo)
+                                         .GroupBy(g => g.AccountTitle))
                             {
                                 balance = 0;
 
                                 foreach (var journal in grouped.OrderBy(g => g.Date))
                                 {
-                                    var account = chartOfAccount.FirstOrDefault(a => a.AccountNumber == journal.AccountNo);
+                                    var account =
+                                        chartOfAccount.FirstOrDefault(a => a.AccountNumber == journal.AccountNo);
 
                                     if (balance != 0)
                                     {
@@ -526,9 +578,24 @@ namespace IBSWeb.Areas.User.Controllers
                                     table.Cell().Border(0.5f).Padding(3).Text(journal.AccountNo);
                                     table.Cell().Border(0.5f).Padding(3).Text(journal.AccountTitle);
                                     table.Cell().Border(0.5f).Padding(3).Text(journal.SubAccountName);
-                                    table.Cell().Border(0.5f).Padding(3).AlignRight().Text(journal.Debit != 0 ? journal.Debit < 0 ? $"({Math.Abs(journal.Debit).ToString(SD.Two_Decimal_Format)})" : journal.Debit.ToString(SD.Two_Decimal_Format) : null).FontColor(journal.Debit < 0 ? Colors.Red.Medium : Colors.Black);
-                                    table.Cell().Border(0.5f).Padding(3).AlignRight().Text(journal.Credit != 0 ? journal.Credit < 0 ? $"({Math.Abs(journal.Credit).ToString(SD.Two_Decimal_Format)})" : journal.Credit.ToString(SD.Two_Decimal_Format) : null).FontColor(journal.Credit < 0 ? Colors.Red.Medium : Colors.Black);
-                                    table.Cell().Border(0.5f).Padding(3).AlignRight().Text(balance != 0 ? balance < 0 ? $"({Math.Abs(balance).ToString(SD.Two_Decimal_Format)})" : balance.ToString(SD.Two_Decimal_Format) : null).FontColor(balance < 0 ? Colors.Red.Medium : Colors.Black);
+                                    table.Cell().Border(0.5f).Padding(3).AlignRight()
+                                        .Text(journal.Debit != 0
+                                            ? journal.Debit < 0
+                                                ? $"({Math.Abs(journal.Debit).ToString(SD.Two_Decimal_Format)})"
+                                                : journal.Debit.ToString(SD.Two_Decimal_Format)
+                                            : null).FontColor(journal.Debit < 0 ? Colors.Red.Medium : Colors.Black);
+                                    table.Cell().Border(0.5f).Padding(3).AlignRight()
+                                        .Text(journal.Credit != 0
+                                            ? journal.Credit < 0
+                                                ? $"({Math.Abs(journal.Credit).ToString(SD.Two_Decimal_Format)})"
+                                                : journal.Credit.ToString(SD.Two_Decimal_Format)
+                                            : null).FontColor(journal.Credit < 0 ? Colors.Red.Medium : Colors.Black);
+                                    table.Cell().Border(0.5f).Padding(3).AlignRight()
+                                        .Text(balance != 0
+                                            ? balance < 0
+                                                ? $"({Math.Abs(balance).ToString(SD.Two_Decimal_Format)})"
+                                                : balance.ToString(SD.Two_Decimal_Format)
+                                            : null).FontColor(balance < 0 ? Colors.Red.Medium : Colors.Black);
                                 }
 
                                 debit = grouped.Sum(j => j.Debit);
@@ -537,10 +604,14 @@ namespace IBSWeb.Areas.User.Controllers
 
                                 #region -- Sub Total
 
-                                table.Cell().ColumnSpan(5).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text($"Total {grouped.Key}").SemiBold();
-                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(debit.ToString(SD.Two_Decimal_Format)).SemiBold();
-                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(credit.ToString(SD.Two_Decimal_Format)).SemiBold();
-                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(balance.ToString(SD.Two_Decimal_Format)).SemiBold();
+                                table.Cell().ColumnSpan(5).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3)
+                                    .AlignRight().Text($"Total {grouped.Key}").SemiBold();
+                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                    .Text(debit.ToString(SD.Two_Decimal_Format)).SemiBold();
+                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                    .Text(credit.ToString(SD.Two_Decimal_Format)).SemiBold();
+                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                    .Text(balance.ToString(SD.Two_Decimal_Format)).SemiBold();
 
                                 #endregion -- Sub Total
                             }
@@ -557,10 +628,26 @@ namespace IBSWeb.Areas.User.Controllers
 
                             #region -- Create Table Cell for Totals
 
-                            table.Cell().ColumnSpan(5).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text("GRAND TOTAL:").Bold();
-                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(debit != 0 ? debit < 0 ? $"({Math.Abs(debit).ToString(SD.Two_Decimal_Format)})" : debit.ToString(SD.Two_Decimal_Format) : null).Bold().FontColor(debit < 0 ? Colors.Red.Medium : Colors.Black);
-                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(credit != 0 ? credit < 0 ? $"({Math.Abs(credit).ToString(SD.Two_Decimal_Format)})" : credit.ToString(SD.Two_Decimal_Format) : null).Bold().FontColor(credit < 0 ? Colors.Red.Medium : Colors.Black);
-                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(balance != 0 ? balance < 0 ? $"({Math.Abs(balance).ToString(SD.Two_Decimal_Format)})" : balance.ToString(SD.Two_Decimal_Format) : null).Bold().FontColor(balance < 0 ? Colors.Red.Medium : Colors.Black);
+                            table.Cell().ColumnSpan(5).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3)
+                                .AlignRight().Text("GRAND TOTAL:").Bold();
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(debit != 0
+                                    ? debit < 0
+                                        ? $"({Math.Abs(debit).ToString(SD.Two_Decimal_Format)})"
+                                        : debit.ToString(SD.Two_Decimal_Format)
+                                    : null).Bold().FontColor(debit < 0 ? Colors.Red.Medium : Colors.Black);
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(credit != 0
+                                    ? credit < 0
+                                        ? $"({Math.Abs(credit).ToString(SD.Two_Decimal_Format)})"
+                                        : credit.ToString(SD.Two_Decimal_Format)
+                                    : null).Bold().FontColor(credit < 0 ? Colors.Red.Medium : Colors.Black);
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(balance != 0
+                                    ? balance < 0
+                                        ? $"({Math.Abs(balance).ToString(SD.Two_Decimal_Format)})"
+                                        : balance.ToString(SD.Two_Decimal_Format)
+                                    : null).Bold().FontColor(balance < 0 ? Colors.Red.Medium : Colors.Black);
 
                             #endregion -- Create Table Cell for Totals
                         });
@@ -583,7 +670,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by account number report quest pdf", "General Ledger Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    "Generate general ledger by account number report quest pdf", "General Ledger Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -594,7 +682,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate general ledger by account number report quest pdf. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate general ledger by account number report quest pdf. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(GeneralLedgerReportByAccountNumber));
             }
@@ -606,7 +695,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateGeneralLedgerReportByAccountNumberExcelFile(GeneralLedgerReportViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateGeneralLedgerReportByAccountNumberExcelFile(
+            GeneralLedgerReportViewModel model, CancellationToken cancellationToken)
         {
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
@@ -617,7 +707,8 @@ namespace IBSWeb.Areas.User.Controllers
                     .FirstOrDefault();
 
                 var selectedAccount = await _unitOfWork.ChartOfAccount
-                    .GetAsync(coa => selectedAccountNo != null && coa.AccountNumber == selectedAccountNo, cancellationToken);
+                    .GetAsync(coa => selectedAccountNo != null && coa.AccountNumber == selectedAccountNo,
+                        cancellationToken);
 
                 var generalLedgerByAccountNo = await _dbContext.GeneralLedgerBooks
                     .Where(g =>
@@ -704,9 +795,9 @@ namespace IBSWeb.Areas.User.Controllers
                 var accountBalances = new Dictionary<string, decimal>();
 
                 foreach (var grouped in generalLedgerByAccountNo
-                    .Where(g => !string.IsNullOrEmpty(g.AccountNo))
-                    .OrderBy(g => g.AccountNo)
-                    .GroupBy(g => g.AccountNo!))
+                             .Where(g => !string.IsNullOrEmpty(g.AccountNo))
+                             .OrderBy(g => g.AccountNo)
+                             .GroupBy(g => g.AccountNo!))
                 {
                     var accountNo = grouped.Key;
 
@@ -834,7 +925,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate general ledger by account number report excel file", "General Ledger Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    "Generate general ledger by account number report excel file", "General Ledger Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail --
@@ -842,12 +934,14 @@ namespace IBSWeb.Areas.User.Controllers
                 // Convert the Excel package to a byte array
                 var excelBytes = await package.GetAsByteArrayAsync(cancellationToken);
 
-                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"GeneralLedgerByAccountNo_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
+                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"GeneralLedgerByAccountNo_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx");
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate general ledger by account number report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate general ledger by account number report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(GeneralLedgerReportByAccountNumber));
             }
@@ -876,6 +970,7 @@ namespace IBSWeb.Areas.User.Controllers
                     TempData["info"] = "No Record Found";
                     return RedirectToAction(nameof(GeneralLedgerBook));
                 }
+
                 var totalDebit = generalBooks.Sum(gb => gb.Debit);
                 var totalCredit = generalBooks.Sum(gb => gb.Credit);
                 var lastRecord = generalBooks.LastOrDefault();
@@ -889,7 +984,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 fileContent.AppendLine($"TAXPAYER'S NAME: Filpride Resources Inc.");
                 fileContent.AppendLine($"TIN: 000-216-589-00000");
-                fileContent.AppendLine($"ADDRESS: 57 Westgate Office, Sampson Road, CBD, Subic Bay Freeport Zone, Kalaklan, Olongapo City, 2200 Zambales, Philippines");
+                fileContent.AppendLine(
+                    $"ADDRESS: 57 Westgate Office, Sampson Road, CBD, Subic Bay Freeport Zone, Kalaklan, Olongapo City, 2200 Zambales, Philippines");
                 fileContent.AppendLine();
                 fileContent.AppendLine($"Accounting System: Accounting Administration System");
                 fileContent.AppendLine($"Acknowledgement Certificate Control No.:");
@@ -908,21 +1004,26 @@ namespace IBSWeb.Areas.User.Controllers
                 fileContent.AppendLine($"{"Date",-8}\t{"Date",-8}\t1\t10\t10\t{firstRecord!.Date}");
                 fileContent.AppendLine($"Reference\tReference\t12\t23\t12\t{firstRecord.Reference}");
                 fileContent.AppendLine($"Description\tDescription\t25\t74\t50\t{firstRecord.Description}");
-                fileContent.AppendLine($"AccountTitle\tAccount Title\t76\t125\t50\t{firstRecord.AccountNo + " " + firstRecord.AccountTitle}");
+                fileContent.AppendLine(
+                    $"AccountTitle\tAccount Title\t76\t125\t50\t{firstRecord.AccountNo + " " + firstRecord.AccountTitle}");
                 fileContent.AppendLine($"{"Debit",-8}\t{"Debit",-8}\t127\t144\t18\t{firstRecord.Debit}");
                 fileContent.AppendLine($"{"Credit",-8}\t{"Credit",-8}\t146\t163\t18\t{firstRecord.Credit}");
                 fileContent.AppendLine();
                 fileContent.AppendLine("GENERAL LEDGER BOOK");
                 fileContent.AppendLine();
-                fileContent.AppendLine($"{"Date",-10}\t{"Reference",-12}\t{"Description",-50}\t{"Account Title",-50}\t{"Debit",18}\t{"Credit",18}");
+                fileContent.AppendLine(
+                    $"{"Date",-10}\t{"Reference",-12}\t{"Description",-50}\t{"Account Title",-50}\t{"Debit",18}\t{"Credit",18}");
 
                 // Generate the records
                 foreach (var record in generalBooks)
                 {
-                    fileContent.AppendLine($"{record.Date.ToString("MM/dd/yyyy"),-10}\t{record.Reference,-12}\t{record.Description,-50}\t{record.AccountNo + " " + record.AccountTitle,-50}\t{record.Debit,18}\t{record.Credit,18}");
+                    fileContent.AppendLine(
+                        $"{record.Date.ToString("MM/dd/yyyy"),-10}\t{record.Reference,-12}\t{record.Description,-50}\t{record.AccountNo + " " + record.AccountTitle,-50}\t{record.Debit,18}\t{record.Credit,18}");
                 }
+
                 fileContent.AppendLine(new string('-', 187));
-                fileContent.AppendLine($"{"",-10}\t{"",-12}\t{"",-50}\t{"TOTAL:",50}\t{totalDebit,18}\t{totalCredit,18}");
+                fileContent.AppendLine(
+                    $"{"",-10}\t{"",-12}\t{"",-50}\t{"TOTAL:",50}\t{totalDebit,18}\t{totalCredit,18}");
 
                 fileContent.AppendLine();
                 fileContent.AppendLine($"Software Name: {CS.AAS}");
@@ -955,7 +1056,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> JournalVoucherSellingPriceReportExcel(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> JournalVoucherSellingPriceReportExcel(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
@@ -982,7 +1084,9 @@ namespace IBSWeb.Areas.User.Controllers
 
                 // Filter for "Update Price" in description (case-insensitive)
                 var filteredData = generalBooks
-                    .Where(gb => gb.Description != null && gb.Description.Contains("update price", StringComparison.CurrentCultureIgnoreCase))
+                    .Where(gb =>
+                        gb.Description != null &&
+                        gb.Description.Contains("update price", StringComparison.CurrentCultureIgnoreCase))
                     .ToList();
 
                 if (filteredData.Count == 0)
@@ -1079,7 +1183,8 @@ namespace IBSWeb.Areas.User.Controllers
                 {
                     range.Style.Font.Bold = true;
                     range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin; // Single top border
-                    range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Double; // Double bottom border
+                    range.Style.Border.Bottom.Style =
+                        OfficeOpenXml.Style.ExcelBorderStyle.Double; // Double bottom border
                 }
 
                 // Auto-fit columns for better readability
@@ -1106,7 +1211,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate JV updating selling price report excel. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate JV updating selling price report excel. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(JournalVoucherPriceReport));
             }
@@ -1124,7 +1230,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> JournalVoucherUnitCostReportExcel(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> JournalVoucherUnitCostReportExcel(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
@@ -1151,7 +1258,9 @@ namespace IBSWeb.Areas.User.Controllers
 
                 // Filter for "Update Cost" in description (case-insensitive)
                 var filteredData = generalBooks
-                    .Where(gb => gb.Description != null && gb.Description.Contains("update cost", StringComparison.CurrentCultureIgnoreCase))
+                    .Where(gb =>
+                        gb.Description != null &&
+                        gb.Description.Contains("update cost", StringComparison.CurrentCultureIgnoreCase))
                     .ToList();
 
                 if (filteredData.Count == 0)
@@ -1248,7 +1357,8 @@ namespace IBSWeb.Areas.User.Controllers
                 {
                     range.Style.Font.Bold = true;
                     range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin; // Single top border
-                    range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Double; // Double bottom border
+                    range.Style.Border.Bottom.Style =
+                        OfficeOpenXml.Style.ExcelBorderStyle.Double; // Double bottom border
                 }
 
                 // Auto-fit columns for better readability
@@ -1275,7 +1385,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate JV updating unit cost report excel. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate JV updating unit cost report excel. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(JournalVoucherUnitCostReport));
             }
@@ -1295,8 +1406,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .OrderBy(coa => coa.AccountNumber)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.AccountNumber + " " + s.AccountName,
-                        Text = s.AccountNumber + " " + s.AccountName
+                        Value = s.AccountNumber + " " + s.AccountName, Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(),
             };
@@ -1306,7 +1416,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateSubsidiaryLedgerExcelFile(GeneralLedgerReportViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateSubsidiaryLedgerExcelFile(GeneralLedgerReportViewModel model,
+            CancellationToken cancellationToken)
         {
             var dateFrom = model.DateFrom;
             var dateTo = model.DateTo;
@@ -1378,9 +1489,8 @@ namespace IBSWeb.Areas.User.Controllers
                 // Column Headers
                 string[] headers =
                 {
-                    "Account No", "Account Name", "Sub-Account Type",
-                    "Sub-Account Name", "Period Start", "Period End",
-                    "Beginning Balance", "Debit Total", "Credit Total", "Ending Balance"
+                    "Account No", "Account Name", "Sub-Account Type", "Sub-Account Name", "Period Start",
+                    "Period End", "Beginning Balance", "Debit Total", "Credit Total", "Ending Balance"
                 };
 
                 int headerRow = 9;

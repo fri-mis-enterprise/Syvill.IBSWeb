@@ -12,19 +12,14 @@ namespace IBS.Models.MasterFile
 
         public int CustomerId { get; set; }
 
-        [ForeignKey(nameof(CustomerId))]
-        public Customer? Customer { get; set; }
+        [ForeignKey(nameof(CustomerId))] public Customer? Customer { get; set; }
 
-        [StringLength(50)]
-        public string BranchName { get; set; } = string.Empty;
+        [StringLength(50)] public string BranchName { get; set; } = string.Empty;
 
-        [StringLength(200)]
-        public string BranchAddress { get; set; } = string.Empty;
+        [StringLength(200)] public string BranchAddress { get; set; } = string.Empty;
 
-        [StringLength(50)]
-        public string BranchTin { get; set; } = string.Empty;
+        [StringLength(50)] public string BranchTin { get; set; } = string.Empty;
 
-        [NotMapped]
-        public List<SelectListItem>? CustomerSelectList { get; set; }
+        [NotMapped] public List<SelectListItem>? CustomerSelectList { get; set; }
     }
 }

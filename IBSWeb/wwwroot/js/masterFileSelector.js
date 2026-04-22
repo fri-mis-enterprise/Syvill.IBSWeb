@@ -219,7 +219,7 @@ class MasterFileSelector {
             }
 
             const row = $(`#${modalId}`).data('row');
-            if (row){
+            if (row) {
                 const accountSelect = row.find('.chart-of-accounts');
 
                 if (!row.find(`input[name$="${type.inputName}"]`).length) {
@@ -303,20 +303,20 @@ class MasterFileSelector {
 
         const accountSelect = row.find('.chart-of-accounts');
         const currentText = accountSelect.find('option:selected').text();
-        
+
         if (!accountSelect.data('original-text')) {
             accountSelect.data('original-text', currentText);
         }
-        
+
         const originalText = accountSelect.data('original-text');
-        
+
         const firstParenIndex = originalText.indexOf(')');
         let newDisplayText;
 
         if (firstParenIndex !== -1) {
-            const accountType = originalText.substring(0, firstParenIndex + 1); 
+            const accountType = originalText.substring(0, firstParenIndex + 1);
             const accountInfo = originalText.substring(firstParenIndex + 1).trim();
-            
+
             newDisplayText = `${accountType} ${accountInfo} (${selectedText})`;
         } else {
             // Fallback if format is different

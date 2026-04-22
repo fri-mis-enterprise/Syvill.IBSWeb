@@ -16,7 +16,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class SupplierController : Controller
+    public class SupplierController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SupplierController> _logger;
@@ -68,8 +68,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     .OrderBy(coa => coa.AccountNumber)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.AccountNumber,
-                        Text = s.AccountNumber + " " + s.AccountName
+                        Value = s.AccountNumber, Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(cancellationToken),
                 WithholdingTaxList = await _dbContext.ChartOfAccounts
@@ -77,8 +76,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     .OrderBy(coa => coa.AccountNumber)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.AccountNumber + " " + s.AccountName,
-                        Text = s.AccountNumber + " " + s.AccountName
+                        Value = s.AccountNumber + " " + s.AccountName, Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(cancellationToken),
                 PaymentTerms = await _unitOfWork.Terms.GetTermsListAsyncByCode(cancellationToken)
@@ -89,15 +87,15 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Supplier model, IFormFile? registration, IFormFile? document, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(Supplier model, IFormFile? registration, IFormFile? document,
+            CancellationToken cancellationToken)
         {
             model.DefaultExpenses = await _dbContext.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber,
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountNumber, Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -106,8 +104,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber + " " + s.AccountName,
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountNumber + " " + s.AccountName, Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -139,13 +136,15 @@ namespace IBSWeb.Areas.Admin.Controllers
                 if (registration != null && registration.Length > 0)
                 {
                     model.ProofOfRegistrationFileName = GenerateFileNameToSave(registration.FileName);
-                    model.ProofOfRegistrationFilePath = await _cloudStorageService.UploadFileAsync(registration, model.ProofOfRegistrationFileName!);
+                    model.ProofOfRegistrationFilePath =
+                        await _cloudStorageService.UploadFileAsync(registration, model.ProofOfRegistrationFileName!);
                 }
 
                 if (document != null && document.Length > 0)
                 {
                     model.ProofOfExemptionFileName = GenerateFileNameToSave(document.FileName);
-                    model.ProofOfExemptionFilePath = await _cloudStorageService.UploadFileAsync(document, model.ProofOfExemptionFileName!);
+                    model.ProofOfExemptionFilePath =
+                        await _cloudStorageService.UploadFileAsync(document, model.ProofOfExemptionFileName!);
                 }
 
                 model.SupplierCode = await _unitOfWork.Supplier.GenerateCodeAsync(cancellationToken);
@@ -168,7 +167,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create supplier master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to create supplier master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = $"Error: '{ex.Message}'";
                 return View(model);
@@ -176,7 +176,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetSuppliersList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetSuppliersList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -191,13 +192,13 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var searchValue = parameters.Search.Value.ToLower();
 
                     queried = queried
-                    .Where(s =>
-                        s.SupplierCode!.ToLower().Contains(searchValue) ||
-                        s.SupplierName.ToLower().Contains(searchValue) ||
-                        s.SupplierAddress.ToLower().Contains(searchValue) ||
-                        s.SupplierTin.ToLower().Contains(searchValue) ||
-                        s.SupplierTerms.ToLower().Contains(searchValue) ||
-                        s.Category.ToLower().Contains(searchValue)
+                        .Where(s =>
+                            s.SupplierCode!.ToLower().Contains(searchValue) ||
+                            s.SupplierName.ToLower().Contains(searchValue) ||
+                            s.SupplierAddress.ToLower().Contains(searchValue) ||
+                            s.SupplierTin.ToLower().Contains(searchValue) ||
+                            s.SupplierTerms.ToLower().Contains(searchValue) ||
+                            s.Category.ToLower().Contains(searchValue)
                         );
                 }
 
@@ -209,7 +210,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
 
                     queried = queried
-                        .OrderBy($"{columnName} {sortDirection}") ;
+                        .OrderBy($"{columnName} {sortDirection}");
                 }
 
                 var totalFilteredRecords = await queried.CountAsync(cancellationToken);
@@ -254,8 +255,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber,
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountNumber, Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -264,8 +264,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber + " " + s.AccountName,
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountNumber + " " + s.AccountName, Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -275,15 +274,15 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Supplier model, IFormFile? registration, IFormFile? document, CancellationToken cancellationToken)
+        public async Task<IActionResult> Edit(Supplier model, IFormFile? registration, IFormFile? document,
+            CancellationToken cancellationToken)
         {
             model.DefaultExpenses = await _dbContext.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber,
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountNumber, Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -292,8 +291,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber + " " + s.AccountName,
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountNumber + " " + s.AccountName, Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -311,13 +309,15 @@ namespace IBSWeb.Areas.Admin.Controllers
                 if (registration != null && registration.Length > 0)
                 {
                     model.ProofOfRegistrationFileName = GenerateFileNameToSave(registration.FileName);
-                    model.ProofOfRegistrationFilePath = await _cloudStorageService.UploadFileAsync(registration, model.ProofOfRegistrationFileName!);
+                    model.ProofOfRegistrationFilePath =
+                        await _cloudStorageService.UploadFileAsync(registration, model.ProofOfRegistrationFileName!);
                 }
 
                 if (document != null && document.Length > 0)
                 {
                     model.ProofOfExemptionFileName = GenerateFileNameToSave(document.FileName);
-                    model.ProofOfExemptionFilePath = await _cloudStorageService.UploadFileAsync(document, model.ProofOfExemptionFileName!);
+                    model.ProofOfExemptionFilePath =
+                        await _cloudStorageService.UploadFileAsync(document, model.ProofOfExemptionFileName!);
                 }
 
                 model.EditedBy = GetUserFullName();
@@ -325,9 +325,9 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region -- Audit Trail Recording --
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Edited Supplier #{model.SupplierCode}",
-                    "Supplier" );
+                    "Supplier");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
@@ -338,7 +338,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit supplier master file. Edited by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit supplier master file. Edited by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = $"Error: '{ex.Message}'";
                 return View(model);
@@ -404,7 +405,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to activate supplier master file. Activated by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to activate supplier master file. Activated by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Activate), new { id = id });
@@ -458,7 +460,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Deactivated Supplier #{supplier.SupplierCode}",
                     "Supplier");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -471,7 +473,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to deactivate supplier master file. Deactivated by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to deactivate supplier master file. Deactivated by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Deactivate), new { id = id });
@@ -607,6 +610,5 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
     }
 }

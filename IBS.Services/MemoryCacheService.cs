@@ -7,6 +7,7 @@ namespace IBS.Services
     public interface ICacheService
     {
         Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default);
+
         Task SetAsync<T>(
             string key,
             T value,
@@ -19,7 +20,7 @@ namespace IBS.Services
         Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
     }
 
-    public sealed class MemoryCacheService : ICacheService
+    public sealed class MemoryCacheService: ICacheService
     {
         private readonly IMemoryCache _cache;
         private static readonly ConcurrentDictionary<string, byte> _keys = new();
@@ -98,6 +99,5 @@ namespace IBS.Services
 
             return Task.CompletedTask;
         }
-
     }
 }

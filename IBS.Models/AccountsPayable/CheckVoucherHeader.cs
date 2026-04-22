@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.Models.AccountsPayable
 {
-    public class CheckVoucherHeader : BaseEntity
+    public class CheckVoucherHeader: BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CheckVoucherHeaderId { get; set; }
 
-        [StringLength(13)]
-        public string CheckVoucherHeaderNo { get; set; } = string.Empty;
+        [StringLength(13)] public string CheckVoucherHeaderNo { get; set; } = string.Empty;
 
         [Display(Name = "Transaction Date")]
         [Column(TypeName = "date")]
@@ -29,24 +28,19 @@ namespace IBS.Models.AccountsPayable
         [Column(TypeName = "varchar[]")]
         public string[]? PONo { get; set; }
 
-        [Display(Name = "Supplier Id")]
-        public int? SupplierId { get; set; }
+        [Display(Name = "Supplier Id")] public int? SupplierId { get; set; }
 
-        [ForeignKey(nameof(SupplierId))]
-        public Supplier? Supplier { get; set; }
+        [ForeignKey(nameof(SupplierId))] public Supplier? Supplier { get; set; }
 
-        [StringLength(200)]
-        public string? SupplierName { get; set; }
+        [StringLength(200)] public string? SupplierName { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? Suppliers { get; set; }
+        [NotMapped] public List<SelectListItem>? Suppliers { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         [Column(TypeName = "numeric(18,4)")]
         public decimal Total { get; set; }
 
-        [Column(TypeName = "numeric(18,4)[]")]
-        public decimal[]? Amount { get; set; }
+        [Column(TypeName = "numeric(18,4)[]")] public decimal[]? Amount { get; set; }
 
         [StringLength(1000)]
         public string? Particulars
@@ -57,17 +51,13 @@ namespace IBS.Models.AccountsPayable
 
         private string? _particulars;
 
-        [Display(Name = "Bank Account Name")]
-        public int? BankId { get; set; }
+        [Display(Name = "Bank Account Name")] public int? BankId { get; set; }
 
-        [ForeignKey(nameof(BankId))]
-        public BankAccount? BankAccount { get; set; }
+        [ForeignKey(nameof(BankId))] public BankAccount? BankAccount { get; set; }
 
-        [StringLength(200)]
-        public string? BankAccountName { get; set; }
+        [StringLength(200)] public string? BankAccountName { get; set; }
 
-        [StringLength(100)]
-        public string? BankAccountNumber { get; set; }
+        [StringLength(100)] public string? BankAccountNumber { get; set; }
 
         [Display(Name = "Check #")]
         [StringLength(50)]
@@ -83,24 +73,19 @@ namespace IBS.Models.AccountsPayable
         [StringLength(150)]
         public string Payee { get; set; } = string.Empty;
 
-        [NotMapped]
-        public List<SelectListItem>? BankAccounts { get; set; }
+        [NotMapped] public List<SelectListItem>? BankAccounts { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? COA { get; set; }
+        [NotMapped] public List<SelectListItem>? COA { get; set; }
 
         [Display(Name = "Check Date")]
         [Column(TypeName = "date")]
         public DateOnly? CheckDate { get; set; }
 
-        [StringLength(1000)]
-        public string? Reference { get; set; }
+        [StringLength(1000)] public string? Reference { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? CheckVouchers { get; set; }
+        [NotMapped] public List<SelectListItem>? CheckVouchers { get; set; }
 
-        [StringLength(10)]
-        public string? CvType { get; set; }
+        [StringLength(10)] public string? CvType { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -114,11 +99,9 @@ namespace IBS.Models.AccountsPayable
 
         public bool IsPrinted { get; set; }
 
-        [StringLength(50)]
-        public string Status { get; set; } = nameof(CheckVoucherPaymentStatus.ForPosting);
+        [StringLength(50)] public string Status { get; set; } = nameof(CheckVoucherPaymentStatus.ForPosting);
 
-        [StringLength(13)]
-        public string Type { get; set; } = string.Empty;
+        [StringLength(13)] public string Type { get; set; } = string.Empty;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -128,32 +111,25 @@ namespace IBS.Models.AccountsPayable
 
         public string? SupportingFileSavedUrl { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateOnly? DcpDate { get; set; }
+        [Column(TypeName = "date")] public DateOnly? DcpDate { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateOnly? DcrDate { get; set; }
+        [Column(TypeName = "date")] public DateOnly? DcrDate { get; set; }
 
         public bool IsAdvances { get; set; }
 
         public int? EmployeeId { get; set; }
 
-        [ForeignKey(nameof(EmployeeId))]
-        public Employee? Employee { get; set; }
+        [ForeignKey(nameof(EmployeeId))] public Employee? Employee { get; set; }
 
-        [StringLength(200)]
-        public string Address { get; set; } = null!;
+        [StringLength(200)] public string Address { get; set; } = null!;
 
-        [StringLength(20)]
-        public string Tin { get; set; } = null!;
+        [StringLength(20)] public string Tin { get; set; } = null!;
 
         public ICollection<CheckVoucherDetail>? Details { get; set; }
 
-        [StringLength(20)]
-        public string VatType { get; set; } = null!;
+        [StringLength(20)] public string VatType { get; set; } = null!;
 
-        [StringLength(20)]
-        public string TaxType { get; set; } = null!;
+        [StringLength(20)] public string TaxType { get; set; } = null!;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]

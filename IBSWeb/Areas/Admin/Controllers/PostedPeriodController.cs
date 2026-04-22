@@ -15,7 +15,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class PostedPeriodController : Controller
+    public class PostedPeriodController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -46,8 +46,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             var viewModel = new PostedPeriodViewModel
             {
-                AvailableModules = await GetAvailableModulesAsync(),
-                PostedPeriods = await GetPostedPeriodsAsync()
+                AvailableModules = await GetAvailableModulesAsync(), PostedPeriods = await GetPostedPeriodsAsync()
             };
 
             return View(viewModel);
@@ -102,12 +101,13 @@ namespace IBSWeb.Areas.Admin.Controllers
                     // Check if period already exists
                     var existingPeriod = await _dbContext.PostedPeriods
                         .FirstOrDefaultAsync(p => p.Module == module &&
-                                           p.Month == request.Month &&
-                                           p.Year == request.Year, cancellationToken);
+                                                  p.Month == request.Month &&
+                                                  p.Year == request.Year, cancellationToken);
 
                     if (existingPeriod != null)
                     {
-                        TempData["ErrorMessage"] = $"Period for {module} in {request.Month}/{request.Year} is already posted.";
+                        TempData["ErrorMessage"] =
+                            $"Period for {module} in {request.Month}/{request.Year} is already posted.";
                         return RedirectToAction(nameof(Index));
                     }
 
@@ -124,7 +124,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     postedPeriods.Add(postedPeriod);
                 }
 
-                await _dbContext.PostedPeriods.AddRangeAsync(postedPeriods,  cancellationToken);
+                await _dbContext.PostedPeriods.AddRangeAsync(postedPeriods, cancellationToken);
 
                 var modulesPosted = string.Join(", ", postedPeriods.Select(p => p.Module));
 
@@ -137,7 +137,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                 await _dbContext.AuditTrails.AddAsync(auditTrailBook, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                TempData["SuccessMessage"] = $"Successfully posted {postedPeriods.Count} module(s) for period {request.Month}/{request.Year}.";
+                TempData["SuccessMessage"] =
+                    $"Successfully posted {postedPeriods.Count} module(s) for period {request.Month}/{request.Year}.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -175,7 +176,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                 _dbContext.PostedPeriods.Remove(postedPeriod);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                TempData["SuccessMessage"] = $"Successfully unposted {postedPeriod.Module} for period {postedPeriod.Month}/{postedPeriod.Year}.";
+                TempData["SuccessMessage"] =
+                    $"Successfully unposted {postedPeriod.Module} for period {postedPeriod.Month}/{postedPeriod.Year}.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

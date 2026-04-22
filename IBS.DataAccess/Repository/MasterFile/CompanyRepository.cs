@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.MasterFile
 {
-    public class CompanyRepository : Repository<Company>, ICompanyRepository
+    public class CompanyRepository: Repository<Company>, ICompanyRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public CompanyRepository(ApplicationDbContext db) : base(db)
+        public CompanyRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -35,7 +35,6 @@ namespace IBS.DataAccess.Repository.MasterFile
 
             // Format the incremented number with leading zeros and concatenate with the letter part
             return $"{lastCode[0]}{incrementedNumber:D2}"; //e.g C02
-
         }
 
         public async Task<bool> IsCompanyExistAsync(string companyName, CancellationToken cancellationToken = default)
@@ -53,7 +52,9 @@ namespace IBS.DataAccess.Repository.MasterFile
         public async Task UpdateAsync(Company model, CancellationToken cancellationToken = default)
         {
             var existingCompany = await _db.Companies
-                .FirstOrDefaultAsync(x => x.CompanyId == model.CompanyId, cancellationToken) ?? throw new InvalidOperationException($"Company with id '{model.CompanyId}' not found.");
+                                      .FirstOrDefaultAsync(x => x.CompanyId == model.CompanyId, cancellationToken) ??
+                                  throw new InvalidOperationException(
+                                      $"Company with id '{model.CompanyId}' not found.");
 
             existingCompany.CompanyName = model.CompanyName;
             existingCompany.CompanyAddress = model.CompanyAddress;

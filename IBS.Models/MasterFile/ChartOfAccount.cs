@@ -34,8 +34,7 @@ namespace IBS.Models.MasterFile
         // Change Parent to an int? (nullable) for FK reference
         public int? ParentAccountId { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? Main { get; set; }
+        [NotMapped] public List<SelectListItem>? Main { get; set; }
 
         [Display(Name = "Created By")]
         [StringLength(50)]
@@ -56,26 +55,23 @@ namespace IBS.Models.MasterFile
 
         public bool HasChildren { get; set; }
 
-        [StringLength(20)]
-        public string FinancialStatementType { get; set; } = string.Empty;
+        [StringLength(20)] public string FinancialStatementType { get; set; } = string.Empty;
 
         // Select List
 
         #region Select List
 
-        [NotMapped]
-        public List<SelectListItem>? Accounts { get; set; }
+        [NotMapped] public List<SelectListItem>? Accounts { get; set; }
 
         #endregion
 
         #region Navigation Properties
 
-        [ForeignKey(nameof(ParentAccountId))]
-        public virtual ChartOfAccount? ParentAccount { get; set; }
+        [ForeignKey(nameof(ParentAccountId))] public virtual ChartOfAccount? ParentAccount { get; set; }
 
         public virtual ICollection<ChartOfAccount> Children { get; set; } = new List<ChartOfAccount>();
 
-        public ICollection<GLPeriodBalance> Balances { get; set; } =  new List<GLPeriodBalance>();
+        public ICollection<GLPeriodBalance> Balances { get; set; } = new List<GLPeriodBalance>();
 
         public ICollection<GLSubAccountBalance> SubAccountBalances { get; set; } = new List<GLSubAccountBalance>();
 

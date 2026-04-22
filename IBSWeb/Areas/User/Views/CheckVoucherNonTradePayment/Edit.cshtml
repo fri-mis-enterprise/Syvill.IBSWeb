@@ -34,14 +34,17 @@
                 </div>
                 <div class="form-group mb-3">
                     <label class="control-label">Supplier<span class="required">*</span></label>
-                    <select asp-for="MultipleSupplierId" asp-items="@Model.Suppliers" class="form-select js-select2 GetCVList" style="width: 100%" required>
+                    <select asp-for="MultipleSupplierId" asp-items="@Model.Suppliers"
+                            class="form-select js-select2 GetCVList" style="width: 100%" required>
                         <option></option>
                     </select>
                     <span asp-validation-for="MultipleSupplierId" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
                     <label asp-for="MultipleCvId" class="control-label">CV #</label><span class="required">*</span>
-                    <select asp-for="MultipleCvId" asp-items="@Model.CheckVouchers" class="form-select js-multiple multipleCvId" multiple="multiple" style="width:100%" required>
+                    <select asp-for="MultipleCvId" asp-items="@Model.CheckVouchers"
+                            class="form-select js-multiple multipleCvId" multiple="multiple" style="width:100%"
+                            required>
                         <option></option>
                     </select>
                     <span asp-validation-for="MultipleCvId" class="text-danger"></span>
@@ -78,12 +81,14 @@
                 </div>
                 <div class="form-group mb-3">
                     <label asp-for="Total" class="control-label"></label><span class="required">*</span>
-                    <input asp-for="Total" class="form-control money totalAmount total" value="" placeholder="0.000" readonly/>
+                    <input asp-for="Total" class="form-control money totalAmount total" value="" placeholder="0.000"
+                           readonly/>
                     <span asp-validation-for="Total" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
                     <label class="control-label">Bank Account<span class="required">*</span></label>
-                    <select asp-for="BankId" asp-items="@Model.Banks" class="form-select js-select2" style="width: 100%" required>
+                    <select asp-for="BankId" asp-items="@Model.Banks" class="form-select js-select2" style="width: 100%"
+                            required>
                         <option></option>
                     </select>
                     <span asp-validation-for="BankId" class="text-danger"></span>
@@ -103,8 +108,10 @@
                     <input name="file" type="file" class="form-control"/>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea asp-for="Particulars" class="form-control" placeholder="Leave a remarks here" style="height: 100px"></textarea>
-                    <label asp-for="Particulars" class="control-label ms-2">Particulars<span class="required">*</span></label>
+                    <textarea asp-for="Particulars" class="form-control" placeholder="Leave a remarks here"
+                              style="height: 100px"></textarea>
+                    <label asp-for="Particulars" class="control-label ms-2">Particulars<span
+                            class="required">*</span></label>
                     <span asp-validation-for="Particulars" class="text-danger"></span>
                 </div>
                 <div class="form-group table-responsive">
@@ -134,7 +141,8 @@
                         <button type="submit" class="btn btn-primary form-control">Save</button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-area="User" asp-controller="CheckVoucherNonTradePayment" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                        <a asp-area="User" asp-controller="CheckVoucherNonTradePayment" asp-action="Index"
+                           class="btn btn-outline-primary border  form-control ">Back to List</a>
                     </div>
                 </div>
             </div>
@@ -157,7 +165,7 @@
                 $.ajax({
                     url: '@Url.Action("GetSupplierDetails", "CheckVoucherNonTradePayment", new { area = "User" })',
                     method: "GET",
-                    data: { supplierId: supplierId },
+                    data: {supplierId: supplierId},
                     success: function (data) {
                         if (data) {
                             $("#Payee").val(data.name);
@@ -185,7 +193,7 @@
                     $.ajax({
                         url: "@Url.Action("GetCVs", "CheckVoucherNonTradePayment")",
                         method: "GET",
-                        data: { supplierId: suppId, paymentId: paymentId },
+                        data: {supplierId: suppId, paymentId: paymentId},
                         success: function (data) {
                             if (data) {
                                 $(".multipleCvId").empty();
@@ -234,7 +242,7 @@
 
                                 // Add CV balance rows with editable inputs
                                 if (data.cvBalances && data.cvBalances.length > 0) {
-                                    data.cvBalances.forEach(function(cv, index) {
+                                    data.cvBalances.forEach(function (cv, index) {
                                         var cvRow = `<tr>
                                                         <td class="text-center">${cv.cvNumber}</td>
                                                         <td class="text-center">
@@ -261,7 +269,7 @@
                                     window.originalEntries = data.journalEntries;
 
                                     // Add validation and recalculation on amount change
-                                    $(".amount-input").on("input", function() {
+                                    $(".amount-input").on("input", function () {
                                         var input = $(this);
                                         var max = parseFloat(input.data("max-balance"));
                                         var val = parseFloat(input.val()) || 0;
@@ -297,7 +305,7 @@
                                 $("#Total").val(formatNumberToFour(data.totalCredit));
 
                                 const minDateFromModel = "@Model.MinDate.ToString("yyyy-MM-dd")";
-                                if(data.transactionDate > minDateFromModel){
+                                if (data.transactionDate > minDateFromModel) {
                                     $("#TransactionDate").val(data.transactionDate).attr("min", data.transactionDate)
                                 }
 
@@ -325,7 +333,7 @@
 
             var newTotal = 0;
             var hasInvalid = false;
-            $(".amount-input").each(function() {
+            $(".amount-input").each(function () {
                 var val = parseFloat($(this).val()) || 0;
                 var max = parseFloat($(this).data("max-balance"));
                 if (val <= 0 || val > max) {
@@ -342,7 +350,7 @@
             var newDebitTotal = 0;
             var newCreditTotal = 0;
 
-            window.originalEntries.forEach(function(entry) {
+            window.originalEntries.forEach(function (entry) {
                 var newDebit = entry.debit * ratio;
                 var newCredit = entry.credit * ratio;
                 newDebitTotal += newDebit;
@@ -395,15 +403,15 @@
             return isValid;
         }
 
-        $('input[name="CheckNo"]').on('blur', function() {
+        $('input[name="CheckNo"]').on('blur', function () {
             var checkNo = $(this).val();
             var cvId = $('input[name="CvId"]').val();
             if (checkNo) {
                 $.ajax({
                     url: '@Url.Action("CheckNoIsExist", "CheckVoucherNonTradePayment", new { area = "User" })',
                     type: "GET",
-                    data: { checkNo: checkNo, cvId: cvId },
-                    success: function(exists) {
+                    data: {checkNo: checkNo, cvId: cvId},
+                    success: function (exists) {
                         const submitButton = $('button[type="submit"]');
 
                         if (exists) {
@@ -421,7 +429,7 @@
                             submitButton.prop('disabled', false);
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.log("Error checking CheckNo: " + error);
                     }
                 });

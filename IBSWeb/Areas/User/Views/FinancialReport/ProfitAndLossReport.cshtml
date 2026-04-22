@@ -13,9 +13,11 @@
     <div class="card-body p-4">
         <form id="dynamicForm" method="post" target="_blank">
             <div class="mb-4 row align-items-center">
-                <label for="monthDate" class="col-sm-4 col-form-label text-end fw-semibold">As Of (Month and Year)</label>
+                <label for="monthDate" class="col-sm-4 col-form-label text-end fw-semibold">As Of (Month and
+                    Year)</label>
                 <div class="col-sm-6">
-                    <input type="month" id="monthDate" name="monthDate" class="form-control" value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM")" required />
+                    <input type="month" id="monthDate" name="monthDate" class="form-control"
+                           value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM")" required/>
                 </div>
             </div>
 
@@ -24,12 +26,16 @@
                 @*     <button type="button" class="btn btn-primary form-control" onclick="submitForm('GenerateProfitAndLossReport')"><i class="bi bi-printer"></i> Generate</button> *@
                 @* </div> *@
                 <div class="col-6 col-md-3">
-                    <button type="button" class="btn btn-primary form-control" onclick="submitForm('ProfitAndLossReport')"><i class="bi bi-file-text"></i> Generate as Excel file</button>
+                    <button type="button" class="btn btn-primary form-control"
+                            onclick="submitForm('ProfitAndLossReport')"><i class="bi bi-file-text"></i> Generate as
+                        Excel file
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

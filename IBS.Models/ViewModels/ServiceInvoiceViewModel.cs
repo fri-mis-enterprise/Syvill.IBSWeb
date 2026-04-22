@@ -19,8 +19,7 @@ namespace IBS.Models.ViewModels
 
         public DateOnly DueDate { get; set; }
 
-        [StringLength(1000)]
-        public string Instructions { get; set; } = string.Empty;
+        [StringLength(1000)] public string Instructions { get; set; } = string.Empty;
 
         public DateOnly Period { get; set; }
 

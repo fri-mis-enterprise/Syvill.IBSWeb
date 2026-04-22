@@ -31,9 +31,17 @@
         }
 
         /* Prevent page breaks within critical sections */
-        table { page-break-inside: avoid; }
-        tr { page-break-inside: avoid; }
-        .table-responsive { page-break-inside: avoid; }
+        table {
+            page-break-inside: avoid;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        .table-responsive {
+            page-break-inside: avoid;
+        }
 
         /* Text overflow handling */
         .text-clamp-2 {
@@ -107,7 +115,7 @@
     }
 </style>
 
-<br class="br-top" />
+<br class="br-top"/>
 <table class="w-100 mb-2">
     <tbody>
     <tr>
@@ -119,8 +127,8 @@
         <td class="text-center" style="padding: 0 !important;">
             <h2 class="company-name" style="margin: 0 0 1px 0;"><u><b>&nbsp;FILPRIDE RESOURCES INC.&nbsp;</b></u></h2>
             <p style="margin: 0; padding: 0; line-height: 1;">
-                57 Westgate Office, Sampson Road, CBD, Subic Bay Freeport Zone,<br />
-                Kalaklan, Olongapo City, 2200 Zambales, Philippines<br />
+                57 Westgate Office, Sampson Road, CBD, Subic Bay Freeport Zone,<br/>
+                Kalaklan, Olongapo City, 2200 Zambales, Philippines<br/>
                 VAT Reg. TIN: 000-216-589-00000
             </p>
         </td>
@@ -149,49 +157,49 @@
 <div class="table-responsive compact-section" style="margin-top:10px;">
     <table class="w-100">
         <thead>
-            <tr style="border: 1px solid black;">
-                <th colspan="2" style="padding-left:20px;">I. PAYEE DETAILS</th>
-                <td colspan="2" class="text-end"><b>Date : @Model.Header!.Date.ToString(SD.Date_Format)</b></td>
-            </tr>
+        <tr style="border: 1px solid black;">
+            <th colspan="2" style="padding-left:20px;">I. PAYEE DETAILS</th>
+            <td colspan="2" class="text-end"><b>Date : @Model.Header!.Date.ToString(SD.Date_Format)</b></td>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td style="width:10%; padding-left:20px;">Name :</td>
-                <td class="text-clamp-2 break-word">
-                    @supplier!.SupplierName
-                </td>
-                <td style="width:50%;" colspan="2" class="text-nowrap">Other References</td>
-            </tr>
-            <tr>
-                <td style="padding-left:20px;">Address :</td>
-                <td class="text-clamp-2 break-word">
-                    @supplier.SupplierAddress
-                </td>
-                <td style="width:5%;">PO # :</td>
-                <td class="text-clamp-2 break-word">
-                    @if (Model.Header.PONo != null && Model.Header.PONo.Any())
-                    {
-                        @string.Join(", ", Model.Header.PONo.Where(x => !string.IsNullOrWhiteSpace(x)))
-                    }
-                </td>
-            </tr>
-            <tr>
-                <td style="padding-left:20px;">TIN # :</td>
-                <td>@supplier.SupplierTin</td>
-                <td>SI # :</td>
-                <td class="text-clamp-2 break-word">
-                    @if (Model.Header.SINo != null && Model.Header.SINo.Any())
-                    {
-                        @string.Join(", ", Model.Header.SINo.Where(x => !string.IsNullOrWhiteSpace(x)))
-                    }
-                </td>
-            </tr>
-            <tr>
-                <td style="padding-left:20px;" class="text-nowrap"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+        <tr>
+            <td style="width:10%; padding-left:20px;">Name :</td>
+            <td class="text-clamp-2 break-word">
+                @supplier!.SupplierName
+            </td>
+            <td style="width:50%;" colspan="2" class="text-nowrap">Other References</td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px;">Address :</td>
+            <td class="text-clamp-2 break-word">
+                @supplier.SupplierAddress
+            </td>
+            <td style="width:5%;">PO # :</td>
+            <td class="text-clamp-2 break-word">
+                @if (Model.Header.PONo != null && Model.Header.PONo.Any())
+                {
+                    @string.Join(", ", Model.Header.PONo.Where(x => !string.IsNullOrWhiteSpace(x)))
+                }
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px;">TIN # :</td>
+            <td>@supplier.SupplierTin</td>
+            <td>SI # :</td>
+            <td class="text-clamp-2 break-word">
+                @if (Model.Header.SINo != null && Model.Header.SINo.Any())
+                {
+                    @string.Join(", ", Model.Header.SINo.Where(x => !string.IsNullOrWhiteSpace(x)))
+                }
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px;" class="text-nowrap"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -199,127 +207,128 @@
 <div class="table-responsive compact-section" style="margin-top:15px;">
     <table class="w-100">
         <thead>
-            <tr style="border: 1px solid black;">
-                <th colspan="4" style="padding-left:20px;">II. CHECK DETAILS</th>
-            </tr>
+        <tr style="border: 1px solid black;">
+            <th colspan="4" style="padding-left:20px;">II. CHECK DETAILS</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td style="width:20%; padding-left:20px;">Payee :</td>
-                @if (Model.Header.SupplierId != null)
-                {
-                    <td class="text-clamp-2 break-word">@Model.Header!.Payee!.ToUpper()</td>
-                }
-                else
-                {
-                    <td class="text-clamp-2 break-word">@Model.Supplier!.SupplierName.ToUpper()</td>
-                }
-                @if (Model.Header.Total != 0)
-                {
-                    <td class="text-end">@Model.Header.Total.ToString(SD.Two_Decimal_Format)</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-            </tr>
-            <tr>
-                <td style="padding-left:20px;">Amount in Words :</td>
-                @{
-                    decimal convertToWords = Model.Header.Total;
-
-                    int integerPart = Convert.ToInt32(Math.Floor(convertToWords));
-                    decimal decimalPart = Math.Round((convertToWords - integerPart), 4);
-
-                    // Convert integer part to words
-                    string integerWords = integerPart.ToWords();
-                    integerWords = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(integerWords.ToLower());
-
-                    // Convert and format cents value
-                    int cents = Convert.ToInt32(decimalPart * 100) % 100;
-                    string centsWords = cents.ToWords();
-                    centsWords = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(centsWords.ToLower());
-
-                    string upperCaseOne = integerWords;
-                    string upperCaseTwo = centsWords;
-
-                    // Combine words and formatting
-                    string words;
-
-                    if (cents > 0)
-                    {
-                        words = $"{upperCaseOne} Pesos and {upperCaseTwo} Centavos Only";
-                    }
-                    else
-                    {
-                        words = $"{upperCaseOne} Pesos Only";
-                    }
-
-                    words = words.Replace(" And", "");
-                    words = words.Replace("-", " ");
-                }
-                @if (Model.Header.Total != 0)
-                {
-                    <td class="break-word">*** @words ***</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-                <td></td>
-            </tr>
-            <tr>
-                <td style="padding-left:20px;">Particulars :</td>
-                <td><p style="margin: 0; padding: 0; text-align: justify" class="text-clamp-3 break-word small-if-long">@Model.Header!.Particulars!.ToUpper()</p></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="padding-left:20px;">Check #:</td>
-                <td>@Html.DisplayFor(model => model.Header!.CheckNo)</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="padding-left:20px;">Check Date:</td>
-                <td>
-                    @Model.Header.CheckDate?.ToString(SD.Date_Format)
-                </td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="table-responsive compact-section" style="margin-top:15px;">
-    <table class="w-100">
-        <thead>
-            <tr style="border: 1px solid black;">
-                <th colspan="4" style="padding-left:20px;">III. ACCOUNTING ENTRIES</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="padding-left:20px;"></td>
-                <th class="text-end">DEBIT</th>
-                <th class="text-end">CREDIT</th>
-            </tr>
-
-            @foreach (var cv in Model.Details!.OrderBy(model => model.CheckVoucherDetailId))
+        <tr>
+            <td style="width:20%; padding-left:20px;">Payee :</td>
+            @if (Model.Header.SupplierId != null)
             {
-                <tr>
-                    <td style="width:60%; padding-left:20px;" class="break-word small-if-long">
-                        @($"{cv.AccountNo} {cv.AccountName}" + (cv.SubAccountName != null ? $" ({cv.SubAccountName})" : string.Empty))
-                    </td>
-                    <td class="text-end" style="width:7%;">@cv.Debit.ToString(SD.Two_Decimal_Format)</td>
-                    <td class="text-end" style="width:7%;">@cv.Credit.ToString(SD.Two_Decimal_Format)</td>
-                </tr>
+                <td class="text-clamp-2 break-word">@Model.Header!.Payee!.ToUpper()</td>
             }
-
-            <tr style="border-bottom:double;"></tr>
-            <tr>
+            else
+            {
+                <td class="text-clamp-2 break-word">@Model.Supplier!.SupplierName.ToUpper()</td>
+            }
+            @if (Model.Header.Total != 0)
+            {
+                <td class="text-end">@Model.Header.Total.ToString(SD.Two_Decimal_Format)</td>
+            }
+            else
+            {
                 <td></td>
-                <td class="text-end">@Model.Details!.Sum(d => d.Debit).ToString(SD.Two_Decimal_Format)</td>
-                <td class="text-end">@Model.Details!.Sum(d => d.Credit).ToString(SD.Two_Decimal_Format)</td>
+            }
+        </tr>
+        <tr>
+            <td style="padding-left:20px;">Amount in Words :</td>
+            @{
+                decimal convertToWords = Model.Header.Total;
+
+                int integerPart = Convert.ToInt32(Math.Floor(convertToWords));
+                decimal decimalPart = Math.Round((convertToWords - integerPart), 4);
+
+                // Convert integer part to words
+                string integerWords = integerPart.ToWords();
+                integerWords = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(integerWords.ToLower());
+
+                // Convert and format cents value
+                int cents = Convert.ToInt32(decimalPart * 100) % 100;
+                string centsWords = cents.ToWords();
+                centsWords = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(centsWords.ToLower());
+
+                string upperCaseOne = integerWords;
+                string upperCaseTwo = centsWords;
+
+                // Combine words and formatting
+                string words;
+
+                if (cents > 0)
+                {
+                    words = $"{upperCaseOne} Pesos and {upperCaseTwo} Centavos Only";
+                }
+                else
+                {
+                    words = $"{upperCaseOne} Pesos Only";
+                }
+
+                words = words.Replace(" And", "");
+                words = words.Replace("-", " ");
+            }
+            @if (Model.Header.Total != 0)
+            {
+                <td class="break-word">*** @words ***</td>
+            }
+            else
+            {
+                <td></td>
+            }
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px;">Particulars :</td>
+            <td><p style="margin: 0; padding: 0; text-align: justify"
+                   class="text-clamp-3 break-word small-if-long">@Model.Header!.Particulars!.ToUpper()</p></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px;">Check #:</td>
+            <td>@Html.DisplayFor(model => model.Header!.CheckNo)</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px;">Check Date:</td>
+            <td>
+                @Model.Header.CheckDate?.ToString(SD.Date_Format)
+            </td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="table-responsive compact-section" style="margin-top:15px;">
+    <table class="w-100">
+        <thead>
+        <tr style="border: 1px solid black;">
+            <th colspan="4" style="padding-left:20px;">III. ACCOUNTING ENTRIES</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="padding-left:20px;"></td>
+            <th class="text-end">DEBIT</th>
+            <th class="text-end">CREDIT</th>
+        </tr>
+
+        @foreach (var cv in Model.Details!.OrderBy(model => model.CheckVoucherDetailId))
+        {
+            <tr>
+                <td style="width:60%; padding-left:20px;" class="break-word small-if-long">
+                    @($"{cv.AccountNo} {cv.AccountName}" + (cv.SubAccountName != null ? $" ({cv.SubAccountName})" : string.Empty))
+                </td>
+                <td class="text-end" style="width:7%;">@cv.Debit.ToString(SD.Two_Decimal_Format)</td>
+                <td class="text-end" style="width:7%;">@cv.Credit.ToString(SD.Two_Decimal_Format)</td>
             </tr>
+        }
+
+        <tr style="border-bottom:double;"></tr>
+        <tr>
+            <td></td>
+            <td class="text-end">@Model.Details!.Sum(d => d.Debit).ToString(SD.Two_Decimal_Format)</td>
+            <td class="text-end">@Model.Details!.Sum(d => d.Credit).ToString(SD.Two_Decimal_Format)</td>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -327,29 +336,30 @@
 <div class="table-responsive compact-section" style="margin-top:15px;">
     <table class="w-100">
         <tbody class="text-center">
-            <tr>
-                <td>Prepared by :</td>
-                <td>Reviewed by </td>
-                <td>Approved by </td>
-            </tr>
-            <tr>
-                <td style="width:33%;">
-                    <br />
-                    <span class="underline" style="display: inline-block; width:60%;">@Model.Header.CreatedBy?.ToUpper()</span> <br />
-                </td>
-                <td style="width:33%;">
-                    <br />
-                    <span class="underline" style="display: inline-block; width:60%;">&nbsp;</span> <br />
-                </td>
-                <td style="width:33%;">
-                    <br />
-                    <span class="underline" style="display: inline-block; width:60%;">&nbsp;</span> <br />
-                </td>
-            </tr>
+        <tr>
+            <td>Prepared by :</td>
+            <td>Reviewed by</td>
+            <td>Approved by</td>
+        </tr>
+        <tr>
+            <td style="width:33%;">
+                <br/>
+                <span class="underline"
+                      style="display: inline-block; width:60%;">@Model.Header.CreatedBy?.ToUpper()</span> <br/>
+            </td>
+            <td style="width:33%;">
+                <br/>
+                <span class="underline" style="display: inline-block; width:60%;">&nbsp;</span> <br/>
+            </td>
+            <td style="width:33%;">
+                <br/>
+                <span class="underline" style="display: inline-block; width:60%;">&nbsp;</span> <br/>
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>
-<br />
+<br/>
 
 @if (Model.Header.Type == nameof(DocumentType.Documented))
 {
@@ -367,7 +377,7 @@
             </p>
         }
     </div>
-    <br />
+    <br/>
 
     @if (selectedCompany == "Filpride")
     {
@@ -410,33 +420,39 @@
             if (isAdminOrManager)
             {
                 <div class="col-6 col-md-3">
-                    <a class="btn btn-success form-control buttons" onclick="confirmApprove(@Model.Header.CheckVoucherHeaderId)">Approve</a>
+                    <a class="btn btn-success form-control buttons"
+                       onclick="confirmApprove(@Model.Header.CheckVoucherHeaderId)">Approve</a>
                 </div>
             }
         }
         else if (Model.Header.Status == nameof(CheckVoucherInvoiceStatus.ForPosting))
         {
             <div class="col-6 col-md-3">
-                <a class="btn btn-primary form-control buttons" onclick="confirmPost(@Model.Header.CheckVoucherHeaderId)">Post</a>
+                <a class="btn btn-primary form-control buttons"
+                   onclick="confirmPost(@Model.Header.CheckVoucherHeaderId)">Post</a>
             </div>
         }
         else if (Model.Header.PostedBy != null)
         {
             <div class="col-6 col-md-3">
-                <a onclick="confirmPrint(@Model.Header?.CheckVoucherHeaderId)" class="btn btn-primary form-control buttons">Print</a>
+                <a onclick="confirmPrint(@Model.Header?.CheckVoucherHeaderId)"
+                   class="btn btn-primary form-control buttons">Print</a>
             </div>
 
             if (Model.Header!.AmountPaid == 0)
             {
                 <div class="col-6 col-md-3">
-                    <a class="btn btn-secondary form-control buttons" onclick="confirmUnpost(@Model.Header!.CheckVoucherHeaderId)">Unpost</a>
+                    <a class="btn btn-secondary form-control buttons"
+                       onclick="confirmUnpost(@Model.Header!.CheckVoucherHeaderId)">Unpost</a>
                 </div>
             }
         }
     }
 
     <div class="col-6 col-md-3">
-        <a asp-area="User" asp-controller="CheckVoucherNonTradeInvoice" asp-action="Index" asp-route-filterType="@ViewBag.FilterType" class="btn btn-outline-primary border form-control buttons">Back to List</a>
+        <a asp-area="User" asp-controller="CheckVoucherNonTradeInvoice" asp-action="Index"
+           asp-route-filterType="@ViewBag.FilterType" class="btn btn-outline-primary border form-control buttons">Back
+            to List</a>
     </div>
 </div>
 
@@ -499,8 +515,7 @@
     @if (Model.Header?.Type == nameof(DocumentType.Documented) && !Model.Header.IsPrinted)
     {
         <script>
-            function confirmPrint(id)
-            {
+            function confirmPrint(id) {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "This will mark the document as reprinted and can't be undone.",
@@ -509,19 +524,18 @@
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes'
-                }).then((result) =>
-                {
-                    if (result.isConfirmed)
-                    {
-                        const afterPrintHandler  = () =>
-                        {
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const afterPrintHandler = () => {
                             window.removeEventListener('afterprint', afterPrintHandler);
                             controllerThenPrint(id);
                         };
                         window.addEventListener('afterprint', afterPrintHandler);
 
                         Swal.close();
-                        setTimeout(() => { window.print(); }, 200);
+                        setTimeout(() => {
+                            window.print();
+                        }, 200);
                     }
                 });
             }
@@ -530,8 +544,7 @@
     else
     {
         <script>
-            function confirmPrint(id)
-            {
+            function confirmPrint(id) {
                 const afterPrintHandler = () => {
                     window.removeEventListener('afterprint', afterPrintHandler);
                     controllerThenPrint(id);

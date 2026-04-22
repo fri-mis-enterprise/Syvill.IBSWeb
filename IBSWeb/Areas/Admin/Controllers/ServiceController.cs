@@ -17,7 +17,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class ServiceController : Controller
+    public class ServiceController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -27,7 +27,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private readonly ILogger<ServiceController> _logger;
 
-        public ServiceController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<ServiceController> logger)
+        public ServiceController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork, ILogger<ServiceController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -58,8 +59,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     .OrderBy(coa => coa.AccountId)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.AccountId.ToString(),
-                        Text = s.AccountNumber + " " + s.AccountName
+                        Value = s.AccountId.ToString(), Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(cancellationToken),
                 UnearnedTitles = await _dbContext.ChartOfAccounts
@@ -67,8 +67,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     .OrderBy(coa => coa.AccountId)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.AccountId.ToString(),
-                        Text = s.AccountNumber + " " + s.AccountName
+                        Value = s.AccountId.ToString(), Text = s.AccountNumber + " " + s.AccountName
                     })
                     .ToListAsync(cancellationToken)
             };
@@ -85,8 +84,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 .OrderBy(coa => coa.AccountId)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountId.ToString(),
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountId.ToString(), Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -95,8 +93,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 .OrderBy(coa => coa.AccountId)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountId.ToString(),
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountId.ToString(), Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
 
@@ -131,7 +128,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Create Service #{services.ServiceNo}", "Service");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
@@ -143,7 +140,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create service master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to create service master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = $"Error: '{ex.Message}'";
                 return View(services);
@@ -151,7 +149,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetServicesList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetServicesList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -167,12 +166,13 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var hasCreatedDate = DateTime.TryParse(searchValue, out var createdDate);
 
                     query = query
-                    .Where(s =>
-                        s.ServiceNo!.ToLower().Contains(searchValue) ||
-                        s.Name.ToLower().Contains(searchValue) ||
-                        s.Percent.ToString().ToLower().Contains(searchValue) ||
-                        s.CreatedBy!.ToLower().Contains(searchValue) ||
-                        (hasCreatedDate && DateOnly.FromDateTime(s.CreatedDate) == DateOnly.FromDateTime(createdDate))
+                        .Where(s =>
+                            s.ServiceNo!.ToLower().Contains(searchValue) ||
+                            s.Name.ToLower().Contains(searchValue) ||
+                            s.Percent.ToString().ToLower().Contains(searchValue) ||
+                            s.CreatedBy!.ToLower().Contains(searchValue) ||
+                            (hasCreatedDate && DateOnly.FromDateTime(s.CreatedDate) ==
+                                DateOnly.FromDateTime(createdDate))
                         );
                 }
 
@@ -184,7 +184,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
 
                     query = query
-                        .OrderBy($"{columnName} {sortDirection}") ;
+                        .OrderBy($"{columnName} {sortDirection}");
                 }
 
                 var totalFilteredRecords = await query.CountAsync(cancellationToken);
@@ -224,6 +224,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             return View(services);
         }
 
@@ -236,7 +237,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 return View(services);
             }
 
-            var existingModel =  await _unitOfWork.Service
+            var existingModel = await _unitOfWork.Service
                 .GetAsync(x => x.ServiceId == services.ServiceId, cancellationToken);
 
             if (existingModel == null)
@@ -254,7 +255,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Edited Service #{existingModel.ServiceNo}",
                     "Service");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -267,7 +268,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogError(ex, "Failed to edit service master file. Edited by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit service master file. Edited by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
@@ -291,10 +293,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         x.CreatedDate
                     });
 
-                return Json(new
-                {
-                    data = services
-                });
+                return Json(new { data = services });
             }
             catch (Exception ex)
             {

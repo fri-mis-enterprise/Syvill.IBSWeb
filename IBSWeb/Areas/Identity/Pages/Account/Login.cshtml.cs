@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using IBS.DataAccess.Repository.IRepository;
@@ -18,14 +19,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace IBSWeb.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class LoginModel : PageModel
+    public class LoginModel: PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger,
+            IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -122,12 +124,14 @@ namespace IBSWeb.Areas.Identity.Pages.Account
                 if (user != null && !user.IsActive)
                 {
                     _logger.LogWarning("Deactivated user attempted login: {Username}", Input.Username);
-                    ModelState.AddModelError(string.Empty, "Your account has been deactivated. Please contact the administrator.");
+                    ModelState.AddModelError(string.Empty,
+                        "Your account has been deactivated. Please contact the administrator.");
                     await LoadPageData(returnUrl);
                     return Page();
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe,
+                    lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
@@ -161,7 +165,8 @@ namespace IBSWeb.Areas.Identity.Pages.Account
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa",
+                        new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
 
                 if (result.IsLockedOut)
@@ -178,12 +183,10 @@ namespace IBSWeb.Areas.Identity.Pages.Account
         }
 
 
-
         private async Task LoadPageData(string returnUrl)
         {
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             ReturnUrl = returnUrl;
         }
-
     }
 }

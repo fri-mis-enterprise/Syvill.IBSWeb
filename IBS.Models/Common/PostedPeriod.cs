@@ -18,10 +18,8 @@ namespace IBS.Models.Common
         [Column(TypeName = "timestamp without time zone")]
         public DateTime PostedOn { get; set; }
 
-        [StringLength(50)]
-        public string PostedBy { get; set; } = null!;
+        [StringLength(50)] public string PostedBy { get; set; } = null!;
 
-        [StringLength(20)]
-        public string Module { get; set; } = null!;
+        [StringLength(20)] public string Module { get; set; } = null!;
     }
 }

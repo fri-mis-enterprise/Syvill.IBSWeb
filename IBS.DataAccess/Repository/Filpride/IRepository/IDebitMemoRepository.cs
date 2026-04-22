@@ -3,7 +3,7 @@ using IBS.Models.AccountsReceivable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IDebitMemoRepository : IRepository<DebitMemo>
+    public interface IDebitMemoRepository: IRepository<DebitMemo>
     {
         Task<string> GenerateCodeAsync(string company, string type, CancellationToken cancellationToken = default);
     }

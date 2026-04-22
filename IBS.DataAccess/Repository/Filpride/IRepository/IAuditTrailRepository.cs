@@ -3,7 +3,7 @@ using IBS.Models.Common;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IAuditTrailRepository : IRepository<AuditTrail>
+    public interface IAuditTrailRepository: IRepository<AuditTrail>
     {
     }
 }

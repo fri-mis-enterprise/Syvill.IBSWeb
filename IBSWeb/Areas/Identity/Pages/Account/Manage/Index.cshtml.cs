@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IBSWeb.Areas.Identity.Pages.Account.Manage
 {
-    public class IndexModel : PageModel
+    public class IndexModel: PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -64,10 +65,7 @@ namespace IBSWeb.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
 
-            Input = new InputModel
-            {
-                PhoneNumber = phoneNumber
-            };
+            Input = new InputModel { PhoneNumber = phoneNumber };
         }
 
         public async Task<IActionResult> OnGetAsync()

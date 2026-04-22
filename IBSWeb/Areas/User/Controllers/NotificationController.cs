@@ -12,7 +12,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area("User")]
     [Authorize]
-    public class NotificationController : Controller
+    public class NotificationController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -22,7 +22,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         private readonly ILogger<NotificationController> _logger;
 
-        public NotificationController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext,
+        public NotificationController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager,
+            ApplicationDbContext dbContext,
             ILogger<NotificationController> logger)
         {
             _unitOfWork = unitOfWork;
@@ -33,7 +34,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var notifications = await _unitOfWork.Notifications.GetUserNotificationsAsync(_userManager.GetUserId(User)!);
+            var notifications =
+                await _unitOfWork.Notifications.GetUserNotificationsAsync(_userManager.GetUserId(User)!);
             return View(notifications);
         }
 

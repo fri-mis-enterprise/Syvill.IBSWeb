@@ -26,7 +26,7 @@ namespace IBSWeb.Areas.User.Controllers
         SD.Department_HRAndAdminOrLegal,
         SD.Department_ManagementAccounting,
         SD.Department_Finance)]
-    public class CheckVoucherNonTradePayrollInvoiceController : Controller
+    public class CheckVoucherNonTradePayrollInvoiceController: Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -110,7 +110,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetInvoiceCheckVouchers([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetInvoiceCheckVouchers([FromForm] DataTablesParameters parameters,
+            DateOnly filterDate, CancellationToken cancellationToken)
         {
             try
             {
@@ -131,7 +132,8 @@ namespace IBSWeb.Areas.User.Controllers
                 // Apply status filter based on filterType
                 if (!string.IsNullOrEmpty(filterTypeClaim) && filterTypeClaim == "ForApproval")
                 {
-                    checkVoucherDetails = checkVoucherDetails.Where(cvd => cvd.CheckVoucherHeader!.Status == nameof(CheckVoucherInvoiceStatus.ForApproval));
+                    checkVoucherDetails = checkVoucherDetails.Where(cvd =>
+                        cvd.CheckVoucherHeader!.Status == nameof(CheckVoucherInvoiceStatus.ForApproval));
                 }
 
                 // Search filter
@@ -201,7 +203,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}.",
+                _logger.LogError(ex,
+                    "Failed to get invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}.",
                     ex.Message, ex.StackTrace);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Index), new { filterType = await GetCurrentFilterType() });
@@ -219,20 +222,23 @@ namespace IBSWeb.Areas.User.Controllers
             var viewModel = new CheckVoucherNonTradeInvoicingViewModel();
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
             viewModel.Suppliers = await _unitOfWork.GetNonTradeSupplierListAsyncById(cancellationToken);
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
 
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CheckVoucherNonTradeInvoicingViewModel viewModel, IFormFile? file, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CheckVoucherNonTradeInvoicingViewModel viewModel, IFormFile? file,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
                 viewModel.Suppliers = await _unitOfWork.GetNonTradeSupplierListAsyncById(cancellationToken);
-                viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
+                viewModel.MinDate =
+                    await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
                 TempData["warning"] = "The information provided was invalid.";
                 return View(viewModel);
             }
@@ -248,7 +254,8 @@ namespace IBSWeb.Areas.User.Controllers
                     .GetAsync(x => x.SupplierName.Contains("SOCIAL SECURITY SYSTEM"), cancellationToken);
 
                 var philhealth = await _unitOfWork.Supplier
-                    .GetAsync(x => x.SupplierName.Contains("PHILIPPINE HEALTH INSURANCE CORPORATION"), cancellationToken);
+                    .GetAsync(x => x.SupplierName.Contains("PHILIPPINE HEALTH INSURANCE CORPORATION"),
+                        cancellationToken);
 
                 var pagibig = await _unitOfWork.Supplier
                     .GetAsync(x => x.SupplierName.Contains("HOME DEVELOPMENT MUTUAL FUND"), cancellationToken);
@@ -257,21 +264,13 @@ namespace IBSWeb.Areas.User.Controllers
                     .GetAsync(x => x.SupplierName.Contains("BUREAU OF INTERNAL REVENUE"), cancellationToken);
 
                 var payee = await _unitOfWork.Supplier
-                    .GetAsync(x => x.SupplierId == viewModel.SupplierId, cancellationToken)
-                    ?? throw new Exception("Payee not found");
+                                .GetAsync(x => x.SupplierId == viewModel.SupplierId, cancellationToken)
+                            ?? throw new Exception("Payee not found");
 
                 var subAccounts = new[]
                 {
-                    "202010200",
-                    "201030540",
-                    "201030530",
-                    "201030520",
-                    "201030300",
-                    "201030250",
-                    "201030240",
-                    "201030230",
-                    "201030210",
-                    "201030220"
+                    "202010200", "201030540", "201030530", "201030520", "201030300", "201030250", "201030240",
+                    "201030230", "201030210", "201030220"
                 };
 
                 var supplierMapping = new Dictionary<string, Supplier?>
@@ -293,7 +292,9 @@ namespace IBSWeb.Areas.User.Controllers
 
                 CheckVoucherHeader checkVoucherHeader = new()
                 {
-                    CheckVoucherHeaderNo = await _unitOfWork.CheckVoucher.GenerateCodeMultipleInvoiceAsync(viewModel.Type!, cancellationToken),
+                    CheckVoucherHeaderNo =
+                        await _unitOfWork.CheckVoucher.GenerateCodeMultipleInvoiceAsync(viewModel.Type!,
+                            cancellationToken),
                     Date = viewModel.TransactionDate,
                     Payee = payee.SupplierName,
                     Address = payee.SupplierAddress,
@@ -352,25 +353,30 @@ namespace IBSWeb.Areas.User.Controllers
                 if (file != null && file.Length > 0)
                 {
                     checkVoucherHeader.SupportingFileSavedFileName = GenerateFileNameToSave(file.FileName);
-                    checkVoucherHeader.SupportingFileSavedUrl = await _cloudStorageService.UploadFileAsync(file, checkVoucherHeader.SupportingFileSavedFileName!);
+                    checkVoucherHeader.SupportingFileSavedUrl =
+                        await _cloudStorageService.UploadFileAsync(file,
+                            checkVoucherHeader.SupportingFileSavedFileName!);
                 }
 
                 #endregion -- Uploading file --
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Created new check voucher# {checkVoucherHeader.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Created new check voucher# {checkVoucherHeader.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
                 await transaction.CommitAsync(cancellationToken);
-                TempData["success"] = $"Check voucher invoicing #{checkVoucherHeader.CheckVoucherHeaderNo} created successfully.";
+                TempData["success"] =
+                    $"Check voucher invoicing #{checkVoucherHeader.CheckVoucherHeaderNo} created successfully.";
                 return RedirectToAction(nameof(Index), new { filterType = await GetCurrentFilterType() });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create payroll invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to create payroll invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
 
                 viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
@@ -398,7 +404,7 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var existingHeaderModel = await _unitOfWork.CheckVoucher.GetAsync(cv => cv.CheckVoucherHeaderId == id,
-                        cancellationToken);
+                    cancellationToken);
 
                 if (existingHeaderModel == null)
                 {
@@ -407,7 +413,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var minDate =
                     await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
-                if (await _unitOfWork.IsPeriodPostedAsync(Module.CheckVoucher, existingHeaderModel.Date, cancellationToken))
+                if (await _unitOfWork.IsPeriodPostedAsync(Module.CheckVoucher, existingHeaderModel.Date,
+                        cancellationToken))
                 {
                     throw new ArgumentException(
                         $"Cannot edit this record because the period {existingHeaderModel.Date:MMM yyyy} is already closed.");
@@ -452,20 +459,23 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to fetch cv non trade payroll invoice. Error: {ErrorMessage}, Stack: {StackTrace}.",
+                _logger.LogError(ex,
+                    "Failed to fetch cv non trade payroll invoice. Error: {ErrorMessage}, Stack: {StackTrace}.",
                     ex.Message, ex.StackTrace);
                 return RedirectToAction(nameof(Index), new { filterType = await GetCurrentFilterType() });
             }
         }
 
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CheckVoucherNonTradeInvoicingViewModel viewModel, IFormFile? file, CancellationToken cancellationToken)
+        public async Task<IActionResult> Edit(CheckVoucherNonTradeInvoicingViewModel viewModel, IFormFile? file,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
                 viewModel.Suppliers = await _unitOfWork.GetNonTradeSupplierListAsyncById(cancellationToken);
-                viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
+                viewModel.MinDate =
+                    await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CheckVoucher, cancellationToken);
                 TempData["warning"] = "The information provided was invalid.";
                 return View(viewModel);
             }
@@ -490,7 +500,8 @@ namespace IBSWeb.Areas.User.Controllers
                     .GetAsync(x => x.SupplierName.Contains("SOCIAL SECURITY SYSTEM"), cancellationToken);
 
                 var philhealth = await _unitOfWork.Supplier
-                    .GetAsync(x => x.SupplierName.Contains("PHILIPPINE HEALTH INSURANCE CORPORATION"), cancellationToken);
+                    .GetAsync(x => x.SupplierName.Contains("PHILIPPINE HEALTH INSURANCE CORPORATION"),
+                        cancellationToken);
 
                 var pagibig = await _unitOfWork.Supplier
                     .GetAsync(x => x.SupplierName.Contains("HOME DEVELOPMENT MUTUAL FUND"), cancellationToken);
@@ -504,16 +515,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var subAccounts = new[]
                 {
-                    "202010200",
-                    "201030540",
-                    "201030530",
-                    "201030520",
-                    "201030300",
-                    "201030250",
-                    "201030240",
-                    "201030230",
-                    "201030210",
-                    "201030220"
+                    "202010200", "201030540", "201030530", "201030520", "201030300", "201030250", "201030240",
+                    "201030230", "201030210", "201030220"
                 };
 
                 var supplierMapping = new Dictionary<string, Supplier?>
@@ -590,7 +593,9 @@ namespace IBSWeb.Areas.User.Controllers
                 if (file != null && file.Length > 0)
                 {
                     existingHeaderModel.SupportingFileSavedFileName = GenerateFileNameToSave(file.FileName);
-                    existingHeaderModel.SupportingFileSavedUrl = await _cloudStorageService.UploadFileAsync(file, existingHeaderModel.SupportingFileSavedFileName!);
+                    existingHeaderModel.SupportingFileSavedUrl =
+                        await _cloudStorageService.UploadFileAsync(file,
+                            existingHeaderModel.SupportingFileSavedFileName!);
                 }
 
                 #endregion -- Uploading file --
@@ -603,6 +608,7 @@ namespace IBSWeb.Areas.User.Controllers
                     existingHeaderModel.ApprovedBy = null;
                     existingHeaderModel.ApprovedDate = null;
                 }
+
                 await _unitOfWork.SaveAsync(cancellationToken);
 
                 #region --Audit Trail Recording
@@ -622,7 +628,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit payroll invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to edit payroll invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
 
                 viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
@@ -661,7 +668,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Approved check voucher# {model.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Approved check voucher# {model.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -673,7 +681,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to approve payroll invoice check voucher. Error: {ErrorMessage}, Stack: {StackTrace}. Approved by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to approve payroll invoice check voucher. Error: {ErrorMessage}, Stack: {StackTrace}. Approved by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -688,7 +697,8 @@ namespace IBSWeb.Areas.User.Controllers
             SD.Department_ManagementAccounting)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
+        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.CheckVoucher
                 .GetAsync(cv => cv.CheckVoucherHeaderId == id, cancellationToken);
@@ -709,19 +719,25 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Canceled check voucher# {model.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Canceled check voucher# {model.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Check Voucher #{model.CheckVoucherHeaderNo} has been cancelled successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Check Voucher #{model.CheckVoucherHeaderNo} has been cancelled successfully."
+                });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to cancel invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to cancel invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return Json(new { success = false, message = ex.Message });
             }
@@ -752,17 +768,23 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Voided check voucher# {model.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Voided check voucher# {model.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
                 await transaction.CommitAsync(cancellationToken);
-                return Json(new { success = true, message = $"Check Voucher #{model.CheckVoucherHeaderNo} has been voided successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Check Voucher #{model.CheckVoucherHeaderNo} has been voided successfully."
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to void invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to void invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 return Json(new { success = false, message = ex.Message });
@@ -781,13 +803,14 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var cvHeader = await _dbContext.CheckVoucherHeaders
-                    .Include(cv => cv.Details)
-                    .FirstOrDefaultAsync(cv => cv.CheckVoucherHeaderId == id, cancellationToken)
-                    ?? throw new NullReferenceException("CV Header not found.");
+                                   .Include(cv => cv.Details)
+                                   .FirstOrDefaultAsync(cv => cv.CheckVoucherHeaderId == id, cancellationToken)
+                               ?? throw new NullReferenceException("CV Header not found.");
 
                 if (await _unitOfWork.IsPeriodPostedAsync(Module.CheckVoucher, cvHeader.Date, cancellationToken))
                 {
-                    TempData["error"] = $"Cannot unpost this record because the period {cvHeader.Date:MMM yyyy} is already closed.";
+                    TempData["error"] =
+                        $"Cannot unpost this record because the period {cvHeader.Date:MMM yyyy} is already closed.";
                     return RedirectToAction(nameof(Print), new { id, supplierId });
                 }
 
@@ -801,11 +824,13 @@ namespace IBSWeb.Areas.User.Controllers
                 cvHeader.PostedBy = null;
                 cvHeader.PostedDate = null;
 
-                await _unitOfWork.CheckVoucher.RemoveRecords<GeneralLedgerBook>(gl => gl.Reference == cvHeader.CheckVoucherHeaderNo, cancellationToken);
+                await _unitOfWork.CheckVoucher.RemoveRecords<GeneralLedgerBook>(
+                    gl => gl.Reference == cvHeader.CheckVoucherHeaderNo, cancellationToken);
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Unposted check voucher# {cvHeader.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Unposted check voucher# {cvHeader.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -817,7 +842,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to unpost invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to unpost invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -839,7 +865,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of check voucher# {cv.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Printed original copy of check voucher# {cv.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -851,7 +878,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of check voucher# {cv.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrail = new(GetUserFullName(),
+                    $"Printed re-printed copy of check voucher# {cv.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -861,7 +889,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Print(int? id, int? supplierId, int? employeeId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Print(int? id, int? supplierId, int? employeeId,
+            CancellationToken cancellationToken)
         {
             if (id == null)
             {
@@ -888,15 +917,13 @@ namespace IBSWeb.Areas.User.Controllers
 
             var viewModel = new CheckVoucherVM
             {
-                Header = header,
-                Details = details,
-                Supplier = getSupplier,
-                Employee = getEmployee
+                Header = header, Details = details, Supplier = getSupplier, Employee = getEmployee
             };
 
             #region --Audit Trail Recording
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview check voucher# {header.CheckVoucherHeaderNo}", "Check Voucher");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview check voucher# {header.CheckVoucherHeaderNo}",
+                "Check Voucher");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -919,7 +946,8 @@ namespace IBSWeb.Areas.User.Controllers
             SD.Department_ManagementAccounting)]
         public async Task<IActionResult> Post(int id, int? supplierId, CancellationToken cancellationToken)
         {
-            var modelHeader = await _unitOfWork.CheckVoucher.GetAsync(cv => cv.CheckVoucherHeaderId == id, cancellationToken);
+            var modelHeader =
+                await _unitOfWork.CheckVoucher.GetAsync(cv => cv.CheckVoucherHeaderId == id, cancellationToken);
 
             if (modelHeader == null)
             {
@@ -942,7 +970,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 if (await _unitOfWork.IsPeriodPostedAsync(Module.CheckVoucher, modelHeader.Date, cancellationToken))
                 {
-                    TempData["error"] = $"Cannot post this record because the period {modelHeader.Date:MMM yyyy} is already closed.";
+                    TempData["error"] =
+                        $"Cannot post this record because the period {modelHeader.Date:MMM yyyy} is already closed.";
                     return RedirectToAction(nameof(Print), new { id, supplierId });
                 }
 
@@ -954,7 +983,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Posted check voucher# {modelHeader.CheckVoucherHeaderNo}", "Check Voucher");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Posted check voucher# {modelHeader.CheckVoucherHeaderNo}", "Check Voucher");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -965,7 +995,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to post invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to post invoice check vouchers. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
 

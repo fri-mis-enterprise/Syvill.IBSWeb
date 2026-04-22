@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format of this file follows **Keep a Changelog**  
@@ -7,116 +8,152 @@ and this project adheres to **Semantic Versioning (SemVer)**.
 ---
 
 ## [v2.3.0] - 2026-03-04
+
 ### Added
+
 - Added a navigation feature to provide an overview of tasks pending approval for CV and JV.
 
 ### Changed
+
 - Implement enhanced amortization functionality to automatically generate a new JV each month.
 - Remove the approval requirement for CV Invoice Payroll processing.
 
 ---
 
 ## [v2.2.0] - 2026-02-28
+
 ### Added
+
 - Added quick access feature.
 - Added new module for JV (Accrual, Amortization, and Reclass)
 - Added approval flow for CV invoice and JV.
 - Added unpost feature for JV.
 
 ### Changed
+
 - Rename the prinout heading from "Invoicing" to "Invoicing / AP Voucher"
 
 ---
 
 ## [v2.1.2] - 2026-02-20
+
 ### Fixed
+
 - Fixed CV payment showing not accurate payable amount.
 
 ---
 
 ## [v2.1.1] - 2026-02-18
+
 ### Fixed
+
 - Fixed input type of payment to show the values in to 4 decimals.
 - Fixed general apis to allow anonymous.
 
 ---
 
 ## [v2.1.0] - 2026-02-18
+
 ### Changed
+
 - Redesign the CV Non Trade payment to accept partial payment.
 
 ---
 
 ## [v2.0.1] - 2026-02-13
+
 ### Fixed
+
 - Fixed discrepancy due to rounding 4 decimals.
 
 ---
 
 ## [v2.0.0] - 2026-02-12
+
 ### Changed
+
 - Upgrade version to.NET10.
 
 ---
 
 ## [v1.2.6] - 2025-01-17
+
 ### Added
+
 - Implement the subaccount in journal voucher.
 
 ---
 
 ## [v1.2.5] - 2026-01-16
+
 ### Added
+
 - Added default commissionee and commission rate to the customer file
 
 ### Changed
+
 - Modified the date parameter needed when generating AR Per Customer.
 - Revised the payroll invoice.
 
 ### Fixed
+
 - Moved the otc fuel sales report to path correctly.
 
 ---
 
 ## [v1.2.4] - 2025-12-16
+
 ### Changed
+
 - Modified the configuration of notification.js to low the cost of GCP.
 
 ---
 
 ## [v1.2.3] - 2025-12-04
+
 ### Added
+
 - Added locking of database when creating new series no.
 
 ---
 
 ## [v1.2.2] - 2025-12-01
+
 ### Added
+
 - Added journal entries for updating the commission and freight.
 
 ### Fixed
+
 - Fixed atl booking card in dashboard not accurate.
 
 ---
 
 ## [v1.2.1] - 2025-11-29
+
 ### Changed
+
 - Changed in to raw sql the query for getting the latest series, applied locking of row to prevent duplicate.
 
 ---
 
 ## [v1.2.0] - 2025-11-28
+
 ### Fixed
+
 - Fixed redundant switch condition on the COS index.
 - Fixed the CV Non-trade invoice to mark only the AP Non-Trade payable.
 
 ### Changed
+
 - Username value when creating audit trail
 
 ---
 
 ## [v1.0.0] - 2025-11-28
+
 ### Added
+
 - Initial implementation of **IBSWeb – Integrated Business System**.
 - Added **N-Tier architecture** structure:
     - `IBS.DataAccess` for repositories and Unit of Work
@@ -136,11 +173,13 @@ and this project adheres to **Semantic Versioning (SemVer)**.
 - Added initial documentation structure (README, repository organization).
 
 ### Changed
+
 - Refactored repository methods to use **async/await** and cleaner LINQ.
 - Improved data validation and error handling across the project.
 - Updated folder naming and namespace conventions for consistency.
 
 ### Fixed
+
 - Fixed issues in Chart of Accounts sorting and retrieval.
 - Fixed session retrieval inconsistencies on user login.
 - Fixed bugs in DataTables initialization and hidden column searching.

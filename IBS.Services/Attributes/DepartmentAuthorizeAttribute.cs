@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace IBS.Services.Attributes
 {
-    public class DepartmentAuthorizeAttribute : AuthorizeAttribute, IAuthorizationFilter
+    public class DepartmentAuthorizeAttribute: AuthorizeAttribute, IAuthorizationFilter
     {
         private readonly string[] _departments;
 
@@ -19,8 +19,11 @@ namespace IBS.Services.Attributes
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var userManager = context.HttpContext.RequestServices.GetService(typeof(UserManager<ApplicationUser>)) as UserManager<ApplicationUser>;
-            var dbContext = context.HttpContext.RequestServices.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
+            var userManager =
+                context.HttpContext.RequestServices.GetService(typeof(UserManager<ApplicationUser>)) as
+                    UserManager<ApplicationUser>;
+            var dbContext =
+                context.HttpContext.RequestServices.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
 
             if (userManager != null && dbContext != null)
             {

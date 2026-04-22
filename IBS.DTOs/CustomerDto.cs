@@ -11,6 +11,6 @@ namespace IBS.DTOs
         public string CustomerAddress { get; set; } = null!;
 
         public string CustomerTin { get; set; } = null!;
-        public string CustomerTerms { get; set; }= null!;
+        public string CustomerTerms { get; set; } = null!;
     }
 }

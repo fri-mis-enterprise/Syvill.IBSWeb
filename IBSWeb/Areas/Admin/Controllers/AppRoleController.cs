@@ -9,7 +9,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class AppRoleController : Controller
+    public class AppRoleController: Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<AppRoleController> _logger;
@@ -44,7 +44,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetRolesList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public IActionResult GetRolesList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -56,8 +57,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var searchValue = parameters.Search.Value.ToLower();
 
                     queried = queried
-                    .Where(r =>
-                        r.Name!.ToLower().Contains(searchValue) == true
+                        .Where(r =>
+                            r.Name!.ToLower().Contains(searchValue) == true
                         );
                 }
 
@@ -74,10 +75,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 var totalRecords = queried.Count();
                 var pagedData = queried
-                    .Select(r  => new
-                    {
-                        r.Name,
-                    })
+                    .Select(r => new { r.Name, })
                     .Skip(parameters.Start)
                     .Take(parameters.Length)
                     .ToList();

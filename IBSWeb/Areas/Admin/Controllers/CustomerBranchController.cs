@@ -13,7 +13,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class CustomerBranchController : Controller
+    public class CustomerBranchController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -23,7 +23,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private readonly ApplicationDbContext _dbContext;
 
-        public CustomerBranchController(IUnitOfWork unitOfWork, ILogger<CustomerController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public CustomerBranchController(IUnitOfWork unitOfWork, ILogger<CustomerController> logger,
+            UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -82,7 +83,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Created Customer Branch #{model.Id}",
                     "Customer Branch");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -95,7 +96,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create customer branch master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to create customer branch master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 model.CustomerSelectList = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
@@ -142,7 +144,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Edited Customer Branch #{model.Id}",
                     "Customer Branch");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -155,7 +157,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit customer branch. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit customer branch. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 TempData["error"] = $"Error: '{ex.Message}'";
                 await transaction.RollbackAsync(cancellationToken);
                 model.CustomerSelectList =
@@ -165,7 +168,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetCustomerBranchesList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCustomerBranchesList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -180,11 +184,11 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var searchValue = parameters.Search.Value.ToLower();
 
                     query = query
-                    .Where(b =>
-                        b.BranchName.ToLower().Contains(searchValue) ||
-                        b.BranchAddress.ToLower().Contains(searchValue) ||
-                        b.BranchTin.ToLower().Contains(searchValue) ||
-                        b.Customer!.CustomerName.ToLower().Contains(searchValue)
+                        .Where(b =>
+                            b.BranchName.ToLower().Contains(searchValue) ||
+                            b.BranchAddress.ToLower().Contains(searchValue) ||
+                            b.BranchTin.ToLower().Contains(searchValue) ||
+                            b.Customer!.CustomerName.ToLower().Contains(searchValue)
                         );
                 }
 
@@ -202,7 +206,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 var pagedData = await query
                     .Skip(parameters.Start)
                     .Take(parameters.Length)
-                    .Select(b  => new
+                    .Select(b => new
                     {
                         b.Id,
                         b.Customer!.CustomerName,
@@ -241,11 +245,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     TempData["error"] = "Customer not found";
                 }
 
-                return Json(new
-                {
-                    address = customer!.CustomerAddress,
-                    tin = customer.CustomerTin,
-                });
+                return Json(new { address = customer!.CustomerAddress, tin = customer.CustomerTin, });
             }
             catch (Exception ex)
             {

@@ -16,7 +16,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class BankAccountController : Controller
+    public class BankAccountController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -26,7 +26,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private readonly ILogger<BankAccountController> _logger;
 
-        public BankAccountController(IUnitOfWork unitOfWork, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, ILogger<BankAccountController> logger)
+        public BankAccountController(IUnitOfWork unitOfWork, ApplicationDbContext dbContext,
+            UserManager<ApplicationUser> userManager, ILogger<BankAccountController> logger)
         {
             _unitOfWork = unitOfWork;
             _dbContext = dbContext;
@@ -45,7 +46,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 var banks = await _unitOfWork.BankAccount
-                .GetAllAsync(null, cancellationToken);
+                    .GetAllAsync(null, cancellationToken);
 
                 return View(banks);
             }
@@ -96,7 +97,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region -- Audit Trail Recordings --
 
-                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new bank {model.Bank} {model.AccountName} {model.AccountNo}", "Bank Account");
+                AuditTrail auditTrailBook = new(model.CreatedBy!,
+                    $"Create new bank {model.Bank} {model.AccountName} {model.AccountNo}", "Bank Account");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recordings --
@@ -107,7 +109,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create bank account. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to create bank account. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return View(model);
@@ -115,7 +118,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetBankAccountsList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetBankAccountsList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -131,13 +135,14 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var hasCreatedDate = DateTime.TryParse(searchValue, out var createdDateTime);
 
                     query = query
-                    .Where(b =>
-                        b.AccountNo.ToLower().Contains(searchValue) ||
-                        b.AccountName.ToLower().Contains(searchValue) ||
-                        b.Bank.ToLower().Contains(searchValue) ||
-                        b.Branch.ToLower().Contains(searchValue) ||
-                        b.CreatedBy!.ToLower().Contains(searchValue) ||
-                        (hasCreatedDate && DateOnly.FromDateTime(b.CreatedDate) == DateOnly.FromDateTime(createdDateTime))
+                        .Where(b =>
+                            b.AccountNo.ToLower().Contains(searchValue) ||
+                            b.AccountName.ToLower().Contains(searchValue) ||
+                            b.Bank.ToLower().Contains(searchValue) ||
+                            b.Branch.ToLower().Contains(searchValue) ||
+                            b.CreatedBy!.ToLower().Contains(searchValue) ||
+                            (hasCreatedDate && DateOnly.FromDateTime(b.CreatedDate) ==
+                                DateOnly.FromDateTime(createdDateTime))
                         );
                 }
 
@@ -225,7 +230,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit bank account. Edited by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit bank account. Edited by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return View(existingModel);
@@ -238,7 +244,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 var bankAccounts = (await _unitOfWork.BankAccount
-                    .GetAllAsync(null, cancellationToken))
+                        .GetAllAsync(null, cancellationToken))
                     .Select(x => new
                     {
                         x.BankAccountId,
@@ -250,10 +256,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         x.CreatedDate
                     });
 
-                return Json(new
-                {
-                    data = bankAccounts
-                });
+                return Json(new { data = bankAccounts });
             }
             catch (Exception ex)
             {

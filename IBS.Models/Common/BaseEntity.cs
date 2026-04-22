@@ -22,23 +22,19 @@ namespace IBS.Models.Common
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? EditedDate { get; set; }
 
-        [Column(TypeName = "varchar(255)")]
-        public string? CancellationRemarks { get; set; }
+        [Column(TypeName = "varchar(255)")] public string? CancellationRemarks { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
-        public string? CanceledBy { get; set; }
+        [Column(TypeName = "varchar(50)")] public string? CanceledBy { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? CanceledDate { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
-        public string? VoidedBy { get; set; }
+        [Column(TypeName = "varchar(50)")] public string? VoidedBy { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? VoidedDate { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
-        public string? PostedBy { get; set; }
+        [Column(TypeName = "varchar(50)")] public string? PostedBy { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? PostedDate { get; set; }

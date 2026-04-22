@@ -13,7 +13,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork: IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
 
@@ -30,7 +30,8 @@ namespace IBS.DataAccess.Repository
                                && m.Year == date.Year, cancellationToken);
         }
 
-        public async Task<DateTime> GetMinimumPeriodBasedOnThePostedPeriods(Module module, CancellationToken cancellationToken = default)
+        public async Task<DateTime> GetMinimumPeriodBasedOnThePostedPeriods(Module module,
+            CancellationToken cancellationToken = default)
         {
             if (!Enum.IsDefined(typeof(Module), module))
             {
@@ -53,7 +54,8 @@ namespace IBS.DataAccess.Repository
                 .ToDateTime(new TimeOnly(0, 0));
         }
 
-        public async Task<bool> IsPeriodPostedAsync(Module module, DateOnly date, CancellationToken cancellationToken = default)
+        public async Task<bool> IsPeriodPostedAsync(Module module, DateOnly date,
+            CancellationToken cancellationToken = default)
         {
             if (!Enum.IsDefined(typeof(Module), module))
             {
@@ -62,14 +64,15 @@ namespace IBS.DataAccess.Repository
 
             return await _db.PostedPeriods
                 .AnyAsync(m =>
-                    m.Module == module.ToString() &&
-                    m.IsPosted &&
-                    m.Year == date.Year &&
-                    m.Month == date.Month,
+                        m.Module == module.ToString() &&
+                        m.IsPosted &&
+                        m.Year == date.Year &&
+                        m.Month == date.Month,
                     cancellationToken);
         }
 
         #region--Filpride
+
         public Filpride.IRepository.ICustomerRepository Customer { get; private set; }
         public Filpride.IRepository.ISupplierRepository Supplier { get; private set; }
         public Filpride.IRepository.IChartOfAccountRepository ChartOfAccount { get; private set; }
@@ -93,16 +96,21 @@ namespace IBS.DataAccess.Repository
         public Filpride.IRepository.IDebitMemoRepository DebitMemo { get; private set; }
 
         public Filpride.IRepository.ICreditMemoRepository CreditMemo { get; private set; }
+
         #endregion
 
         #region Accounts Payable
+
         public Filpride.IRepository.ICheckVoucherRepository CheckVoucher { get; private set; }
 
         public Filpride.IRepository.IJournalVoucherRepository JournalVoucher { get; private set; }
+
         #endregion
 
         #region Books and Report
+
         public IReportRepository Report { get; private set; }
+
         #endregion
 
         #region Master File
@@ -140,19 +148,25 @@ namespace IBS.DataAccess.Repository
             #region AAS
 
             #region Accounts Receivable
+
             ServiceInvoice = new Filpride.ServiceInvoiceRepository(_db);
             CollectionReceipt = new Filpride.CollectionReceiptRepository(_db);
             DebitMemo = new Filpride.DebitMemoRepository(_db);
             CreditMemo = new Filpride.CreditMemoRepository(_db);
+
             #endregion
 
             #region Accounts Payable
+
             CheckVoucher = new Filpride.CheckVoucherRepository(_db);
             JournalVoucher = new Filpride.JournalVoucherRepository(_db);
+
             #endregion
 
             #region Books and Report
+
             Report = new ReportRepository(_db);
+
             #endregion
 
             #region Master File
@@ -179,11 +193,7 @@ namespace IBS.DataAccess.Repository
             return await _db.Customers
                 .OrderBy(c => c.CustomerName)
                 .Where(c => c.IsActive)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.CustomerId.ToString(),
-                    Text = c.CustomerName
-                })
+                .Select(c => new SelectListItem { Value = c.CustomerId.ToString(), Text = c.CustomerName })
                 .ToListAsync(cancellationToken);
         }
 
@@ -194,22 +204,18 @@ namespace IBS.DataAccess.Repository
                 .Where(s => s.IsActive)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.SupplierId.ToString(),
-                    Text = s.SupplierCode + " " + s.SupplierName
+                    Value = s.SupplierId.ToString(), Text = s.SupplierCode + " " + s.SupplierName
                 })
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetNonTradeSupplierListAsyncById(
+            CancellationToken cancellationToken = default)
         {
             return await _db.Suppliers
                 .OrderBy(s => s.SupplierName)
                 .Where(s => s.IsActive && s.Category == "Non-Trade")
-                .Select(s => new SelectListItem
-                {
-                    Value = s.SupplierId.ToString(),
-                    Text = s.SupplierName
-                })
+                .Select(s => new SelectListItem { Value = s.SupplierId.ToString(), Text = s.SupplierName })
                 .ToListAsync(cancellationToken);
         }
 
@@ -219,8 +225,7 @@ namespace IBS.DataAccess.Repository
                 .OrderBy(b => b.AccountNo)
                 .Select(ba => new SelectListItem
                 {
-                    Value = ba.BankAccountId.ToString(),
-                    Text = ba.Bank + " " + ba.AccountNo + " " + ba.AccountName
+                    Value = ba.BankAccountId.ToString(), Text = ba.Bank + " " + ba.AccountNo + " " + ba.AccountName
                 })
                 .ToListAsync(cancellationToken);
         }
@@ -233,21 +238,16 @@ namespace IBS.DataAccess.Repository
                 .ThenBy(e => e.LastName)
                 .Select(e => new SelectListItem
                 {
-                    Value = e.EmployeeId.ToString(),
-                    Text = $"{e.EmployeeNumber} - {e.FirstName} {e.LastName}"
+                    Value = e.EmployeeId.ToString(), Text = $"{e.EmployeeNumber} - {e.FirstName} {e.LastName}"
                 })
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetServiceListById( CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetServiceListById(CancellationToken cancellationToken = default)
         {
             return await _db.Services
                 .OrderBy(s => s.Name)
-                .Select(s => new SelectListItem
-                {
-                    Value = s.ServiceId.ToString(),
-                    Text = s.Name
-                })
+                .Select(s => new SelectListItem { Value = s.ServiceId.ToString(), Text = s.Name })
                 .ToListAsync(cancellationToken);
         }
 
@@ -258,11 +258,7 @@ namespace IBS.DataAccess.Repository
             return await _db.Products
                 .OrderBy(p => p.ProductCode)
                 .Where(p => p.IsActive)
-                .Select(p => new SelectListItem
-                {
-                    Value = p.ProductCode,
-                    Text = p.ProductCode + " " + p.ProductName
-                })
+                .Select(p => new SelectListItem { Value = p.ProductCode, Text = p.ProductCode + " " + p.ProductName })
                 .ToListAsync(cancellationToken);
         }
 
@@ -273,39 +269,39 @@ namespace IBS.DataAccess.Repository
                 .Where(p => p.IsActive)
                 .Select(p => new SelectListItem
                 {
-                    Value = p.ProductId.ToString(),
-                    Text = p.ProductCode + " " + p.ProductName
+                    Value = p.ProductId.ToString(), Text = p.ProductCode + " " + p.ProductName
                 })
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetChartOfAccountListAsyncById(CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetChartOfAccountListAsyncById(
+            CancellationToken cancellationToken = default)
         {
             return await _db.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountId.ToString(),
-                    Text = s.AccountNumber + " " + s.AccountName
+                    Value = s.AccountId.ToString(), Text = s.AccountNumber + " " + s.AccountName
                 })
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetChartOfAccountListAsyncByNo(CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetChartOfAccountListAsyncByNo(
+            CancellationToken cancellationToken = default)
         {
             return await _db.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
                 .OrderBy(coa => coa.AccountNumber)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.AccountNumber,
-                    Text = $"({s.AccountType}) {s.AccountNumber} {s.AccountName}"
+                    Value = s.AccountNumber, Text = $"({s.AccountType}) {s.AccountNumber} {s.AccountName}"
                 })
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetChartOfAccountListAsyncByAccountTitle(CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetChartOfAccountListAsyncByAccountTitle(
+            CancellationToken cancellationToken = default)
         {
             return await _db.ChartOfAccounts
                 .Where(coa => !coa.HasChildren)
@@ -323,11 +319,7 @@ namespace IBS.DataAccess.Repository
             return await _db.Companies
                 .OrderBy(c => c.CompanyCode)
                 .Where(c => c.IsActive)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.CompanyName,
-                    Text = c.CompanyCode + " " + c.CompanyName
-                })
+                .Select(c => new SelectListItem { Value = c.CompanyName, Text = c.CompanyCode + " " + c.CompanyName })
                 .ToListAsync(cancellationToken);
         }
 
@@ -338,8 +330,7 @@ namespace IBS.DataAccess.Repository
                 .Where(c => c.IsActive)
                 .Select(c => new SelectListItem
                 {
-                    Value = c.CompanyId.ToString(),
-                    Text = c.CompanyCode + " " + c.CompanyName
+                    Value = c.CompanyId.ToString(), Text = c.CompanyCode + " " + c.CompanyName
                 })
                 .ToListAsync(cancellationToken);
         }

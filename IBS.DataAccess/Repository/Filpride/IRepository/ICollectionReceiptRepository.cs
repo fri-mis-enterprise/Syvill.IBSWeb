@@ -3,11 +3,12 @@ using IBS.Models.AccountsReceivable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ICollectionReceiptRepository : IRepository<CollectionReceipt>
+    public interface ICollectionReceiptRepository: IRepository<CollectionReceipt>
     {
         Task<string> GenerateCodeAsync(string type, CancellationToken cancellationToken = default);
 
-        Task UndoServiceInvoiceChanges(CollectionReceiptDetail collectionReceiptDetail, CancellationToken cancellationToken);
+        Task UndoServiceInvoiceChanges(CollectionReceiptDetail collectionReceiptDetail,
+            CancellationToken cancellationToken);
 
         Task RemoveSVPayment(int id, decimal paidAmount, CancellationToken cancellationToken = default);
 

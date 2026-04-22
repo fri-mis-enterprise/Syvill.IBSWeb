@@ -15,7 +15,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
-    public class UserController : Controller
+    public class UserController: Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -157,7 +157,12 @@ namespace IBSWeb.Areas.Admin.Controllers
                             // If role assignment failed, remove the newly created user and return error
                             await _userManager.DeleteAsync(newUser);
                             var errors = string.Join(", ", addRoleResult.Errors.Select(e => e.Description));
-                            return Json(new { success = false, message = errors, errors = addRoleResult.Errors.Select(e => e.Description) });
+                            return Json(new
+                            {
+                                success = false,
+                                message = errors,
+                                errors = addRoleResult.Errors.Select(e => e.Description)
+                            });
                         }
 
                         // Audit Trail
@@ -171,7 +176,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                             .Replace("\r", string.Empty)
                             .Replace("\n", string.Empty);
 
-                        _logger.LogInformation("User {Username} created successfully by {CurrentUser}", safeUsername, currentUser);
+                        _logger.LogInformation("User {Username} created successfully by {CurrentUser}", safeUsername,
+                            currentUser);
                         return Json(new { success = true, message = "User created successfully" });
                     }
                     else
@@ -192,8 +198,11 @@ namespace IBSWeb.Areas.Admin.Controllers
                     // Track changes for audit
                     var changes = new List<string>();
                     if (user.Name != model.Name) changes.Add($"Name: {user.Name} → {model.Name}");
-                    if (user.Department != model.Department) changes.Add($"Department: {user.Department} → {model.Department}");
-                    if (user.IsActive != model.IsActive) changes.Add($"Status: {(user.IsActive ? "Active" : "Inactive")} → {(model.IsActive ? "Active" : "Inactive")}");
+                    if (user.Department != model.Department)
+                        changes.Add($"Department: {user.Department} → {model.Department}");
+                    if (user.IsActive != model.IsActive)
+                        changes.Add(
+                            $"Status: {(user.IsActive ? "Active" : "Inactive")} → {(model.IsActive ? "Active" : "Inactive")}");
 
                     // Update role if changed
                     var currentRoles = await _userManager.GetRolesAsync(user);
@@ -204,7 +213,12 @@ namespace IBSWeb.Areas.Admin.Controllers
                         if (!removeResult.Succeeded)
                         {
                             var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
-                            return Json(new { success = false, message = errors, errors = removeResult.Errors.Select(e => e.Description) });
+                            return Json(new
+                            {
+                                success = false,
+                                message = errors,
+                                errors = removeResult.Errors.Select(e => e.Description)
+                            });
                         }
 
                         // Add new role
@@ -217,12 +231,20 @@ namespace IBSWeb.Areas.Admin.Controllers
                                 var restoreResult = await _userManager.AddToRolesAsync(user, currentRoles);
                                 if (!restoreResult.Succeeded)
                                 {
-                                    _logger.LogError("Failed to restore roles for user {Username} after AddToRole failure: {Errors}", user.UserName, string.Join(", ", restoreResult.Errors.Select(e => e.Description)));
+                                    _logger.LogError(
+                                        "Failed to restore roles for user {Username} after AddToRole failure: {Errors}",
+                                        user.UserName,
+                                        string.Join(", ", restoreResult.Errors.Select(e => e.Description)));
                                 }
                             }
 
                             var errors = string.Join(", ", addRoleResult.Errors.Select(e => e.Description));
-                            return Json(new { success = false, message = errors, errors = addRoleResult.Errors.Select(e => e.Description) });
+                            return Json(new
+                            {
+                                success = false,
+                                message = errors,
+                                errors = addRoleResult.Errors.Select(e => e.Description)
+                            });
                         }
 
                         changes.Add($"Role: {currentRoles.FirstOrDefault()} → {model.Role}");
@@ -247,11 +269,13 @@ namespace IBSWeb.Areas.Admin.Controllers
                                 "User Management"
                             );
                         }
+
                         var safeUsername = model.Username
                             .Replace("\r", string.Empty)
                             .Replace("\n", string.Empty);
 
-                        _logger.LogInformation("User {safeUsername} updated successfully by {CurrentUser}", safeUsername, currentUser);
+                        _logger.LogInformation("User {safeUsername} updated successfully by {CurrentUser}",
+                            safeUsername, currentUser);
                         return Json(new { success = true, message = "User updated successfully" });
                     }
                     else
@@ -278,6 +302,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 {
                     return Json(new { success = false, message = "Invalid user id" });
                 }
+
                 var currentUser = User.FindFirstValue(ClaimTypes.Name) ?? "System";
                 var company = User.FindFirstValue("Company") ?? "System";
                 var user = await _userManager.FindByIdAsync(id);
@@ -292,6 +317,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                 {
                     return Json(new { success = false, message = "You cannot deactivate your own account" });
                 }
+
                 user.IsActive = !user.IsActive;
                 user.ModifiedDate = DateTimeHelper.GetCurrentPhilippineTime();
                 user.ModifiedBy = currentUser;
@@ -311,7 +337,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                         .Replace("\r", string.Empty)
                         .Replace("\n", string.Empty);
 
-                    _logger.LogInformation("User {safeUsername} {Action} by {CurrentUser}", safeUsername, action, currentUser);
+                    _logger.LogInformation("User {safeUsername} {Action} by {CurrentUser}", safeUsername, action,
+                        currentUser);
                     return Json(new { success = true, message = $"User {action} successfully" });
                 }
 
@@ -350,7 +377,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var updateResult = await _userManager.UpdateAsync(user);
                     if (!updateResult.Succeeded)
                     {
-                        _logger.LogWarning("Failed to update audit fields for user {Username} after password reset", user.UserName);
+                        _logger.LogWarning("Failed to update audit fields for user {Username} after password reset",
+                            user.UserName);
                     }
 
                     await LogAuditTrail(
@@ -363,7 +391,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                         .Replace("\r", string.Empty)
                         .Replace("\n", string.Empty);
 
-                    _logger.LogInformation("Password reset for user {Username} by {CurrentUser}", safeUsername, currentUser);
+                    _logger.LogInformation("Password reset for user {Username} by {CurrentUser}", safeUsername,
+                        currentUser);
                     return Json(new { success = true, message = "Password reset successfully" });
                 }
 
@@ -397,11 +426,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             var roles = _roleManager.Roles
                 // .Where(r => r.Name != "Admin") // Exclude Admin role
-                .Select(r => new SelectListItem
-                {
-                    Text = r.Name,
-                    Value = r.Name
-                })
+                .Select(r => new SelectListItem { Text = r.Name, Value = r.Name })
                 .ToList();
 
             return Json(roles);
@@ -415,25 +440,19 @@ namespace IBSWeb.Areas.Admin.Controllers
     public class UserUpsertModel
     {
         public string? Id { get; set; }
-        [Required]
-        public string Username { get; set; } = null!;
-        [Required]
-        public string Name { get; set; } = null!;
-        [Required]
-        public string Department { get; set; } = null!;
+        [Required] public string Username { get; set; } = null!;
+        [Required] public string Name { get; set; } = null!;
+        [Required] public string Department { get; set; } = null!;
         public string? StationAccess { get; set; }
-        [Required]
-        public string Role { get; set; } = null!;
+        [Required] public string Role { get; set; } = null!;
         public string? Password { get; set; }
         public bool IsActive { get; set; }
     }
 
     public class PasswordResetModel
     {
-        [Required]
-        public string UserId { get; set; } = null!;
-        [Required]
-        public string NewPassword { get; set; } = null!;
+        [Required] public string UserId { get; set; } = null!;
+        [Required] public string NewPassword { get; set; } = null!;
     }
 
     #endregion

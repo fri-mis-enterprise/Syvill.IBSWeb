@@ -27,12 +27,14 @@
                 <legend>Select Status<span class="required">*</span></legend>
 
                 <div class="form-check form-check-inline mb-3">
-                    <input class="form-check-input" type="radio" asp-for="Status" id="inlineRadio1" value="P" aria-labelledby="labelInlineRadio1">
+                    <input class="form-check-input" type="radio" asp-for="Status" id="inlineRadio1" value="P"
+                           aria-labelledby="labelInlineRadio1">
                     <label class="form-check-label" for="inlineRadio1" id="labelInlineRadio1">Provisionary</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" asp-for="Status" id="inlineRadio2" value="R" aria-labelledby="labelInlineRadio2" >
+                    <input class="form-check-input" type="radio" asp-for="Status" id="inlineRadio2" value="R"
+                           aria-labelledby="labelInlineRadio2">
                     <label class="form-check-label" for="inlineRadio2" id="labelInlineRadio2">Regular</label>
                 </div>
                 <br/>
@@ -40,8 +42,10 @@
             </fieldset>
 
             <div class="form-floating mb-3">
-                <input asp-for="EmployeeNumber" class="form-control " maxlength="4" placeholder="Enter the Employee Number"/>
-                <label asp-for="EmployeeNumber" class="form-label">Employee Number<span class="required">*</span></label>
+                <input asp-for="EmployeeNumber" class="form-control " maxlength="4"
+                       placeholder="Enter the Employee Number"/>
+                <label asp-for="EmployeeNumber" class="form-label">Employee Number<span
+                        class="required">*</span></label>
                 <span asp-validation-for="EmployeeNumber" class="text-danger"></span>
             </div>
 
@@ -76,7 +80,8 @@
             </div>
 
             <div class="form-floating mb-3">
-                <textarea asp-for="Address" class="form-control" placeholder="Enter address" style="height: 200px"></textarea>
+                <textarea asp-for="Address" class="form-control" placeholder="Enter address"
+                          style="height: 200px"></textarea>
                 <label asp-for="Address" class="control-label">Address<span class="required">*</span></label>
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
@@ -84,7 +89,7 @@
             <div class="form-floating py-2 col-12">
                 <input asp-for="BirthDate" type="date" class="form-control border-0 shadow"
                        placeholder=""
-                       value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")" />
+                       value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")"/>
                 <label asp-for="BirthDate">Birth Date</label>
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
@@ -102,13 +107,15 @@
             </div>
 
             <div class="form-floating mb-3">
-                <input asp-for="TinNo" class="form-control formattedTinNumberInput" maxlength="17" placeholder="Enter the TIN No."/>
+                <input asp-for="TinNo" class="form-control formattedTinNumberInput" maxlength="17"
+                       placeholder="Enter the TIN No."/>
                 <label asp-for="TinNo" class="form-label">TIN No.</label>
                 <span asp-validation-for="TinNo" class="text-danger"></span>
             </div>
 
             <div class="form-floating mb-3">
-                <input asp-for="PhilhealthNo" class="form-control " maxlength="15" placeholder="Enter the Philhealth No."/>
+                <input asp-for="PhilhealthNo" class="form-control " maxlength="15"
+                       placeholder="Enter the Philhealth No."/>
                 <label asp-for="PhilhealthNo" class="form-label">Philhealth No.</label>
                 <span asp-validation-for="PhilhealthNo" class="text-danger"></span>
             </div>
@@ -136,7 +143,8 @@
                     <option value="@SD.Department_RCD">@SD.Department_RCD</option>
                     <option value="@SD.Department_RetailAdmin">@SD.Department_RetailAdmin</option>
                     <option value="@SD.Department_RetailAudit">@SD.Department_RetailAudit</option>
-                    <option value="@SD.Department_SiteDevAndSiteAcquisition">@SD.Department_SiteDevAndSiteAcquisition</option>
+                    <option
+                        value="@SD.Department_SiteDevAndSiteAcquisition">@SD.Department_SiteDevAndSiteAcquisition</option>
                     <option value="@SD.Department_StationCashier">@SD.Department_StationCashier</option>
                     <option value="@SD.Department_TradeAndSupply">@SD.Department_TradeAndSupply</option>
                     <option value="@SD.Department_TrainingAndCompliance">@SD.Department_TrainingAndCompliance</option>
@@ -147,7 +155,7 @@
             <div class="form-floating py-2 col-12">
                 <input asp-for="DateHired" type="date" class="form-control border-0 shadow"
                        placeholder=""
-                       value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")" />
+                       value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")"/>
                 <label asp-for="DateHired">Date Hired</label>
                 <span asp-validation-for="DateHired" class="text-danger"></span>
             </div>
@@ -155,7 +163,7 @@
             <div class="form-floating py-2 col-12">
                 <input asp-for="DateResigned" type="date" class="form-control border-0 shadow"
                        placeholder=""
-                       value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")" />
+                       value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")"/>
                 <label asp-for="DateResigned">Date Resigned</label>
                 <span asp-validation-for="DateResigned" class="text-danger"></span>
             </div>
@@ -173,7 +181,7 @@
 
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsManagerial" /> Managerial
+                    <input class="form-check-input" asp-for="IsManagerial"/> Managerial
                 </label>
             </div>
 
@@ -191,7 +199,7 @@
 
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> Active
+                    <input class="form-check-input" asp-for="IsActive"/> Active
                 </label>
             </div>
 
@@ -200,7 +208,8 @@
                     <button type="submit" class="btn btn-primary form-control">Create</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Admin" asp-controller="Employee" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="Admin" asp-controller="Employee" asp-action="Index"
+                       class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>

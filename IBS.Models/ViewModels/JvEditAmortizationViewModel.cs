@@ -7,8 +7,7 @@ namespace IBS.Models.ViewModels
     {
         public int JvId { get; set; }
 
-        [Required]
-        public DateOnly TransactionDate { get; set; }
+        [Required] public DateOnly TransactionDate { get; set; }
 
         public DateTime MinDate { get; set; }
 
@@ -21,20 +20,16 @@ namespace IBS.Models.ViewModels
 
         public string? CrNo { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string Reason { get; set; } = string.Empty;
+        [Required] [StringLength(200)] public string Reason { get; set; } = string.Empty;
 
         public List<JvEditAmortizationDetailViewModel> Details { get; set; } = [];
 
         [Range(1, int.MaxValue, ErrorMessage = "Number of months must be greater than zero.")]
         public int NumberOfMonths { get; set; }
 
-        [Required]
-        public string SelectedExpenseAccount { get; set; } = string.Empty;
+        [Required] public string SelectedExpenseAccount { get; set; } = string.Empty;
 
-        [Required]
-        public string SelectedPrepaidAccount { get; set; } = string.Empty;
+        [Required] public string SelectedPrepaidAccount { get; set; } = string.Empty;
 
         public List<SelectListItem>? PrepaidExpenseAccounts { get; set; }
     }

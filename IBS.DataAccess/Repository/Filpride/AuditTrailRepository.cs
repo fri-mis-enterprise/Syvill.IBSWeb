@@ -4,11 +4,11 @@ using IBS.Models.Common;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class AuditTrailRepository : Repository<AuditTrail>, IAuditTrailRepository
+    public class AuditTrailRepository: Repository<AuditTrail>, IAuditTrailRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public AuditTrailRepository(ApplicationDbContext db) : base(db)
+        public AuditTrailRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }

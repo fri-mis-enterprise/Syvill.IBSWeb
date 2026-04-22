@@ -11,6 +11,7 @@
         border-right: none !important;
         border-bottom: none !important;
     }
+
     .table-bordered tbody tr:last-child,
     .table-bordered tbody tr:last-child td {
         border-bottom: none !important;
@@ -37,10 +38,11 @@
             <div class="row mb-2">
                 <div class="col-12 col-md-8">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="CollectionReceiptId" />
+                    <input type="hidden" asp-for="CollectionReceiptId"/>
                     <div class="form-group mb-3">
                         <label class="control-label">Customers</label>
-                        <select asp-for="CustomerId" asp-items="@Model.Customers" class="form-select js-select2" style="width:100%" required>
+                        <select asp-for="CustomerId" asp-items="@Model.Customers" class="form-select js-select2"
+                                style="width:100%" required>
                             <option></option>
                         </select>
                         <span asp-validation-for="CustomerId" class="text-danger"></span>
@@ -48,7 +50,8 @@
 
                     <div class="form-group mb-3">
                         <label class="control-label">SV NO.</label>
-                        <select asp-for="ServiceInvoiceId" id="serviceInvoice" asp-items="@Model.ServiceInvoices" class="form-select js-select2" style="width:100%">
+                        <select asp-for="ServiceInvoiceId" id="serviceInvoice" asp-items="@Model.ServiceInvoices"
+                                class="form-select js-select2" style="width:100%">
                             <option></option>
                         </select>
                         <span asp-validation-for="ServiceInvoiceId" class="text-danger"></span>
@@ -63,17 +66,20 @@
                         <span asp-validation-for="TransactionDate" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="ReferenceNo" id="floatingInput" type="text" class="form-control" placeholder="Reference #" required />
+                        <input asp-for="ReferenceNo" id="floatingInput" type="text" class="form-control"
+                               placeholder="Reference #" required/>
                         <label for="floatingInput" class="control-label">Reference #</label>
                         <span asp-validation-for="ReferenceNo" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="Remarks" id="floatingInput" type="text" class="form-control" placeholder="Optional" />
+                        <input asp-for="Remarks" id="floatingInput" type="text" class="form-control"
+                               placeholder="Optional"/>
                         <label for="floatingInput" class="control-label">Remarks</label>
                         <span asp-validation-for="Remarks" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="BatchNumber" id="floatingInput" type="text" class="form-control" placeholder="Optional" />
+                        <input asp-for="BatchNumber" id="floatingInput" type="text" class="form-control"
+                               placeholder="Optional"/>
                         <label for="floatingInput" class="control-label">Batch#</label>
                         <span asp-validation-for="BatchNumber" class="text-danger"></span>
                     </div>
@@ -112,53 +118,55 @@ Balance:        <span id="balance"></span>
 
                     <tr>
                         <td style="padding-left:20px;">Cash</td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input asp-for="CashAmount" style="border:none" class="form-control moneyInput" /></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input asp-for="CashAmount" style="border:none" class="form-control moneyInput"/></td>
                     </tr>
 
                     <tr>
                         <td style="padding-left:20px;">Check</td>
-                        <td><input asp-for="CheckDate" type="date" style="border:none" class="form-control" /></td>
-                        <td><input asp-for="CheckNo" style="border:none" class="form-control" /></td>
-                        <td><input asp-for="CheckBank" style="border:none" class="form-control" /></td>
-                        <td><input asp-for="CheckBranch" style="border:none" class="form-control" /></td>
-                        <td><input asp-for="CheckAmount" style="border:none" class="form-control moneyInput" /></td>
+                        <td><input asp-for="CheckDate" type="date" style="border:none" class="form-control"/></td>
+                        <td><input asp-for="CheckNo" style="border:none" class="form-control"/></td>
+                        <td><input asp-for="CheckBank" style="border:none" class="form-control"/></td>
+                        <td><input asp-for="CheckBranch" style="border:none" class="form-control"/></td>
+                        <td><input asp-for="CheckAmount" style="border:none" class="form-control moneyInput"/></td>
                     </tr>
 
                     <tr>
                         <td style="padding-left:20px;">Manager's Check</td>
-                        <td><input asp-for="ManagersCheckDate" type="date" style="border:none" class="form-control"/></td>
+                        <td><input asp-for="ManagersCheckDate" type="date" style="border:none" class="form-control"/>
+                        </td>
                         <td><input asp-for="ManagersCheckNo" style="border:none" class="form-control"/></td>
                         <td><input asp-for="ManagersCheckBank" style="border:none" class="form-control"/></td>
                         <td><input asp-for="ManagersCheckBranch" style="border:none" class="form-control"/></td>
-                        <td><input asp-for="ManagersCheckAmount" style="border:none" class="form-control moneyInput"/></td>
+                        <td><input asp-for="ManagersCheckAmount" style="border:none" class="form-control moneyInput"/>
+                        </td>
                     </tr>
 
                     <tr>
                         <td style="padding-left:20px;">EWT</td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input asp-for="EWT" style="border:none" class="form-control moneyInput" /></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input asp-for="EWT" style="border:none" class="form-control moneyInput"/></td>
                     </tr>
                     <tr>
                         <td style="padding-left:20px;">WVAT</td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input style="border:none" class="form-control" disabled /></td>
-                        <td><input asp-for="WVAT" style="border:none" class="form-control moneyInput" /></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input style="border:none" class="form-control" disabled/></td>
+                        <td><input asp-for="WVAT" style="border:none" class="form-control moneyInput"/></td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td style="padding-left:20px; padding-top: 5px; padding-bottom: 5px;">TOTAL: </td>
+                        <td style="padding-left:20px; padding-top: 5px; padding-bottom: 5px;">TOTAL:</td>
                         <td id="checkTotal" style="padding-left:15px; padding-top: 5px; padding-bottom: 5px;"></td>
                     </tr>
                     </tbody>
@@ -168,11 +176,13 @@ Balance:        <span id="balance"></span>
             <div class="form-group my-3">
                 <label class="form-label fst-italic">If applicable, upload the certificate.</label>
                 <div class="mb-3">
-                    <label asp-for="Bir2306" class="form-label">BIR 2306 Form @(!Model.HasAlready2306 ? "" : "(Replace existing file)")</label>
+                    <label asp-for="Bir2306" class="form-label">BIR 2306
+                        Form @(!Model.HasAlready2306 ? "" : "(Replace existing file)")</label>
                     <input class="form-control form-control-sm w-25" asp-for="Bir2306" type="file">
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Bir2307" class="form-label">BIR 2307 Form @(!Model.HasAlready2307 ? "" : "(Replace existing file)")</label>
+                    <label asp-for="Bir2307" class="form-label">BIR 2307
+                        Form @(!Model.HasAlready2307 ? "" : "(Replace existing file)")</label>
                     <input class="form-control form-control-sm w-25" asp-for="Bir2307" type="file">
                 </div>
             </div>
@@ -212,13 +222,14 @@ Balance:        <span id="balance"></span>
             @*     </table> *@
             @* </div> *@
 
-            <br />
+            <br/>
             <div class="row pt-2">
                 <div class="col-6 col-md-3">
                     <button id="submitButton" type="submit" class="btn btn-primary form-control">Update</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="User" asp-controller="CollectionReceipt" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="User" asp-controller="CollectionReceipt" asp-action="Index"
+                       class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>
@@ -238,14 +249,15 @@ Balance:        <span id="balance"></span>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
                         <label class="control-label">Account Title</label>
-                        <select id="AccountTitle" asp-items="@Model.ChartOfAccounts" class="form-select" style="width: 100%">
+                        <select id="AccountTitle" asp-items="@Model.ChartOfAccounts" class="form-select"
+                                style="width: 100%">
                             <option></option>
                         </select>
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group pt-4">
                         <label class="control-label">Amount</label>
-                        <input id="AccountAmount" class="form-control moneyInput" value="" placeholder="0.000" />
+                        <input id="AccountAmount" class="form-control moneyInput" value="" placeholder="0.000"/>
                         <span class="text-danger"></span>
                     </div>
                 </form>
@@ -272,7 +284,7 @@ Balance:        <span id="balance"></span>
                 $.ajax({
                     url: '@Url.Action("GetServiceInvoices", "CollectionReceipt", new { area = "User" })',
                     type: "GET",
-                    data: { customerNo: customerNo, crId: collectionReceiptId },
+                    data: {customerNo: customerNo, crId: collectionReceiptId},
                     success: function (data) {
 
                         $("#serviceInvoice").empty();
@@ -425,7 +437,7 @@ Balance:        <span id="balance"></span>
             updateTotal();
         });
 
-        function checkIfExceed (event){
+        function checkIfExceed(event) {
             let balanceValue = parseFloat($("#balance").text().replace(/,/g, "")) || 0;
             let checkTotal = parseFloat($("#checkTotal").text().replace(/,/g, "")) || 0;
             event.preventDefault();
@@ -436,14 +448,13 @@ Balance:        <span id="balance"></span>
                 return;
             }
 
-            if (checkTotal > balanceValue){
+            if (checkTotal > balanceValue) {
                 Swal.fire({
                     title: "Error",
                     text: "Total payment amount cannot exceed the balance",
                     icon: "error"
                 });
-            }
-            else{
+            } else {
                 form.submit();
             }
         }

@@ -20,7 +20,7 @@
 
                 <div class="mb-3 col-md-4">
                     <label class="control-label">Select Month</label>
-                    <input id="monthInput" type="month" name="monthDate" class="form-control" value="@currentMonth" />
+                    <input id="monthInput" type="month" name="monthDate" class="form-control" value="@currentMonth"/>
                 </div>
 
                 <div class="mb-3 col-md-4">
@@ -38,7 +38,7 @@
                 Reopening <span id="selectedMonth"></span> will mark this period and all succeeding periods as
                 <b>INVALID</b>.
 
-                <br /><br />
+                <br/><br/>
 
                 You will need to <b>close each month again sequentially</b> to rebuild the balances.
 
@@ -74,13 +74,13 @@
 
         let confirmed = false;
 
-        function formatMonth(value){
-            if(!value) return "";
+        function formatMonth(value) {
+            if (!value) return "";
             const date = new Date(value + "-01");
-            return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            return date.toLocaleString('en-US', {month: 'long', year: 'numeric'});
         }
 
-        function updateWarning(){
+        function updateWarning() {
             selectedMonth.textContent = formatMonth(monthInput.value);
         }
 
@@ -101,11 +101,11 @@
 
         form.action = '@Url.Action("TriggerMonthlyClosure", "MonthlyPeriod")';
 
-        form.addEventListener("submit", function(e){
+        form.addEventListener("submit", function (e) {
 
             if (confirmed) return;
 
-            if(actionType.value === "open"){
+            if (actionType.value === "open") {
 
                 e.preventDefault();
 

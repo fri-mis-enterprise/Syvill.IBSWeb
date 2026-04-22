@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.IRepository
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork: IDisposable
     {
         IProductRepository Product { get; }
 
@@ -21,7 +21,8 @@ namespace IBS.DataAccess.Repository.IRepository
 
         Task<List<SelectListItem>> GetChartOfAccountListAsyncById(CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetChartOfAccountListAsyncByAccountTitle(CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetChartOfAccountListAsyncByAccountTitle(
+            CancellationToken cancellationToken = default);
 
         Task<List<SelectListItem>> GetCompanyListAsyncByName(CancellationToken cancellationToken = default);
 
@@ -64,6 +65,7 @@ namespace IBS.DataAccess.Repository.IRepository
         IDebitMemoRepository DebitMemo { get; }
 
         ICreditMemoRepository CreditMemo { get; }
+
         #endregion
 
         #region Accounts Payable
@@ -77,6 +79,7 @@ namespace IBS.DataAccess.Repository.IRepository
         #region Books and Report
 
         IReportRepository Report { get; }
+
         #endregion
 
         #region Master File
@@ -93,7 +96,8 @@ namespace IBS.DataAccess.Repository.IRepository
 
         Task<bool> IsPeriodPostedAsync(DateOnly date, CancellationToken cancellationToken = default);
 
-        Task<DateTime> GetMinimumPeriodBasedOnThePostedPeriods(Module module, CancellationToken cancellationToken = default);
+        Task<DateTime> GetMinimumPeriodBasedOnThePostedPeriods(Module module,
+            CancellationToken cancellationToken = default);
 
         Task<bool> IsPeriodPostedAsync(Module module, DateOnly date, CancellationToken cancellationToken = default);
     }

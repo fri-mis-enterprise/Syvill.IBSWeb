@@ -10,7 +10,7 @@ using Quartz;
 namespace IBS.Services
 {
     [DisallowConcurrentExecution]
-    public class StartOfTheMonthService : IJob
+    public class StartOfTheMonthService: IJob
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -52,13 +52,13 @@ namespace IBS.Services
             try
             {
                 var amortizationSetting = await _dbContext.JvAmortizationSettings
-                .Include(x => x.JvHeader)
+                    .Include(x => x.JvHeader)
                     .ThenInclude(x => x.Details)
-                .Where(x =>
-                (x.NextRunDate == null || x.NextRunDate <= dateToday) &&
-                x.IsActive &&
-                x.JvHeader.PostedBy != null)
-                .ToListAsync();
+                    .Where(x =>
+                        (x.NextRunDate == null || x.NextRunDate <= dateToday) &&
+                        x.IsActive &&
+                        x.JvHeader.PostedBy != null)
+                    .ToListAsync();
 
                 if (amortizationSetting.Count == 0)
                 {
@@ -121,6 +121,7 @@ namespace IBS.Services
                         {
                             amortization.OccurrenceRemaining--;
                         }
+
                         amortization.IsActive = amortization.OccurrenceRemaining > 0;
                         amortization.NextRunDate = amortization.IsActive ? dateToday.AddMonths(1) : null;
                     }

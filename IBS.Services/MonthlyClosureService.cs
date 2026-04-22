@@ -15,7 +15,7 @@ namespace IBS.Services
         Task OpenAsync(DateOnly monthDate, string user, CancellationToken cancellationToken = default);
     }
 
-    public class MonthlyClosureService : IMonthlyClosureService
+    public class MonthlyClosureService: IMonthlyClosureService
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -154,8 +154,8 @@ namespace IBS.Services
             {
                 var hasAlreadyNibit = await _dbContext.MonthlyNibits
                     .AnyAsync(x =>
-                        x.Month == periodMonth.Month &&
-                        x.Year == periodMonth.Year,
+                            x.Month == periodMonth.Month &&
+                            x.Year == periodMonth.Year,
                         cancellationToken);
 
                 if (hasAlreadyNibit)
@@ -194,6 +194,7 @@ namespace IBS.Services
                         {
                             currentAccount = currentAccount.ParentAccount;
                         }
+
                         // Return the top-level parent account (mother account)
                         return new { currentAccount.AccountNumber, currentAccount.AccountName };
                     });
@@ -236,7 +237,8 @@ namespace IBS.Services
                     nibitForThePeriod.BeginningBalance = beginning.EndingBalance;
                 }
 
-                nibitForThePeriod.EndingBalance = nibitForThePeriod.BeginningBalance + nibitForThePeriod.NetIncome + nibitForThePeriod.PriorPeriodAdjustment;
+                nibitForThePeriod.EndingBalance = nibitForThePeriod.BeginningBalance + nibitForThePeriod.NetIncome +
+                                                  nibitForThePeriod.PriorPeriodAdjustment;
 
                 await _dbContext.MonthlyNibits.AddAsync(nibitForThePeriod, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
@@ -285,13 +287,7 @@ namespace IBS.Services
 
                 var glGroupedBySubAccount = glEntries
                     .Where(x => x.SubAccountId.HasValue && x.SubAccountType.HasValue)
-                    .GroupBy(x => new
-                    {
-                        x.AccountId,
-                        x.SubAccountId,
-                        x.SubAccountType,
-                        x.SubAccountName
-                    })
+                    .GroupBy(x => new { x.AccountId, x.SubAccountId, x.SubAccountType, x.SubAccountName })
                     .Select(g => new
                     {
                         g.Key.AccountId,
@@ -315,8 +311,8 @@ namespace IBS.Services
                     {
                         AccountId = g.Key,
                         EndingBalance = g.OrderByDescending(x => x.PeriodEndDate)
-                                         .Select(x => x.EndingBalance)
-                                         .FirstOrDefault()
+                            .Select(x => x.EndingBalance)
+                            .FirstOrDefault()
                     })
                     .ToDictionaryAsync(x => x.AccountId, x => x.EndingBalance, cancellationToken);
 
@@ -368,8 +364,8 @@ namespace IBS.Services
                         {
                             Key = g.Key,
                             EndingBalance = g.OrderByDescending(x => x.PeriodEndDate)
-                                             .Select(x => x.EndingBalance)
-                                             .FirstOrDefault()
+                                .Select(x => x.EndingBalance)
+                                .FirstOrDefault()
                         })
                         .ToDictionary(x => x.Key, x => x.EndingBalance);
 
@@ -423,7 +419,8 @@ namespace IBS.Services
 
                 _logger.LogInformation(
                     "Recorded GL balances for period {PeriodMonth} : {AccountCount} accounts ({ActiveCount} with transactions), {SubAccountCount} sub-accounts.",
-                    periodMonth.ToString("yyyy-MM-dd"), glBalances.Count, glGroupedByAccount.Count, subAccountBalances.Count);
+                    periodMonth.ToString("yyyy-MM-dd"), glBalances.Count, glGroupedByAccount.Count,
+                    subAccountBalances.Count);
             }
             catch (Exception ex)
             {
@@ -441,12 +438,12 @@ namespace IBS.Services
             try
             {
                 await _dbContext.MonthlyNibits
-                     .Where(n =>
+                    .Where(n =>
                         n.IsValid &&
-                         (n.Year > monthDate.Year ||
+                        (n.Year > monthDate.Year ||
                          (n.Year == monthDate.Year && n.Month >= monthDate.Month)))
-                     .ExecuteUpdateAsync(e =>
-                         e.SetProperty(d => d.IsValid, false), cancellationToken);
+                    .ExecuteUpdateAsync(e =>
+                        e.SetProperty(d => d.IsValid, false), cancellationToken);
 
                 await _dbContext.GlSubAccountBalances
                     .Where(s =>
@@ -469,7 +466,8 @@ namespace IBS.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "An error occurred while opening the period {Period}", monthDate.ToString("MMM yyy"));
+                _logger.LogError(ex, "An error occurred while opening the period {Period}",
+                    monthDate.ToString("MMM yyy"));
                 throw;
             }
         }

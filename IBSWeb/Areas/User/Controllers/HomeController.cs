@@ -12,13 +12,14 @@ using IBS.Models.ViewModels;
 namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
-    public class HomeController : Controller
+    public class HomeController: Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager,
+            ApplicationDbContext dbContext)
         {
             _logger = logger;
             _userManager = userManager;
@@ -52,20 +53,18 @@ namespace IBSWeb.Areas.User.Controllers
                 #region -- Accounting - For Approval
 
                 JournalVoucherForApprovalCount = await _dbContext.JournalVoucherHeaders
-                        .Where(jv => jv.Status == nameof(JvStatus.ForApproval))
-                        .CountAsync(),
-
+                    .Where(jv => jv.Status == nameof(JvStatus.ForApproval))
+                    .CountAsync(),
                 CheckVoucherNonTradeInvoiceForApprovalCount = await _dbContext.CheckVoucherHeaders
-                        .Where(cv => cv.Status == nameof(CheckVoucherInvoiceStatus.ForApproval)
-                                     && cv.CvType == nameof(CVType.Invoicing)
-                                     && !cv.IsPayroll)
-                        .CountAsync(),
-
+                    .Where(cv => cv.Status == nameof(CheckVoucherInvoiceStatus.ForApproval)
+                                 && cv.CvType == nameof(CVType.Invoicing)
+                                 && !cv.IsPayroll)
+                    .CountAsync(),
                 CheckVoucherNonTradePayrollInvoiceForApprovalCount = await _dbContext.CheckVoucherHeaders
-                        .Where(cv => cv.Status == nameof(CheckVoucherInvoiceStatus.ForApproval)
-                                     && cv.CvType == nameof(CVType.Invoicing)
-                                     && cv.IsPayroll)
-                        .CountAsync(),
+                    .Where(cv => cv.Status == nameof(CheckVoucherInvoiceStatus.ForApproval)
+                                 && cv.CvType == nameof(CVType.Invoicing)
+                                 && cv.IsPayroll)
+                    .CountAsync(),
 
                 #endregion -- Accounting - For Approval
             };

@@ -3,7 +3,7 @@ using IBS.Models.AccountsPayable;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface IJournalVoucherRepository : IRepository<JournalVoucherHeader>
+    public interface IJournalVoucherRepository: IRepository<JournalVoucherHeader>
     {
         Task<string> GenerateCodeAsync(string? type, CancellationToken cancellationToken = default);
 

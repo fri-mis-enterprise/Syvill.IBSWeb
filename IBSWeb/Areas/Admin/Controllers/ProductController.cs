@@ -15,7 +15,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class ProductController : Controller
+    public class ProductController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -25,7 +25,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private readonly ApplicationDbContext _dbContext;
 
-        public ProductController(IUnitOfWork unitOfWork, ILogger<ProductController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public ProductController(IUnitOfWork unitOfWork, ILogger<ProductController> logger,
+            UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -79,9 +80,9 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region -- Audit Trail Recording --
 
-                AuditTrail auditTrailBook = new (
+                AuditTrail auditTrailBook = new(
                     GetUserFullName(), $"Created Product {model.ProductCode}",
-                    "Product" );
+                    "Product");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
@@ -92,7 +93,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create product master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to create product master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["Error"] = ex.Message;
                 return View(model);
@@ -100,7 +102,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetProductList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetProductList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -113,10 +116,10 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var searchValue = parameters.Search.Value.ToLower();
 
                     queried = queried
-                    .Where(p =>
-                        p.ProductCode.ToLower().Contains(searchValue) == true ||
-                        p.ProductName.ToLower().Contains(searchValue) == true ||
-                        p.ProductUnit.ToLower().Contains(searchValue) == true
+                        .Where(p =>
+                            p.ProductCode.ToLower().Contains(searchValue) == true ||
+                            p.ProductName.ToLower().Contains(searchValue) == true ||
+                            p.ProductUnit.ToLower().Contains(searchValue) == true
                         ).ToList();
                 }
 
@@ -195,9 +198,9 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region -- Audit Trail Recording --
 
-                AuditTrail auditTrailBook = new (
+                AuditTrail auditTrailBook = new(
                     GetUserFullName(), $"Edited Product {existing.ProductCode} => {model.ProductCode}",
-                    "Product" );
+                    "Product");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion -- Audit Trail Recording --
@@ -260,7 +263,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (
+                AuditTrail auditTrailBook = new(
                     GetUserFullName(), $"Activated Product #{product.ProductCode}",
                     "Product");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -273,7 +276,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to activate product master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to activate product master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Activate), new { id = id });
@@ -325,7 +329,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (
+                AuditTrail auditTrailBook = new(
                     GetUserFullName(), $"Deactivated Product #{product.ProductCode}",
                     "Product");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -338,7 +342,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to deactivate product master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to deactivate product master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Deactivate), new { id = id });
@@ -349,8 +354,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         public IActionResult GetAllProductIds()
         {
             var productIds = _dbContext.Products
-                                     .Select(p => p.ProductId) // Assuming Id is the primary key
-                                     .ToList();
+                .Select(p => p.ProductId) // Assuming Id is the primary key
+                .ToList();
 
             return Json(productIds);
         }
@@ -361,8 +366,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 var products = (await _unitOfWork
-                    .Product
-                    .GetAllAsync(cancellationToken:  cancellationToken))
+                        .Product
+                        .GetAllAsync(cancellationToken: cancellationToken))
                     .Select(x => new
                     {
                         x.ProductId,
@@ -373,10 +378,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         x.CreatedDate
                     });
 
-                return Json(new
-                {
-                    data = products
-                });
+                return Json(new { data = products });
             }
             catch (Exception ex)
             {

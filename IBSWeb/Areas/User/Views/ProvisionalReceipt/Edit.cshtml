@@ -11,6 +11,7 @@
         border-right: none !important;
         border-bottom: none !important;
     }
+
     .table-bordered tbody tr:last-child,
     .table-bordered tbody tr:last-child td {
         border-bottom: none !important;
@@ -33,14 +34,15 @@
     <div class="card-body p-4">
         <form method="post">
             @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Id"/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="row">
                 <div class="col">
                     <div class="form-group mb-3">
                         <label asp-for="EmployeeId" class="control-label"></label><span class="required">*</span>
-                        <select asp-for="EmployeeId" asp-items="@Model.Employees" class="form-select js-select2" style="width:100%">
+                        <select asp-for="EmployeeId" asp-items="@Model.Employees" class="form-select js-select2"
+                                style="width:100%">
                             <option value=""></option>
                         </select>
                         <span asp-validation-for="EmployeeId" class="text-danger"></span>
@@ -49,24 +51,24 @@
                     <div class="form-group mb-3">
                         <label asp-for="TransactionDate" class="control-label"></label><span class="required">*</span>
                         <input asp-for="TransactionDate" type="date" class="form-control"
-                               min="@Model.MinDate.ToString("yyyy-MM-dd")" />
+                               min="@Model.MinDate.ToString("yyyy-MM-dd")"/>
                         <span asp-validation-for="TransactionDate" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input asp-for="ReferenceNo" class="form-control" placeholder="Reference #" />
+                        <input asp-for="ReferenceNo" class="form-control" placeholder="Reference #"/>
                         <label asp-for="ReferenceNo"></label>
                         <span asp-validation-for="ReferenceNo" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input asp-for="Remarks" class="form-control" placeholder="Remarks" />
+                        <input asp-for="Remarks" class="form-control" placeholder="Remarks"/>
                         <label asp-for="Remarks"></label>
                         <span asp-validation-for="Remarks" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input asp-for="BatchNumber" class="form-control" placeholder="Batch#" />
+                        <input asp-for="BatchNumber" class="form-control" placeholder="Batch#"/>
                         <label asp-for="BatchNumber"></label>
                         <span asp-validation-for="BatchNumber" class="text-danger"></span>
                     </div>
@@ -88,50 +90,50 @@
                 </tr>
                 <tr>
                     <td style="padding-left:20px;">Cash</td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" asp-for="CashAmount" class="form-control moneyInput" /></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" asp-for="CashAmount" class="form-control moneyInput"/></td>
                 </tr>
                 <tr>
                     <td style="padding-left:20px;">Check</td>
-                    <td><input style="border: none" asp-for="CheckDate" type="date" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="CheckNo" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="CheckBank" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="CheckBranch" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="CheckAmount" class="form-control moneyInput" /></td>
+                    <td><input style="border: none" asp-for="CheckDate" type="date" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="CheckNo" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="CheckBank" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="CheckBranch" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="CheckAmount" class="form-control moneyInput"/></td>
                 </tr>
                 <tr>
                     <td style="padding-left:20px;">Manager's Check</td>
-                    <td><input style="border: none" asp-for="ManagersCheckDate" type="date" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="ManagersCheckNo" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="ManagersCheckBank" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="ManagersCheckBranch" class="form-control" /></td>
-                    <td><input style="border: none" asp-for="ManagersCheckAmount" class="form-control moneyInput" /></td>
+                    <td><input style="border: none" asp-for="ManagersCheckDate" type="date" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="ManagersCheckNo" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="ManagersCheckBank" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="ManagersCheckBranch" class="form-control"/></td>
+                    <td><input style="border: none" asp-for="ManagersCheckAmount" class="form-control moneyInput"/></td>
                 </tr>
                 <tr>
                     <td style="padding-left:20px;">EWT</td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" asp-for="EWT" class="form-control moneyInput" /></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" asp-for="EWT" class="form-control moneyInput"/></td>
                 </tr>
                 <tr>
                     <td style="padding-left:20px;">WVAT</td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" class="form-control" disabled /></td>
-                    <td><input style="border: none" asp-for="WVAT" class="form-control moneyInput" /></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" class="form-control" disabled/></td>
+                    <td><input style="border: none" asp-for="WVAT" class="form-control moneyInput"/></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td style="padding-left:20px; padding-top: 5px; padding-bottom: 5px;">TOTAL: </td>
+                    <td style="padding-left:20px; padding-top: 5px; padding-bottom: 5px;">TOTAL:</td>
                     <td id="checkTotal" style="padding-left:15px; padding-top: 5px; padding-bottom: 5px;"></td>
                 </tr>
                 </tbody>
@@ -142,7 +144,8 @@
                     <button type="submit" class="btn btn-primary form-control">Save</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
+                    <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index"
+                       class="btn btn-outline-primary border form-control">Back to List</a>
                 </div>
             </div>
         </form>

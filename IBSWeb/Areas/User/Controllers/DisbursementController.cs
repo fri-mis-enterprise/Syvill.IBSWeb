@@ -15,7 +15,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
     [DepartmentAuthorize(SD.Department_Finance, SD.Department_RCD)]
-    public class DisbursementController : Controller
+    public class DisbursementController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -61,15 +61,16 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetDisbursements([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetDisbursements([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
                 var companyClaims = await GetCompanyClaimAsync();
 
                 var disbursements = _unitOfWork.CheckVoucher
-                    .GetAllQuery(x=> x.CvType != nameof(CVType.Invoicing) &&
-                                     x.PostedBy != null) ;
+                    .GetAllQuery(x => x.CvType != nameof(CVType.Invoicing) &&
+                                      x.PostedBy != null);
 
                 var totalRecords = await disbursements.CountAsync(cancellationToken);
 
@@ -82,16 +83,16 @@ namespace IBSWeb.Areas.User.Controllers
                     var hasDcrDate = DateOnly.TryParse(searchValue, out var dcrDate);
 
                     disbursements = disbursements
-                    .Where(s =>
-                        s.CheckVoucherHeaderNo!.ToLower().Contains(searchValue) == true ||
-                        s.Payee!.ToLower().Contains(searchValue) == true ||
-                        s.Total.ToString().Contains(searchValue) ||
-                        s.CheckVoucherHeaderId.ToString().Contains(searchValue) ||
-                        s.Reference!.ToLower().Contains(searchValue) == true ||
-                        s.CheckNo!.ToLower().Contains(searchValue) == true ||
-                        (hasDate && s.Date == date) ||
-                        (hasDcpDate && s.DcpDate == dcpDate) == true ||
-                        (hasDcrDate && s.DcrDate == dcrDate) == true
+                        .Where(s =>
+                            s.CheckVoucherHeaderNo!.ToLower().Contains(searchValue) == true ||
+                            s.Payee!.ToLower().Contains(searchValue) == true ||
+                            s.Total.ToString().Contains(searchValue) ||
+                            s.CheckVoucherHeaderId.ToString().Contains(searchValue) ||
+                            s.Reference!.ToLower().Contains(searchValue) == true ||
+                            s.CheckNo!.ToLower().Contains(searchValue) == true ||
+                            (hasDate && s.Date == date) ||
+                            (hasDcpDate && s.DcpDate == dcpDate) == true ||
+                            (hasDcrDate && s.DcrDate == dcrDate) == true
                         );
                 }
 
@@ -126,7 +127,7 @@ namespace IBSWeb.Areas.User.Controllers
                     var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
 
                     disbursements = disbursements
-                        .OrderBy($"{columnName} {sortDirection}") ;
+                        .OrderBy($"{columnName} {sortDirection}");
                 }
 
                 var totalFilteredRecords = await disbursements.CountAsync(cancellationToken);
@@ -181,7 +182,8 @@ namespace IBSWeb.Areas.User.Controllers
             cv.DcpDate = dcpDate;
             cv.DcrDate = null;
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCP date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCP date of CV# {cv.CheckVoucherHeaderNo}",
+                "Disbursement");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             await _unitOfWork.SaveAsync(cancellationToken);
@@ -227,7 +229,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             cv.DcrDate = dcrDate;
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCR date of CV# {cv.CheckVoucherHeaderNo}", "Disbursement");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Update DCR date of CV# {cv.CheckVoucherHeaderNo}",
+                "Disbursement");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             await _unitOfWork.SaveAsync(cancellationToken);

@@ -59,8 +59,8 @@
                         data: {
                             id: id,
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -68,14 +68,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -106,8 +106,8 @@
                             id: id,
                             cancellationRemarks: $("#cancellationRemarks").val()
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -115,14 +115,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -131,14 +131,14 @@
         }
     </script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             let filterValue = localStorage.getItem('filterDate') || "";
             $('#inputDate').val(filterValue);
 
             let table = $('#paginatedTable').DataTable({
                 "processing": true, // Enable processing indicator
                 "serverSide": true, // Enable server-side processing
-                "stateSave" : true,
+                "stateSave": true,
                 "stateDuration": 86400,
                 "language": {
                     "processing": `<div class="d-flex justify-content-center">
@@ -163,17 +163,17 @@
                         alert('An error occurred while loading the data');
                     }
                 },
-                "preDrawCallback": function(settings) {
+                "preDrawCallback": function (settings) {
                     $('#paginatedTable').addClass('table-loading');
                 },
-                "drawCallback": function(settings) {
+                "drawCallback": function (settings) {
                     $('#paginatedTable').removeClass('table-loading');
 
                     // Initialize all tooltips
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 },
                 "columns": [
-                    { "data": "creditMemoNo" },
+                    {"data": "creditMemoNo"},
                     {
                         "data": "transactionDate",
                         "name": "transactionDate",
@@ -192,13 +192,12 @@
                         "render": function (data, type, row) {
                             if (row.salesInvoiceId) {
                                 return row.salesInvoice.salesInvoiceNo
-                            }
-                            else {
+                            } else {
                                 return row.serviceInvoice.serviceInvoiceNo
                             }
                         }
                     },
-                    { "data": "source" },
+                    {"data": "source"},
                     {
                         "data": "creditAmount",
                         "render": function (data, type, row) {
@@ -206,13 +205,13 @@
                             return `<span class="d-block fw-medium">${amount}</span>`;
                         }
                     },
-                    { "data": "createdBy" },
+                    {"data": "createdBy"},
                     {
                         "data": "status",
-                        "render": function(data, type, row) {
+                        "render": function (data, type, row) {
                             var statusClass = row.status == "@nameof(Status.Posted)" ? "bg-info" :
-                                              row.status == "@nameof(Status.Voided)"  ? "bg-danger" :
-                                              row.status == "@nameof(Status.Canceled)" ? "bg-warning" : "";
+                                row.status == "@nameof(Status.Voided)" ? "bg-danger" :
+                                    row.status == "@nameof(Status.Canceled)" ? "bg-warning" : "";
 
                             return `<span class="badge rounded-pill ${statusClass}">${row.status}</span>`;
                         }
@@ -251,7 +250,7 @@
                 "pageLength": 10 // Default number of rows per page
             });
 
-            $('#inputDate').on('change', function() {
+            $('#inputDate').on('change', function () {
                 filterValue = $(this).val();
                 localStorage.setItem('filterDate', filterValue); // persist the date
                 table.ajax.reload();

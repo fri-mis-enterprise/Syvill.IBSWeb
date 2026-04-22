@@ -10,16 +10,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ReportRepository : Repository<GeneralLedgerBook>, IReportRepository
+    public class ReportRepository: Repository<GeneralLedgerBook>, IReportRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public ReportRepository(ApplicationDbContext db) : base(db)
+        public ReportRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
 
-        public async Task<List<GeneralLedgerBook>> GetGeneralLedgerBooks(DateOnly dateFrom, DateOnly dateTo, CancellationToken cancellationToken = default)
+        public async Task<List<GeneralLedgerBook>> GetGeneralLedgerBooks(DateOnly dateFrom, DateOnly dateTo,
+            CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -38,7 +39,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return generalLedgerBooks;
         }
 
-        public async Task<List<ServiceInvoice>> GetServiceInvoiceReport(DateOnly dateFrom, DateOnly dateTo, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
+        public async Task<List<ServiceInvoice>> GetServiceInvoiceReport(DateOnly dateFrom, DateOnly dateTo,
+            string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -47,8 +49,8 @@ namespace IBS.DataAccess.Repository.Filpride
 
             var query = _db.ServiceInvoices
                 .Where(dr =>
-                             dr.Period >= dateFrom &&
-                             dr.Period <= dateTo);
+                    dr.Period >= dateFrom &&
+                    dr.Period <= dateTo);
 
             // Apply status filter
             if (statusFilter == "ValidOnly")
@@ -70,7 +72,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return serviceInvoices;
         }
 
-        public async Task<List<CheckVoucherHeader>> GetClearedDisbursementReport(DateOnly dateFrom, DateOnly dateTo, CancellationToken cancellationToken = default)
+        public async Task<List<CheckVoucherHeader>> GetClearedDisbursementReport(DateOnly dateFrom, DateOnly dateTo,
+            CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -93,7 +96,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return checkVoucherHeader;
         }
 
-        public async Task<List<CollectionReceipt>> GetCollectionReceiptReport(DateOnly dateFrom, DateOnly dateTo, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
+        public async Task<List<CollectionReceipt>> GetCollectionReceiptReport(DateOnly dateFrom, DateOnly dateTo,
+            string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {
@@ -127,7 +131,9 @@ namespace IBS.DataAccess.Repository.Filpride
             return collectionReceipts;
         }
 
-        public async Task<List<ServiceInvoice>> GetARPerCustomerReport(DateOnly dateFrom, DateOnly dateTo, List<int>? customerIds = null, string statusFilter = "ValidOnly", CancellationToken cancellationToken = default)
+        public async Task<List<ServiceInvoice>> GetARPerCustomerReport(DateOnly dateFrom, DateOnly dateTo,
+            List<int>? customerIds = null, string statusFilter = "ValidOnly",
+            CancellationToken cancellationToken = default)
         {
             if (dateFrom > dateTo)
             {

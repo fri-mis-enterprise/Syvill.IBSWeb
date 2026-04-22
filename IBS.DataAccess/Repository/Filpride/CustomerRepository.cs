@@ -9,11 +9,11 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class CustomerRepository : Repository<Customer>, ICustomerRepository
+    public class CustomerRepository: Repository<Customer>, ICustomerRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public CustomerRepository(ApplicationDbContext db) : base(db)
+        public CustomerRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -47,15 +47,16 @@ namespace IBS.DataAccess.Repository.Filpride
 
             return await _db.Customers
                 .AnyAsync(c =>
-                    c.CustomerTin == tin,
+                        c.CustomerTin == tin,
                     cancellationToken);
         }
 
         public async Task UpdateAsync(Customer model, CancellationToken cancellationToken = default)
         {
             var existingCustomer = await _db.Customers
-                .FirstOrDefaultAsync(x => x.CustomerId == model.CustomerId, cancellationToken)
-                                   ?? throw new InvalidOperationException($"Customer with id '{model.CustomerId}' not found.");
+                                       .FirstOrDefaultAsync(x => x.CustomerId == model.CustomerId, cancellationToken)
+                                   ?? throw new InvalidOperationException(
+                                       $"Customer with id '{model.CustomerId}' not found.");
 
             existingCustomer.CustomerName = model.CustomerName;
             existingCustomer.CustomerAddress = model.CustomerAddress;
@@ -83,26 +84,25 @@ namespace IBS.DataAccess.Repository.Filpride
             }
         }
 
-        public async Task<List<SelectListItem>> GetCustomerBranchesSelectListAsync(int customerId, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetCustomerBranchesSelectListAsync(int customerId,
+            CancellationToken cancellationToken = default)
         {
             return await _db.CustomerBranches
                 .OrderBy(c => c.BranchName)
                 .Where(c => c.CustomerId == customerId)
-                .Select(b => new SelectListItem
-                {
-                    Value = b.BranchName,
-                    Text = b.BranchName
-                })
+                .Select(b => new SelectListItem { Value = b.BranchName, Text = b.BranchName })
                 .ToListAsync(cancellationToken);
         }
 
-        public override async Task<Customer?> GetAsync(Expression<Func<Customer, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<Customer?> GetAsync(Expression<Func<Customer, bool>> filter,
+            CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
-                    .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<Customer>> GetAllAsync(Expression<Func<Customer, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Customer>> GetAllAsync(Expression<Func<Customer, bool>>? filter,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<Customer> query = dbSet;
 

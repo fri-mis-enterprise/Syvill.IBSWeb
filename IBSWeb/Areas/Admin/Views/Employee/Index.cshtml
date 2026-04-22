@@ -46,7 +46,7 @@
             var table = $('#paginatedTable').DataTable({
                 "order": [[0, 'asc']],
                 "columnDefs": [
-                    { "orderable": false, "targets": [8] }
+                    {"orderable": false, "targets": [8]}
                 ],
                 "processing": true,
                 "serverSide": true,
@@ -116,7 +116,7 @@
                     {
                         "data": "null",
                         "orderable": false,
-                        "render": function(data, type, row) {
+                        "render": function (data, type, row) {
                             let actions = `<div class="d-flex justify-content-center"><div style="width:150px;">`;
 
                             actions += `<a class="btn btn-primary col-12" href="${editUrl}?id=${row.employeeId}"><i class="bi bi-eye"></i> Edit</a>`;

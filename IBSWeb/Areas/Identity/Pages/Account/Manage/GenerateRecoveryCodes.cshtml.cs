@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace IBSWeb.Areas.Identity.Pages.Account.Manage
 {
-    public class GenerateRecoveryCodesModel : PageModel
+    public class GenerateRecoveryCodesModel: PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<GenerateRecoveryCodesModel> _logger;
@@ -46,7 +47,8 @@ namespace IBSWeb.Areas.Identity.Pages.Account.Manage
             var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
             if (!isTwoFactorEnabled)
             {
-                throw new InvalidOperationException($"Cannot generate recovery codes for user because they do not have 2FA enabled.");
+                throw new InvalidOperationException(
+                    $"Cannot generate recovery codes for user because they do not have 2FA enabled.");
             }
 
             return Page();
@@ -64,7 +66,8 @@ namespace IBSWeb.Areas.Identity.Pages.Account.Manage
             var userId = await _userManager.GetUserIdAsync(user);
             if (!isTwoFactorEnabled)
             {
-                throw new InvalidOperationException($"Cannot generate recovery codes for user as they do not have 2FA enabled.");
+                throw new InvalidOperationException(
+                    $"Cannot generate recovery codes for user as they do not have 2FA enabled.");
             }
 
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);

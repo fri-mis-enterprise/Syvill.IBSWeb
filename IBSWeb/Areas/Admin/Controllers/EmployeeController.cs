@@ -13,7 +13,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class EmployeeController : Controller
+    public class EmployeeController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -23,7 +23,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<EmployeeController> logger)
+        public EmployeeController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork, ILogger<EmployeeController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -69,7 +70,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Created new Employee #{model.EmployeeNumber}",
                     "Employee");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -82,7 +83,9 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create employee. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}", ex.Message, ex.StackTrace, User.Identity!.Name);
+                _logger.LogError(ex,
+                    "Failed to create employee. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                    ex.Message, ex.StackTrace, User.Identity!.Name);
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return View(model);
@@ -90,7 +93,8 @@ namespace IBSWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetEmployeesList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetEmployeesList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -106,15 +110,15 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var hasBirthDate = DateOnly.TryParse(searchValue, out var birthDate);
 
                     queried = queried
-                    .Where(e =>
-                        e.EmployeeNumber.ToLower().Contains(searchValue) ||
-                        e.Initial!.ToLower().Contains(searchValue) == true ||
-                        e.FirstName.ToLower().Contains(searchValue) ||
-                        e.LastName.ToLower().Contains(searchValue) ||
-                        (hasBirthDate && e.BirthDate == birthDate) == true ||
-                        e.TelNo!.ToLower().Contains(searchValue) == true ||
-                        e.Department!.ToLower().Contains(searchValue) == true ||
-                        e.Position.ToLower().Contains(searchValue)
+                        .Where(e =>
+                            e.EmployeeNumber.ToLower().Contains(searchValue) ||
+                            e.Initial!.ToLower().Contains(searchValue) == true ||
+                            e.FirstName.ToLower().Contains(searchValue) ||
+                            e.LastName.ToLower().Contains(searchValue) ||
+                            (hasBirthDate && e.BirthDate == birthDate) == true ||
+                            e.TelNo!.ToLower().Contains(searchValue) == true ||
+                            e.Department!.ToLower().Contains(searchValue) == true ||
+                            e.Position.ToLower().Contains(searchValue)
                         );
                 }
 
@@ -126,7 +130,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var sortDirection = orderColumn.Dir.ToLower() == "asc" ? "ascending" : "descending";
 
                     queried = queried
-                        .OrderBy($"{columnName} {sortDirection}") ;
+                        .OrderBy($"{columnName} {sortDirection}");
                 }
 
                 var totalFilteredRecords = await queried.CountAsync(cancellationToken);
@@ -184,7 +188,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Edited Employee #{existingModel.EmployeeNumber} => {model.EmployeeNumber}",
                     "Employee");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -225,7 +229,9 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit employee. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}", ex.Message, ex.StackTrace, _userManager.GetUserName(User));
+                _logger.LogError(ex,
+                    "Failed to edit employee. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                    ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return View(model);

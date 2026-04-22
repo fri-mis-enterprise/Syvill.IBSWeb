@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository
 {
-    public class HubConnectionRepository : IHubConnectionRepository
+    public class HubConnectionRepository: IHubConnectionRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -17,11 +17,7 @@ namespace IBS.DataAccess.Repository
 
         public async Task SaveConnectionAsync(string username, string connectionId)
         {
-            var connection = new HubConnection
-            {
-                UserName = username,
-                ConnectionId = connectionId
-            };
+            var connection = new HubConnection { UserName = username, ConnectionId = connectionId };
 
             _dbContext.HubConnections.Add(connection);
             await _dbContext.SaveChangesAsync();
@@ -43,7 +39,7 @@ namespace IBS.DataAccess.Repository
         {
             await _dbContext.HubConnections
                 .Where(c => c.UserName == username)
-                .ExecuteDeleteAsync(); 
+                .ExecuteDeleteAsync();
 
             await _dbContext.SaveChangesAsync();
         }

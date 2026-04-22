@@ -5,8 +5,7 @@ namespace IBS.Models.Common
 {
     public class Notification
     {
-        [Key]
-        public Guid NotificationId { get; set; }
+        [Key] public Guid NotificationId { get; set; }
 
         public string Message { get; set; } = null!;
 

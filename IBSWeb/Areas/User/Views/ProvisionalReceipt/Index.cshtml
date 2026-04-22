@@ -55,7 +55,7 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Next',
                 didOpen: () => {
-                    $('#swal-input2').select2({ dropdownParent: $('.swal2-container') });
+                    $('#swal-input2').select2({dropdownParent: $('.swal2-container')});
                 },
                 preConfirm: () => {
                     const depositDate = document.getElementById('swal-input1').value;
@@ -64,7 +64,7 @@
                         Swal.showValidationMessage('Both Deposit Date and Bank are required');
                         return false;
                     }
-                    return { depositDate, bankId };
+                    return {depositDate, bankId};
                 },
                 willClose: () => {
                     if ($('#swal-input2').data('select2')) {
@@ -73,7 +73,7 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const { depositDate, bankId } = result.value;
+                    const {depositDate, bankId} = result.value;
                     window.location.href = `@Url.Action("Deposit", "ProvisionalReceipt", new { area = "User" })/${provisionalReceiptId}?depositDate=${encodeURIComponent(depositDate)}&bankId=${encodeURIComponent(bankId)}`;
                 }
             });
@@ -201,7 +201,7 @@
                     }
                 },
                 columns: [
-                    { data: "seriesNumber" },
+                    {data: "seriesNumber"},
                     {
                         data: "transactionDate",
                         render: function (data) {
@@ -212,21 +212,21 @@
                             });
                         }
                     },
-                    { data: "employeeName" },
-                    { data: "referenceNo" },
+                    {data: "employeeName"},
+                    {data: "referenceNo"},
                     {
                         data: "total",
                         render: function (data) {
                             return $.fn.dataTable.render.number(',', '.', 2).display(data);
                         }
                     },
-                    { data: "createdBy" },
+                    {data: "createdBy"},
                     {
                         data: "status",
-                        render: function(data, type, row) {
+                        render: function (data, type, row) {
                             var statusClass = row.status === "@nameof(CollectionReceiptStatus.Posted)"
-                                || row.status === "@nameof(CollectionReceiptStatus.Deposited)"
-                                || row.status === "@nameof(CollectionReceiptStatus.Redeposited)"
+                            || row.status === "@nameof(CollectionReceiptStatus.Deposited)"
+                            || row.status === "@nameof(CollectionReceiptStatus.Redeposited)"
                                 ? "bg-info"
                                 : row.status === "@nameof(CollectionReceiptStatus.Cleared)"
                                     ? "bg-success"

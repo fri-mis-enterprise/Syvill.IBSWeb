@@ -11,17 +11,13 @@ namespace IBS.Models.AccountsPayable
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CheckVoucherDetailId { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? DefaultExpenses { get; set; }
+        [NotMapped] public List<SelectListItem>? DefaultExpenses { get; set; }
 
-        [StringLength(20)]
-        public string AccountNo { get; set; } = string.Empty;
+        [StringLength(20)] public string AccountNo { get; set; } = string.Empty;
 
-        [StringLength(200)]
-        public string AccountName { get; set; } = string.Empty;
+        [StringLength(200)] public string AccountName { get; set; } = string.Empty;
 
-        [StringLength(13)]
-        public string TransactionNo { get; set; } = string.Empty;
+        [StringLength(13)] public string TransactionNo { get; set; } = string.Empty;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -36,16 +32,13 @@ namespace IBS.Models.AccountsPayable
         [ForeignKey(nameof(CheckVoucherHeaderId))]
         public CheckVoucherHeader? CheckVoucherHeader { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal Amount { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal Amount { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal AmountPaid { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal AmountPaid { get; set; }
 
         public bool IsVatable { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal EwtPercent { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal EwtPercent { get; set; }
 
         public bool IsUserSelected { get; set; }
 
@@ -55,7 +48,6 @@ namespace IBS.Models.AccountsPayable
 
         public int? SubAccountId { get; set; }
 
-        [Column(TypeName = "varchar(200)")]
-        public string? SubAccountName { get; set; }
+        [Column(TypeName = "varchar(200)")] public string? SubAccountName { get; set; }
     }
 }

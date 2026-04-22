@@ -5,8 +5,7 @@ namespace IBS.Models.ViewModels
 {
     public class JvCreateAccrualViewModel
     {
-        [Required]
-        public DateOnly TransactionDate { get; set; }
+        [Required] public DateOnly TransactionDate { get; set; }
 
         public DateTime MinDate { get; set; }
 
@@ -19,9 +18,7 @@ namespace IBS.Models.ViewModels
 
         public string? CrNo { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string Reason { get; set; } = string.Empty;
+        [Required] [StringLength(200)] public string Reason { get; set; } = string.Empty;
 
         public List<JvCreateAccrualDetailViewModel> Details { get; set; } = [];
     }

@@ -17,7 +17,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class ChartOfAccountController : Controller
+    public class ChartOfAccountController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -47,7 +47,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var level1 = await _unitOfWork.ChartOfAccount
-                .GetAllAsync(cancellationToken : cancellationToken);
+                .GetAllAsync(cancellationToken: cancellationToken);
 
             return View(level1.Where(c => c.Level == 1)
                 .ToList());
@@ -104,7 +104,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Created new Account #{newAccount.AccountNumber}",
                     "Chart of Accounts");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -117,7 +117,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit chart of account. Edited by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit chart of account. Edited by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["Error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
@@ -167,7 +168,8 @@ namespace IBSWeb.Areas.Admin.Controllers
                             (s.AccountType != null && s.AccountType.ToLower().Contains(searchValue)) ||
                             (s.NormalBalance != null && s.NormalBalance.ToLower().Contains(searchValue)) ||
                             s.Level.ToString().Contains(searchValue) ||
-                            (hasCreatedDate && DateOnly.FromDateTime(s.CreatedDate) == DateOnly.FromDateTime(createdDate))
+                            (hasCreatedDate && DateOnly.FromDateTime(s.CreatedDate) ==
+                                DateOnly.FromDateTime(createdDate))
                         );
                 }
 
@@ -252,7 +254,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (GetUserFullName(),
+                AuditTrail auditTrailBook = new(GetUserFullName(),
                     $"Edited Account #{existingAccount.AccountNumber}", "Chart of Accounts");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
@@ -264,7 +266,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit chart of account. Edited by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit chart of account. Edited by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["Error"] = ex.Message;
                 return RedirectToAction(nameof(Index));

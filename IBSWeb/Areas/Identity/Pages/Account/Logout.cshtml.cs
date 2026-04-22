@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using IBS.DataAccess.Repository.IRepository;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace IBSWeb.Areas.Identity.Pages.Account
 {
-    public class LogoutModel : PageModel
+    public class LogoutModel: PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
@@ -32,6 +33,5 @@ namespace IBSWeb.Areas.Identity.Pages.Account
             _logger.LogInformation("User logged out.");
             return returnUrl != null ? LocalRedirect(returnUrl) : RedirectToPage();
         }
-
     }
 }

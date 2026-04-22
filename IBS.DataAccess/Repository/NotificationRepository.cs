@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository
 {
-    public class NotificationRepository : INotificationRepository
+    public class NotificationRepository: INotificationRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -20,8 +20,7 @@ namespace IBS.DataAccess.Repository
         {
             var notification = new Notification
             {
-                Message = message,
-                CreatedDate = DateTimeHelper.GetCurrentPhilippineTime()
+                Message = message, CreatedDate = DateTimeHelper.GetCurrentPhilippineTime()
             };
 
             await _db.Notifications.AddAsync(notification);
@@ -39,12 +38,12 @@ namespace IBS.DataAccess.Repository
             await _db.SaveChangesAsync();
         }
 
-        public async Task AddNotificationToMultipleUsersAsync(List<string> userIds, string message, bool requiresResponse = false)
+        public async Task AddNotificationToMultipleUsersAsync(List<string> userIds, string message,
+            bool requiresResponse = false)
         {
             var notification = new Notification
             {
-                Message = message,
-                CreatedDate = DateTimeHelper.GetCurrentPhilippineTime()
+                Message = message, CreatedDate = DateTimeHelper.GetCurrentPhilippineTime()
             };
 
             await _db.Notifications.AddAsync(notification);

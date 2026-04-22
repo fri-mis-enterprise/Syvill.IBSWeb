@@ -22,7 +22,7 @@ using Color = System.Drawing.Color;
 namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
-    public class AccountsReceivableReport : Controller
+    public class AccountsReceivableReport: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -76,158 +76,162 @@ namespace IBSWeb.Areas.User.Controllers
 
         #region -- Generate Posted Collection Excel File --
 
-            public async Task<IActionResult> GeneratePostedCollectionExcelFile(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GeneratePostedCollectionExcelFile(ViewModelBook model,
+            CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                TempData["warning"] = "Please input date range";
+                return RedirectToAction(nameof(PostedCollection));
+            }
+
+            try
+            {
+                var dateFrom = model.DateFrom;
+                var dateTo = model.DateTo;
+                var extractedBy = GetUserFullName();
+                var statusFilter = NormalizeStatusFilter(model.StatusFilter);
+
+                var collectionReceiptReport = await _unitOfWork.Report
+                    .GetCollectionReceiptReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
+
+                using var package = new ExcelPackage();
+                var worksheet = package.Workbook.Worksheets.Add("COLLECTION");
+
+                var mergedCells = worksheet.Cells["A1:C1"];
+                mergedCells.Merge = true;
+                mergedCells.Value = "COLLECTION";
+                mergedCells.Style.Font.Size = 16;
+
+                worksheet.Cells["A2"].Value = "Date Range:";
+                worksheet.Cells["A3"].Value = "Extracted By:";
+                worksheet.Cells["A4"].Value = "Company:";
+                worksheet.Cells["A5"].Value = "Status Filter:";
+
+                worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
+                worksheet.Cells["B3"].Value = $"{extractedBy}";
+                worksheet.Cells["B4"].Value = $"Syvill";
+                worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
+
+                bool showVoidCancelColumns = statusFilter != "ValidOnly";
+
+                worksheet.Cells["A7"].Value = "CUSTOMER No.";
+                worksheet.Cells["B7"].Value = "CUSTOMER NAME";
+                worksheet.Cells["C7"].Value = "ACCT. TYPE";
+                worksheet.Cells["D7"].Value = "TRAN. DATE (INV)";
+                worksheet.Cells["E7"].Value = "CR No.";
+                worksheet.Cells["F7"].Value = "INVOICE No.";
+                worksheet.Cells["G7"].Value = "DUE DATE";
+                worksheet.Cells["H7"].Value = "DATE OF CHECK";
+                worksheet.Cells["I7"].Value = "BANK";
+                worksheet.Cells["J7"].Value = "CHECK No.";
+                worksheet.Cells["K7"].Value = "AMOUNT";
+
+                if (showVoidCancelColumns)
                 {
-                    TempData["warning"] = "Please input date range";
-                    return RedirectToAction(nameof(PostedCollection));
+                    worksheet.Cells["L7"].Value = "VOIDED BY";
+                    worksheet.Cells["M7"].Value = "VOIDED DATE";
                 }
 
-                try
+                string headerEndColumn = showVoidCancelColumns ? "M7" : "K7";
+                var headerCells = worksheet.Cells[$"A7:{headerEndColumn}"];
+                headerCells.Style.Font.Size = 11;
+                headerCells.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                headerCells.Style.Fill.BackgroundColor.SetColor(Color.DarkGray);
+                headerCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                headerCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                headerCells.Style.Font.Bold = true;
+
+                var row = 8;
+                var startingRow = row - 1;
+                var currencyFormat = "#,##0.00";
+                decimal totalAmount = 0;
+
+                foreach (var cr in collectionReceiptReport)
                 {
-                    var dateFrom = model.DateFrom;
-                    var dateTo = model.DateTo;
-                    var extractedBy = GetUserFullName();
-                    var statusFilter = NormalizeStatusFilter(model.StatusFilter);
+                    var currentAmount = cr.CashAmount + cr.CheckAmount;
+                    worksheet.Cells[row, 1].Value = cr.Customer?.CustomerCode;
+                    worksheet.Cells[row, 2].Value = cr.ServiceInvoice?.CustomerName;
+                    worksheet.Cells[row, 3].Value = cr.ServiceInvoice?.CreatedDate;
+                    worksheet.Cells[row, 4].Value = cr.CollectionReceiptNo;
+                    worksheet.Cells[row, 5].Value = cr.ServiceInvoice?.ServiceInvoiceNo;
+                    worksheet.Cells[row, 6].Value = cr.ServiceInvoice?.DueDate;
+                    worksheet.Cells[row, 7].Value = cr.CheckDate;
+                    worksheet.Cells[row, 8].Value = $"{cr.BankAccount?.Bank} {cr.BankAccountNumber}";
+                    worksheet.Cells[row, 9].Value = cr.CheckNo;
+                    worksheet.Cells[row, 10].Value = currentAmount;
 
-                    var collectionReceiptReport = await _unitOfWork.Report
-                        .GetCollectionReceiptReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
-
-                    using var package = new ExcelPackage();
-                    var worksheet = package.Workbook.Worksheets.Add("COLLECTION");
-
-                    var mergedCells = worksheet.Cells["A1:C1"];
-                    mergedCells.Merge = true;
-                    mergedCells.Value = "COLLECTION";
-                    mergedCells.Style.Font.Size = 16;
-
-                    worksheet.Cells["A2"].Value = "Date Range:";
-                    worksheet.Cells["A3"].Value = "Extracted By:";
-                    worksheet.Cells["A4"].Value = "Company:";
-                    worksheet.Cells["A5"].Value = "Status Filter:";
-
-                    worksheet.Cells["B2"].Value = $"{dateFrom} - {dateTo}";
-                    worksheet.Cells["B3"].Value = $"{extractedBy}";
-                    worksheet.Cells["B4"].Value = $"Syvill";
-                    worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
-
-                    bool showVoidCancelColumns = statusFilter != "ValidOnly";
-
-                    worksheet.Cells["A7"].Value = "CUSTOMER No.";
-                    worksheet.Cells["B7"].Value = "CUSTOMER NAME";
-                    worksheet.Cells["C7"].Value = "ACCT. TYPE";
-                    worksheet.Cells["D7"].Value = "TRAN. DATE (INV)";
-                    worksheet.Cells["E7"].Value = "CR No.";
-                    worksheet.Cells["F7"].Value = "INVOICE No.";
-                    worksheet.Cells["G7"].Value = "DUE DATE";
-                    worksheet.Cells["H7"].Value = "DATE OF CHECK";
-                    worksheet.Cells["I7"].Value = "BANK";
-                    worksheet.Cells["J7"].Value = "CHECK No.";
-                    worksheet.Cells["K7"].Value = "AMOUNT";
+                    worksheet.Cells[row, 3].Style.Numberformat.Format = "MMM/dd/yyyy";
+                    worksheet.Cells[row, 6].Style.Numberformat.Format = "MMM/dd/yyyy";
+                    worksheet.Cells[row, 7].Style.Numberformat.Format = "MMM/dd/yyyy";
+                    worksheet.Cells[row, 10].Style.Numberformat.Format = currencyFormat;
 
                     if (showVoidCancelColumns)
                     {
-                        worksheet.Cells["L7"].Value = "VOIDED BY";
-                        worksheet.Cells["M7"].Value = "VOIDED DATE";
-                    }
-
-                    string headerEndColumn = showVoidCancelColumns ? "M7" : "K7";
-                    var headerCells = worksheet.Cells[$"A7:{headerEndColumn}"];
-                    headerCells.Style.Font.Size = 11;
-                    headerCells.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    headerCells.Style.Fill.BackgroundColor.SetColor(Color.DarkGray);
-                    headerCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    headerCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
-                    headerCells.Style.Font.Bold = true;
-
-                    var row = 8;
-                    var startingRow = row - 1;
-                    var currencyFormat = "#,##0.00";
-                    decimal totalAmount = 0;
-
-                    foreach (var cr in collectionReceiptReport)
-                    {
-                        var currentAmount = cr.CashAmount + cr.CheckAmount;
-                        worksheet.Cells[row, 1].Value = cr.Customer?.CustomerCode;
-                        worksheet.Cells[row, 2].Value = cr.ServiceInvoice?.CustomerName;
-                        worksheet.Cells[row, 3].Value = cr.ServiceInvoice?.CreatedDate;
-                        worksheet.Cells[row, 4].Value = cr.CollectionReceiptNo;
-                        worksheet.Cells[row, 5].Value = cr.ServiceInvoice?.ServiceInvoiceNo;
-                        worksheet.Cells[row, 6].Value = cr.ServiceInvoice?.DueDate;
-                        worksheet.Cells[row, 7].Value = cr.CheckDate;
-                        worksheet.Cells[row, 8].Value = $"{cr.BankAccount?.Bank} {cr.BankAccountNumber}";
-                        worksheet.Cells[row, 9].Value = cr.CheckNo;
-                        worksheet.Cells[row, 10].Value = currentAmount;
-
-                        worksheet.Cells[row, 3].Style.Numberformat.Format = "MMM/dd/yyyy";
-                        worksheet.Cells[row, 6].Style.Numberformat.Format = "MMM/dd/yyyy";
-                        worksheet.Cells[row, 7].Style.Numberformat.Format = "MMM/dd/yyyy";
-                        worksheet.Cells[row, 10].Style.Numberformat.Format = currencyFormat;
-
-                        if (showVoidCancelColumns)
+                        worksheet.Cells[row, 11].Value = cr.VoidedBy;
+                        worksheet.Cells[row, 12].Value = cr.VoidedDate;
+                        if (cr.VoidedDate.HasValue)
                         {
-                            worksheet.Cells[row, 11].Value = cr.VoidedBy;
-                            worksheet.Cells[row, 12].Value = cr.VoidedDate;
-                            if (cr.VoidedDate.HasValue)
-                            {
-                                worksheet.Cells[row, 12].Style.Numberformat.Format = "MMM/dd/yyyy";
-                            }
+                            worksheet.Cells[row, 12].Style.Numberformat.Format = "MMM/dd/yyyy";
                         }
-
-                        totalAmount += currentAmount;
-                        row++;
                     }
 
-                    int lastColumn = showVoidCancelColumns ? 12 : 10;
-
-                    worksheet.Cells[row, 9].Value = "Total:";
-                    worksheet.Cells[row, 10].Value = totalAmount;
-                    worksheet.Cells[row, 10].Style.Numberformat.Format = currencyFormat;
-
-                    using (var range = worksheet.Cells[row, 1, row, lastColumn])
-                    {
-                        range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        range.Style.Fill.BackgroundColor.SetColor(Color.Yellow);
-                        range.Style.Border.BorderAround(ExcelBorderStyle.Thin);
-                    }
-                    using (var range = worksheet.Cells[row, 10, row, 11])
-                    {
-                        range.Style.Border.Bottom.Style = ExcelBorderStyle.Double;
-                        range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        range.Style.Font.Bold = true;
-                    }
-
-                    int lastRow = row - 1;
-                    using (var range = worksheet.Cells[startingRow - 1, 11, lastRow, 11])
-                    {
-                        range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                    }
-
-                    worksheet.Cells.AutoFitColumns();
-                    worksheet.View.FreezePanes(8, 1);
-
-                    #region -- Audit Trail --
-
-                    AuditTrail auditTrailBook = new(GetUserFullName(), "Generate posted collection report excel file", "Accounts Receivable Report");
-                    await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
-
-                    #endregion
-
-                    var fileName = $"Collection_Report_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx";
-                    var stream = new MemoryStream();
-                    await package.SaveAsAsync(stream, cancellationToken);
-                    stream.Position = 0;
-                    return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                    totalAmount += currentAmount;
+                    row++;
                 }
-                catch (Exception ex)
+
+                int lastColumn = showVoidCancelColumns ? 12 : 10;
+
+                worksheet.Cells[row, 9].Value = "Total:";
+                worksheet.Cells[row, 10].Value = totalAmount;
+                worksheet.Cells[row, 10].Style.Numberformat.Format = currencyFormat;
+
+                using (var range = worksheet.Cells[row, 1, row, lastColumn])
                 {
-                    ViewData["error"] = ex.Message;
-                    _logger.LogError(ex, "Failed to generate posted collection report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
-                        ex.Message, ex.StackTrace, _userManager.GetUserName(User));
-                    return RedirectToAction(nameof(PostedCollection));
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                    range.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 }
+
+                using (var range = worksheet.Cells[row, 10, row, 11])
+                {
+                    range.Style.Border.Bottom.Style = ExcelBorderStyle.Double;
+                    range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    range.Style.Font.Bold = true;
+                }
+
+                int lastRow = row - 1;
+                using (var range = worksheet.Cells[startingRow - 1, 11, lastRow, 11])
+                {
+                    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                }
+
+                worksheet.Cells.AutoFitColumns();
+                worksheet.View.FreezePanes(8, 1);
+
+                #region -- Audit Trail --
+
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate posted collection report excel file",
+                    "Accounts Receivable Report");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
+
+                #endregion
+
+                var fileName = $"Collection_Report_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx";
+                var stream = new MemoryStream();
+                await package.SaveAsAsync(stream, cancellationToken);
+                stream.Position = 0;
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
+            catch (Exception ex)
+            {
+                ViewData["error"] = ex.Message;
+                _logger.LogError(ex,
+                    "Failed to generate posted collection report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                    ex.Message, ex.StackTrace, _userManager.GetUserName(User));
+                return RedirectToAction(nameof(PostedCollection));
+            }
+        }
 
         #endregion -- Generate Posted Collection Excel File --
 
@@ -239,9 +243,9 @@ namespace IBSWeb.Areas.User.Controllers
 
         #region -- Generate Aging Report Excel File --
 
-        public async Task<IActionResult> GenerateAgingReportExcelFile(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateAgingReportExcelFile(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
-
             if (!ModelState.IsValid)
             {
                 TempData["warning"] = "Please input date range";
@@ -465,7 +469,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate aging report excel file", "Accounts Receivable Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate aging report excel file",
+                    "Accounts Receivable Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
@@ -479,7 +484,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate aging report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate aging report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(AgingReport));
             }
@@ -490,17 +496,15 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> ArPerCustomer()
         {
-            ViewModelBook viewmodel = new()
-            {
-                CustomerList = await _unitOfWork.GetCustomerListAsyncById()
-            };
+            ViewModelBook viewmodel = new() { CustomerList = await _unitOfWork.GetCustomerListAsyncById() };
 
             return View(viewmodel);
         }
 
         #region -- Generate AR Per Customer Excel File --
 
-        public async Task<IActionResult> GenerateArPerCustomerExcelFile(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateArPerCustomerExcelFile(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -517,7 +521,8 @@ namespace IBSWeb.Areas.User.Controllers
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
                 var salesInvoice = await _unitOfWork.Report
-                    .GetARPerCustomerReport(model.DateFrom, model.DateTo, model.Customers, statusFilter, cancellationToken);
+                    .GetARPerCustomerReport(model.DateFrom, model.DateTo, model.Customers, statusFilter,
+                        cancellationToken);
 
                 if (!salesInvoice.Any())
                 {
@@ -545,7 +550,8 @@ namespace IBSWeb.Areas.User.Controllers
                 worksheet.Cells["A4"].Value = "Company:";
                 worksheet.Cells["A5"].Value = "Status Filter:";
 
-                worksheet.Cells["B2"].Value = $"{dateFrom.ToString(SD.Date_Format)} - {dateTo.ToString(SD.Date_Format)}";
+                worksheet.Cells["B2"].Value =
+                    $"{dateFrom.ToString(SD.Date_Format)} - {dateTo.ToString(SD.Date_Format)}";
                 worksheet.Cells["B3"].Value = $"{extractedBy}";
                 worksheet.Cells["B4"].Value = $"Syvill";
                 worksheet.Cells["B5"].Value = GetStatusFilterLabel(statusFilter);
@@ -629,7 +635,7 @@ namespace IBSWeb.Areas.User.Controllers
                         //var vatPerLiter = vatAmount / sv.Quantity;
                         var ewtAmount = isTaxable ? repoCalculator.ComputeEwtAmount(netOfVat, 0.01m) : 0m;
                         //var isEwtAmountPaid = sv.IsTaxAndVatPaid ? ewtAmount : 0m;
-                       // var ewtBalance = ewtAmount - isEwtAmountPaid;
+                        // var ewtBalance = ewtAmount - isEwtAmountPaid;
 
                         worksheet.Cells[row, 1].Value = sv.Customer?.CustomerCode;
                         // worksheet.Cells[row, 2].Value = sv.CustomerOrderSlip?.CustomerName ?? sv.Customer?.CustomerName;
@@ -760,6 +766,7 @@ namespace IBSWeb.Areas.User.Controllers
 
                     row++;
                 }
+
                 totalFreightPerLiter = totalFreight != 0 && totalQuantity != 0 ? totalFreight / totalQuantity : 0m;
 
                 worksheet.Cells[row, 12].Value = "GRAND TOTAL ";
@@ -812,12 +819,14 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate ar per customer report excel file", "Accounts Receivable Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate ar per customer report excel file",
+                    "Accounts Receivable Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
-                var fileName = $"AR_Per_Customer_Report_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx";
+                var fileName =
+                    $"AR_Per_Customer_Report_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx";
                 var stream = new MemoryStream();
                 await package.SaveAsAsync(stream, cancellationToken);
                 stream.Position = 0;
@@ -826,7 +835,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate ar per customer report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate ar per customer report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(ArPerCustomer));
             }
@@ -842,7 +852,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         #region -- Generated Service Invoice Report as Quest PDF
 
-        public async Task<IActionResult> GeneratedServiceInvoiceReport(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GeneratedServiceInvoiceReport(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -869,42 +880,42 @@ namespace IBSWeb.Areas.User.Controllers
                     {
                         #region -- Page Setup
 
-                            page.Size(PageSizes.Legal.Landscape());
-                            page.Margin(20);
-                            page.DefaultTextStyle(x => x.FontSize(9).FontFamily("Times New Roman"));
+                        page.Size(PageSizes.Legal.Landscape());
+                        page.Margin(20);
+                        page.DefaultTextStyle(x => x.FontSize(9).FontFamily("Times New Roman"));
 
                         #endregion
 
                         #region -- Header
 
-                            var imgFilprideLogoPath = Path.Combine(_webHostEnvironment.WebRootPath, "img", "Filpride-logo.png");
+                        var imgFilprideLogoPath =
+                            Path.Combine(_webHostEnvironment.WebRootPath, "img", "Filpride-logo.png");
 
-                            page.Header().Height(50).Row(row =>
+                        page.Header().Height(50).Row(row =>
+                        {
+                            row.RelativeItem().Column(column =>
                             {
-                                row.RelativeItem().Column(column =>
+                                column.Item()
+                                    .Text("SERVICE REPORT")
+                                    .FontSize(20).SemiBold();
+
+                                column.Item().Text(text =>
                                 {
-                                    column.Item()
-                                        .Text("SERVICE REPORT")
-                                        .FontSize(20).SemiBold();
-
-                                    column.Item().Text(text =>
-                                    {
-                                        text.Span("Date From: ").SemiBold();
-                                        text.Span(model.DateFrom.ToString(SD.Date_Format));
-                                    });
-
-                                    column.Item().Text(text =>
-                                    {
-                                        text.Span("Date To: ").SemiBold();
-                                        text.Span(model.DateTo.ToString(SD.Date_Format));
-                                    });
+                                    text.Span("Date From: ").SemiBold();
+                                    text.Span(model.DateFrom.ToString(SD.Date_Format));
                                 });
 
-                                row.ConstantItem(size: 100)
-                                    .Height(50)
-                                    .Image(Image.FromFile(imgFilprideLogoPath)).FitWidth();
-
+                                column.Item().Text(text =>
+                                {
+                                    text.Span("Date To: ").SemiBold();
+                                    text.Span(model.DateTo.ToString(SD.Date_Format));
+                                });
                             });
+
+                            row.ConstantItem(size: 100)
+                                .Height(50)
+                                .Image(Image.FromFile(imgFilprideLogoPath)).FitWidth();
+                        });
 
                         #endregion
 
@@ -914,82 +925,115 @@ namespace IBSWeb.Areas.User.Controllers
                         {
                             #region -- Columns Definition
 
-                                table.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
 
                             #endregion
 
                             #region -- Table Header
 
-                                table.Header(header =>
-                                {
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Transaction Date").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Customer Name").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Customer Address").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Customer TIN").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Service Invoice#").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Service").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Period").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Due Date").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("G. Amount").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Amount Paid").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Payment Status").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Instructions").SemiBold();
-                                    header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter().AlignMiddle().Text("Type").SemiBold();
-                                });
+                            table.Header(header =>
+                            {
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Transaction Date").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Customer Name").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Customer Address").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Customer TIN").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Service Invoice#").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Service").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Period").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Due Date").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("G. Amount").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Amount Paid").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Payment Status").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Instructions").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignCenter()
+                                    .AlignMiddle().Text("Type").SemiBold();
+                            });
 
                             #endregion
 
                             #region -- Loop to Show Records
 
-                                var totalAmount = 0m;
-                                var totalAmountPaid = 0m;
+                            var totalAmount = 0m;
+                            var totalAmountPaid = 0m;
 
-                                foreach (var record in serviceInvoice)
-                                {
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.CreatedDate.ToString(SD.Date_Format));
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.CustomerName);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.CustomerAddress);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.CustomerTin);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.ServiceInvoiceNo);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.ServiceName);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.Period.ToString(SD.Date_Format));
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.DueDate.ToString(SD.Date_Format));
-                                    table.Cell().Border(0.5f).Padding(3).AlignRight().Text(record.Total != 0 ? record.Total < 0 ? $"({Math.Abs(record.Total).ToString(SD.Two_Decimal_Format)})" : record.Total.ToString(SD.Two_Decimal_Format) : null).FontColor(record.Total < 0 ? Colors.Red.Medium : Colors.Black);
-                                    table.Cell().Border(0.5f).Padding(3).AlignRight().Text(record.AmountPaid != 0 ? record.AmountPaid < 0 ? $"({Math.Abs(record.AmountPaid).ToString(SD.Two_Decimal_Format)})" : record.AmountPaid.ToString(SD.Two_Decimal_Format) : null).FontColor(record.AmountPaid < 0 ? Colors.Red.Medium : Colors.Black);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.PaymentStatus);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.Instructions);
-                                    table.Cell().Border(0.5f).Padding(3).Text(record.Type);
+                            foreach (var record in serviceInvoice)
+                            {
+                                table.Cell().Border(0.5f).Padding(3).Text(record.CreatedDate.ToString(SD.Date_Format));
+                                table.Cell().Border(0.5f).Padding(3).Text(record.CustomerName);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.CustomerAddress);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.CustomerTin);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.ServiceInvoiceNo);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.ServiceName);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.Period.ToString(SD.Date_Format));
+                                table.Cell().Border(0.5f).Padding(3).Text(record.DueDate.ToString(SD.Date_Format));
+                                table.Cell().Border(0.5f).Padding(3).AlignRight()
+                                    .Text(record.Total != 0
+                                        ? record.Total < 0
+                                            ? $"({Math.Abs(record.Total).ToString(SD.Two_Decimal_Format)})"
+                                            : record.Total.ToString(SD.Two_Decimal_Format)
+                                        : null).FontColor(record.Total < 0 ? Colors.Red.Medium : Colors.Black);
+                                table.Cell().Border(0.5f).Padding(3).AlignRight().Text(record.AmountPaid != 0
+                                    ? record.AmountPaid < 0
+                                        ? $"({Math.Abs(record.AmountPaid).ToString(SD.Two_Decimal_Format)})"
+                                        : record.AmountPaid.ToString(SD.Two_Decimal_Format)
+                                    : null).FontColor(record.AmountPaid < 0 ? Colors.Red.Medium : Colors.Black);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.PaymentStatus);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.Instructions);
+                                table.Cell().Border(0.5f).Padding(3).Text(record.Type);
 
-                                    totalAmount += record.Total;
-                                    totalAmountPaid += record.AmountPaid;
-                                }
+                                totalAmount += record.Total;
+                                totalAmountPaid += record.AmountPaid;
+                            }
 
                             #endregion
 
                             #region -- Create Table Cell for Totals
 
-                                table.Cell().ColumnSpan(8).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text("TOTAL:").SemiBold();
-                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(totalAmount != 0 ? totalAmount < 0 ? $"({Math.Abs(totalAmount).ToString(SD.Two_Decimal_Format)})" : totalAmount.ToString(SD.Two_Decimal_Format) : null).FontColor(totalAmount < 0 ? Colors.Red.Medium : Colors.Black).SemiBold();
-                                table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight().Text(totalAmountPaid != 0 ? totalAmountPaid < 0 ? $"({Math.Abs(totalAmountPaid).ToString(SD.Two_Decimal_Format)})" : totalAmountPaid.ToString(SD.Two_Decimal_Format) : null).FontColor(totalAmountPaid < 0 ? Colors.Red.Medium : Colors.Black).SemiBold();
-                                table.Cell().ColumnSpan(3).Background(Colors.Grey.Lighten1).Border(0.5f);
+                            table.Cell().ColumnSpan(8).Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3)
+                                .AlignRight().Text("TOTAL:").SemiBold();
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(totalAmount != 0
+                                    ? totalAmount < 0
+                                        ? $"({Math.Abs(totalAmount).ToString(SD.Two_Decimal_Format)})"
+                                        : totalAmount.ToString(SD.Two_Decimal_Format)
+                                    : null).FontColor(totalAmount < 0 ? Colors.Red.Medium : Colors.Black).SemiBold();
+                            table.Cell().Background(Colors.Grey.Lighten1).Border(0.5f).Padding(3).AlignRight()
+                                .Text(totalAmountPaid != 0
+                                    ? totalAmountPaid < 0
+                                        ? $"({Math.Abs(totalAmountPaid).ToString(SD.Two_Decimal_Format)})"
+                                        : totalAmountPaid.ToString(SD.Two_Decimal_Format)
+                                    : null).FontColor(totalAmountPaid < 0 ? Colors.Red.Medium : Colors.Black)
+                                .SemiBold();
+                            table.Cell().ColumnSpan(3).Background(Colors.Grey.Lighten1).Border(0.5f);
 
                             #endregion
-
                         });
 
                         #endregion
@@ -1010,7 +1054,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate service invoice report quest pdf", "Accounts Receivable Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate service invoice report quest pdf",
+                    "Accounts Receivable Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
@@ -1021,7 +1066,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate service invoice report quest pdf. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate service invoice report quest pdf. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(ServiceInvoiceReport));
             }
@@ -1031,7 +1077,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         #region -- Generate Service Invoice Report Excel File --
 
-        public async Task<IActionResult> GenerateServiceInvoiceReportExcelFile(ViewModelBook model, CancellationToken cancellationToken)
+        public async Task<IActionResult> GenerateServiceInvoiceReportExcelFile(ViewModelBook model,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -1046,13 +1093,15 @@ namespace IBSWeb.Areas.User.Controllers
                 var extractedBy = GetUserFullName();
                 var statusFilter = NormalizeStatusFilter(model.StatusFilter);
 
-                var serviceReport = await _unitOfWork.Report.GetServiceInvoiceReport(model.DateFrom, model.DateTo, statusFilter, cancellationToken);
+                var serviceReport = await _unitOfWork.Report.GetServiceInvoiceReport(model.DateFrom, model.DateTo,
+                    statusFilter, cancellationToken);
 
                 if (serviceReport.Count == 0)
                 {
                     TempData["info"] = "No Record Found";
                     return RedirectToAction(nameof(ServiceInvoiceReport));
                 }
+
                 // Create the Excel package
                 using var package = new ExcelPackage();
 
@@ -1188,12 +1237,14 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region -- Audit Trail --
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate service invoice report excel file", "Accounts Receivable Report");
+                AuditTrail auditTrailBook = new(GetUserFullName(), "Generate service invoice report excel file",
+                    "Accounts Receivable Report");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion
 
-                var fileName = $"Service_Invoice_Report_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx";
+                var fileName =
+                    $"Service_Invoice_Report_{DateTimeHelper.GetCurrentPhilippineTime():yyyyddMMHHmmss}.xlsx";
                 var stream = new MemoryStream();
                 await package.SaveAsAsync(stream, cancellationToken);
                 stream.Position = 0;
@@ -1202,7 +1253,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to generate dispatch report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to generate dispatch report excel file. Error: {ErrorMessage}, Stack: {StackTrace}. Generated by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(ServiceInvoiceReport));
             }

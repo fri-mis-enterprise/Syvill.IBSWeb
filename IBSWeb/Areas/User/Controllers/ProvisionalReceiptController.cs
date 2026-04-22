@@ -18,7 +18,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_Finance, SD.Department_RCD)]
-    public class ProvisionalReceiptController : Controller
+    public class ProvisionalReceiptController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -43,10 +43,12 @@ namespace IBSWeb.Areas.User.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        private async Task PopulateFormDependenciesAsync(ProvisionalReceiptViewModel viewModel, CancellationToken cancellationToken)
+        private async Task PopulateFormDependenciesAsync(ProvisionalReceiptViewModel viewModel,
+            CancellationToken cancellationToken)
         {
             viewModel.Employees = await _unitOfWork.GetEmployeeListById(cancellationToken);
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.ProvisionalReceipt, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.ProvisionalReceipt, cancellationToken);
         }
 
         private static PREditViewModel MapToEditViewModel(ProvisionalReceipt model)
@@ -105,7 +107,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            ViewBag.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.ProvisionalReceipt, cancellationToken);
+            ViewBag.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.ProvisionalReceipt, cancellationToken);
             return View();
         }
 
@@ -116,7 +119,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetProvisionalReceipts([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetProvisionalReceipts([FromForm] DataTablesParameters parameters,
+            DateOnly filterDate, CancellationToken cancellationToken)
         {
             try
             {
@@ -173,7 +177,8 @@ namespace IBSWeb.Areas.User.Controllers
                             : query.OrderByDescending(pr => pr.Status),
                         "employeeName" => ascending
                             ? query.OrderBy(pr => pr.Employee.LastName).ThenBy(pr => pr.Employee.FirstName)
-                            : query.OrderByDescending(pr => pr.Employee.LastName).ThenByDescending(pr => pr.Employee.FirstName),
+                            : query.OrderByDescending(pr => pr.Employee.LastName)
+                                .ThenByDescending(pr => pr.Employee.FirstName),
                         _ => query.OrderByDescending(pr => pr.Id)
                     };
                 }
@@ -248,7 +253,8 @@ namespace IBSWeb.Areas.User.Controllers
                 return View(viewModel);
             }
 
-            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT + viewModel.WVAT;
+            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT +
+                        viewModel.WVAT;
 
             if (total <= 0)
             {
@@ -291,7 +297,8 @@ namespace IBSWeb.Areas.User.Controllers
                 await transaction.RollbackAsync(cancellationToken);
                 await PopulateFormDependenciesAsync(viewModel, cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to create provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to create provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
                 return View(viewModel);
             }
@@ -313,9 +320,11 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            if (await _unitOfWork.IsPeriodPostedAsync(Module.ProvisionalReceipt, model.TransactionDate, cancellationToken))
+            if (await _unitOfWork.IsPeriodPostedAsync(Module.ProvisionalReceipt, model.TransactionDate,
+                    cancellationToken))
             {
-                TempData["error"] = $"Cannot edit this record because the period {model.TransactionDate:MMM yyyy} is already closed.";
+                TempData["error"] =
+                    $"Cannot edit this record because the period {model.TransactionDate:MMM yyyy} is already closed.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -343,7 +352,8 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT + viewModel.WVAT;
+            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT +
+                        viewModel.WVAT;
 
             if (total <= 0)
             {
@@ -375,7 +385,8 @@ namespace IBSWeb.Areas.User.Controllers
                 await transaction.RollbackAsync(cancellationToken);
                 await PopulateFormDependenciesAsync(viewModel, cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to edit provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to edit provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
                 return View(viewModel);
             }
@@ -426,7 +437,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to tag provisional receipt as printed. Error: {ErrorMessage}, Stack: {StackTrace}. Printed by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to tag provisional receipt as printed. Error: {ErrorMessage}, Stack: {StackTrace}. Printed by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
                 return RedirectToAction(nameof(Index));
             }
@@ -465,7 +477,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to post provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to post provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
                 return RedirectToAction(nameof(Index));
             }
@@ -509,14 +522,16 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to void provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to void provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
+        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.ProvisionalReceipt
                 .GetAsync(pr => pr.Id == id, cancellationToken);
@@ -548,7 +563,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to cancel provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to cancel provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
             }
 
@@ -556,7 +572,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Deposit(int id, int bankId, DateOnly depositDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> Deposit(int id, int bankId, DateOnly depositDate,
+            CancellationToken cancellationToken)
         {
             var bank = await _unitOfWork.BankAccount.GetAsync(b => b.BankAccountId == bankId, cancellationToken);
             var model = await _unitOfWork.ProvisionalReceipt
@@ -593,7 +610,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to record provisional receipt deposit date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to record provisional receipt deposit date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
             }
 
@@ -637,7 +655,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to return provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Returned by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to return provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Returned by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
             }
 
@@ -678,7 +697,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to redeposit provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Redeposited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to redeposit provisional receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Redeposited by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
             }
 
@@ -686,7 +706,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ApplyClearingDate(int id, DateOnly clearingDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> ApplyClearingDate(int id, DateOnly clearingDate,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.ProvisionalReceipt
                 .GetAsync(pr => pr.Id == id, cancellationToken);
@@ -716,7 +737,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to apply provisional receipt clearing date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to apply provisional receipt clearing date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
                     ex.Message, ex.StackTrace, GetUserFullName());
             }
 

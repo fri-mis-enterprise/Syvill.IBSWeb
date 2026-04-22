@@ -14,38 +14,30 @@ namespace IBS.Models.MasterFile
         [Display(Name = "Service No")]
         public string ServiceNo { get; set; } = string.Empty;
 
-        [StringLength(20)]
-        public string? CurrentAndPreviousNo { get; set; }
+        [StringLength(20)] public string? CurrentAndPreviousNo { get; set; }
 
         [Display(Name = "Current and Previous")]
         [StringLength(50)]
         public string? CurrentAndPreviousTitle { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? CurrentAndPreviousTitles { get; set; }
+        [NotMapped] public List<SelectListItem>? CurrentAndPreviousTitles { get; set; }
 
-        [NotMapped]
-        public int CurrentAndPreviousId { get; set; }
+        [NotMapped] public int CurrentAndPreviousId { get; set; }
 
-        [NotMapped]
-        public int UnearnedId { get; set; }
+        [NotMapped] public int UnearnedId { get; set; }
 
-        [StringLength(50)]
-        public string? UnearnedTitle { get; set; }
+        [StringLength(50)] public string? UnearnedTitle { get; set; }
 
-        [StringLength(20)]
-        public string? UnearnedNo { get; set; }
+        [StringLength(20)] public string? UnearnedNo { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? UnearnedTitles { get; set; }
+        [NotMapped] public List<SelectListItem>? UnearnedTitles { get; set; }
 
         [Required]
         [Display(Name = "Service Name")]
         [StringLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
-        public int Percent { get; set; }
+        [Required] public int Percent { get; set; }
 
         [Display(Name = "Created By")]
         [StringLength(100)]

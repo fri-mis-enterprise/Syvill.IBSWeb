@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +14,7 @@ using System.Text.Encodings.Web;
 
 namespace IBSWeb.Areas.Identity.Pages.Account.Manage
 {
-    public class EmailModel : PageModel
+    public class EmailModel: PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -76,10 +77,7 @@ namespace IBSWeb.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             Email = email;
 
-            Input = new InputModel
-            {
-                NewEmail = email,
-            };
+            Input = new InputModel { NewEmail = email, };
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
         }

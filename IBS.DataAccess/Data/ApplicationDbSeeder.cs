@@ -14,7 +14,8 @@ namespace IBS.DataAccess.Data
         private const string _adminUserName = "azh";
         private const string _adminPassword = "Testing.1234";
 
-        public static async Task SeedAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+        public static async Task SeedAsync(IServiceProvider serviceProvider,
+            CancellationToken cancellationToken = default)
         {
             await using var scope = serviceProvider.CreateAsyncScope();
 

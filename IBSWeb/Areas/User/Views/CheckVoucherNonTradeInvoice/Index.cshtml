@@ -26,30 +26,30 @@
             <div class="table-responsive" style="max-height: 70vh">
                 <table class="table table-hover mb-0" id="paginatedTable">
                     <thead class="bg-light">
-                        <tr>
-                            <th class="text-start">Invoice#</th>
-                            <th class="text-start">Date</th>
-                            <th class="text-start">Payee</th>
-                            <th class="text-start">Payable Amount</th>
-                            <th class="text-start">Amount Paid</th>
-                            <th class="text-start">Balance</th>
-                            <th class="text-start">Status</th>
-                            <th class="text-center" style="width: 100px;">Actions</th>
-                        </tr>
+                    <tr>
+                        <th class="text-start">Invoice#</th>
+                        <th class="text-start">Date</th>
+                        <th class="text-start">Payee</th>
+                        <th class="text-start">Payable Amount</th>
+                        <th class="text-start">Amount Paid</th>
+                        <th class="text-start">Balance</th>
+                        <th class="text-start">Status</th>
+                        <th class="text-center" style="width: 100px;">Actions</th>
+                    </tr>
                     </thead>
                     <tfoot>
-                        <tr class="bg-secondary text-white fw-bold">
-                            <td class="py-3"></td>
-                            <td class="py-3"></td>
-                            <td class="text-end py-3">
-                                <span class="text-uppercase">Grand Total:</span>
-                            </td>
-                            <td class="text-start py-3" id="totalAmount"></td>
-                            <td class="text-start py-3" id="totalAmountPaid"></td>
-                            <td class="text-start py-3" id="totalBalance"></td>
-                            <td class="py-3"></td>
-                            <td class="py-3"></td>
-                        </tr>
+                    <tr class="bg-secondary text-white fw-bold">
+                        <td class="py-3"></td>
+                        <td class="py-3"></td>
+                        <td class="text-end py-3">
+                            <span class="text-uppercase">Grand Total:</span>
+                        </td>
+                        <td class="text-start py-3" id="totalAmount"></td>
+                        <td class="text-start py-3" id="totalAmountPaid"></td>
+                        <td class="text-start py-3" id="totalBalance"></td>
+                        <td class="py-3"></td>
+                        <td class="py-3"></td>
+                    </tr>
                     </tfoot>
                 </table>
             </div>
@@ -76,8 +76,8 @@
                         data: {
                             id: id,
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -85,14 +85,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -122,8 +122,8 @@
                             id: id,
                             cancellationRemarks: $("#cancellationRemarks").val()
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -131,14 +131,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -180,10 +180,10 @@
                     }
 
                 },
-                "preDrawCallback": function(settings) {
+                "preDrawCallback": function (settings) {
                     $('#paginatedTable').addClass('table-loading');
                 },
-                "drawCallback": function(settings) {
+                "drawCallback": function (settings) {
                     $('#paginatedTable').removeClass('table-loading');
 
                     // Initialize all tooltips
@@ -305,7 +305,7 @@
                 }
             });
 
-            $('#inputDate').on('change', function() {
+            $('#inputDate').on('change', function () {
                 filterValue = $(this).val();
                 localStorage.setItem('filterDate', filterValue); // persist the date
                 table.ajax.reload();

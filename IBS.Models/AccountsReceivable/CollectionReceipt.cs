@@ -6,7 +6,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.Models.AccountsReceivable
 {
-    public class CollectionReceipt : BaseEntity
+    public class CollectionReceipt: BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,11 +22,9 @@ namespace IBS.Models.AccountsReceivable
         [StringLength(13)]
         public string? SVNo { get; set; }
 
-        [ForeignKey(nameof(ServiceInvoiceId))]
-        public ServiceInvoice? ServiceInvoice { get; set; }
+        [ForeignKey(nameof(ServiceInvoiceId))] public ServiceInvoice? ServiceInvoice { get; set; }
 
-        [ForeignKey(nameof(CustomerId))]
-        public Customer? Customer { get; set; }
+        [ForeignKey(nameof(CustomerId))] public Customer? Customer { get; set; }
 
         [Required(ErrorMessage = "Customer is required.")]
         public int CustomerId { get; set; }
@@ -63,8 +61,7 @@ namespace IBS.Models.AccountsReceivable
         public decimal CashAmount { get; set; }
 
         //Check
-        [Column(TypeName = "date")]
-        public DateOnly? CheckDate { get; set; }
+        [Column(TypeName = "date")] public DateOnly? CheckDate { get; set; }
 
         [StringLength(50)]
         public string? CheckNo
@@ -94,8 +91,7 @@ namespace IBS.Models.AccountsReceivable
         private string? _checkBranch;
 
         //Check
-        [Column(TypeName = "date")]
-        public DateOnly? ManagersCheckDate { get; set; }
+        [Column(TypeName = "date")] public DateOnly? ManagersCheckDate { get; set; }
 
         [StringLength(50)]
         public string? ManagersCheckNo
@@ -126,14 +122,11 @@ namespace IBS.Models.AccountsReceivable
 
         public int? BankId { get; set; }
 
-        [ForeignKey(nameof(BankId))]
-        public BankAccount? BankAccount { get; set; }
+        [ForeignKey(nameof(BankId))] public BankAccount? BankAccount { get; set; }
 
-        [StringLength(50)]
-        public string? BankAccountName { get; set; }
+        [StringLength(50)] public string? BankAccountName { get; set; }
 
-        [StringLength(30)]
-        public string? BankAccountNumber { get; set; }
+        [StringLength(30)] public string? BankAccountNumber { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -157,40 +150,30 @@ namespace IBS.Models.AccountsReceivable
 
         public bool IsCertificateUpload { get; set; }
 
-        [StringLength(200)]
-        public string? F2306FilePath { get; set; }
+        [StringLength(200)] public string? F2306FilePath { get; set; }
 
-        [StringLength(100)]
-        public string? F2306FileName { get; set; }
+        [StringLength(100)] public string? F2306FileName { get; set; }
 
-        [StringLength(200)]
-        public string? F2307FilePath { get; set; }
+        [StringLength(200)] public string? F2307FilePath { get; set; }
 
-        [StringLength(100)]
-        public string? F2307FileName { get; set; }
+        [StringLength(100)] public string? F2307FileName { get; set; }
 
         public bool IsPrinted { get; set; }
 
         public DateOnly[]? MultipleTransactionDate { get; set; }
 
-        [StringLength(50)]
-        public string Status { get; set; } = nameof(Enums.Status.Pending);
+        [StringLength(50)] public string Status { get; set; } = nameof(Enums.Status.Pending);
 
-        [StringLength(13)]
-        public string? Type { get; set; }
+        [StringLength(13)] public string? Type { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateOnly? DepositedDate { get; set; }
+        [Column(TypeName = "date")] public DateOnly? DepositedDate { get; set; }
 
-        [NotMapped]
-        public List<GeneralLedgerBook>? Details { get; set; }
+        [NotMapped] public List<GeneralLedgerBook>? Details { get; set; }
 
         public ICollection<CollectionReceiptDetail>? ReceiptDetails { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateOnly? ClearedDate { get; set; }
+        [Column(TypeName = "date")] public DateOnly? ClearedDate { get; set; }
 
-        [StringLength(50)]
-        public string BatchNumber { get; set; } = string.Empty;
+        [StringLength(50)] public string BatchNumber { get; set; } = string.Empty;
     }
 }

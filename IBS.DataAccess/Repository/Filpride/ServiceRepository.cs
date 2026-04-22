@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ServiceRepository : Repository<Service>, IServiceRepository
+    public class ServiceRepository: Repository<Service>, IServiceRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public ServiceRepository(ApplicationDbContext db) : base(db)
+        public ServiceRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -27,7 +27,6 @@ namespace IBS.DataAccess.Repository.Filpride
             }
 
             return (serviceNo + 1).ToString();
-
         }
 
         public async Task<bool> IsServicesExist(string serviceName, CancellationToken cancellationToken = default)

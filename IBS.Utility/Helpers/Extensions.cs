@@ -23,22 +23,21 @@ namespace IBS.Utility.Helpers
         public static string GetEnumDisplayName(this Enum enumValue)
         {
             return enumValue.GetType()
-                            .GetMember(enumValue.ToString())
-                            .First()
-                            .GetCustomAttribute<DisplayAttribute>()?
-                            .GetName() ?? enumValue.ToString();
+                .GetMember(enumValue.ToString())
+                .First()
+                .GetCustomAttribute<DisplayAttribute>()?
+                .GetName() ?? enumValue.ToString();
         }
 
         public static List<SelectListItem> ToSelectList<TEnum>() where TEnum : Enum
         {
             return Enum.GetValues(typeof(TEnum))
-                       .Cast<TEnum>()
-                       .Select(e => new SelectListItem
-                       {
-                           Value = Convert.ToInt32(e).ToString(),
-                           Text = e.GetEnumDisplayName()
-                       })
-                       .ToList();
+                .Cast<TEnum>()
+                .Select(e => new SelectListItem
+                {
+                    Value = Convert.ToInt32(e).ToString(), Text = e.GetEnumDisplayName()
+                })
+                .ToList();
         }
     }
 }

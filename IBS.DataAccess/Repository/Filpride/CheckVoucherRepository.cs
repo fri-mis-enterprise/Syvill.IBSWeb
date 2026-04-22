@@ -9,11 +9,11 @@ using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class CheckVoucherRepository : Repository<CheckVoucherHeader>, ICheckVoucherRepository
+    public class CheckVoucherRepository: Repository<CheckVoucherHeader>, ICheckVoucherRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public CheckVoucherRepository(ApplicationDbContext db) : base(db)
+        public CheckVoucherRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -36,7 +36,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.CheckVoucherHeaderNo!.Length)
                 .ThenByDescending(x => x.CheckVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Type == nameof(DocumentType.Documented),
+                        x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastCv == null)
@@ -74,10 +74,12 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public async Task UpdateInvoicingVoucher(decimal paymentAmount, int invoiceVoucherId, CancellationToken cancellationToken = default)
+        public async Task UpdateInvoicingVoucher(decimal paymentAmount, int invoiceVoucherId,
+            CancellationToken cancellationToken = default)
         {
             var invoiceVoucher = await GetAsync(i => i.CheckVoucherHeaderId == invoiceVoucherId, cancellationToken)
-                                 ?? throw new InvalidOperationException($"Check voucher with id '{invoiceVoucherId}' not found.");
+                                 ?? throw new InvalidOperationException(
+                                     $"Check voucher with id '{invoiceVoucherId}' not found.");
 
             var detailsVoucher = await _db.CheckVoucherDetails
                 .Where(cvd => cvd.TransactionNo == invoiceVoucher.CheckVoucherHeaderNo
@@ -94,10 +96,12 @@ namespace IBS.DataAccess.Repository.Filpride
             }
         }
 
-        public async Task UpdateMultipleInvoicingVoucher(decimal paymentAmount, int invoiceVoucherId, CancellationToken cancellationToken = default)
+        public async Task UpdateMultipleInvoicingVoucher(decimal paymentAmount, int invoiceVoucherId,
+            CancellationToken cancellationToken = default)
         {
             var invoiceVoucher = await GetAsync(i => i.CheckVoucherHeaderId == invoiceVoucherId, cancellationToken)
-                ?? throw new InvalidOperationException($"Check voucher with id '{invoiceVoucherId}' not found.");
+                                 ?? throw new InvalidOperationException(
+                                     $"Check voucher with id '{invoiceVoucherId}' not found.");
 
             var detailsVoucher = await _db.CheckVoucherDetails
                 .Where(cvd => invoiceVoucher.CheckVoucherHeaderNo!.Contains(cvd.TransactionNo))
@@ -112,7 +116,8 @@ namespace IBS.DataAccess.Repository.Filpride
             }
         }
 
-        public override async Task<CheckVoucherHeader?> GetAsync(Expression<Func<CheckVoucherHeader, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<CheckVoucherHeader?> GetAsync(Expression<Func<CheckVoucherHeader, bool>> filter,
+            CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(cv => cv.BankAccount)
@@ -121,7 +126,8 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<CheckVoucherHeader>> GetAllAsync(Expression<Func<CheckVoucherHeader, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<CheckVoucherHeader>> GetAllAsync(
+            Expression<Func<CheckVoucherHeader, bool>>? filter, CancellationToken cancellationToken = default)
         {
             IQueryable<CheckVoucherHeader> query = dbSet
                 .Include(cv => cv.BankAccount)
@@ -136,7 +142,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<CheckVoucherHeader> GetAllQuery(Expression<Func<CheckVoucherHeader, bool>>? filter = null)
+        public override IQueryable<CheckVoucherHeader> GetAllQuery(
+            Expression<Func<CheckVoucherHeader, bool>>? filter = null)
         {
             IQueryable<CheckVoucherHeader> query = dbSet
                 .Include(cv => cv.BankAccount)
@@ -153,17 +160,20 @@ namespace IBS.DataAccess.Repository.Filpride
             return query;
         }
 
-        public async Task<string> GenerateCodeMultipleInvoiceAsync(string type, CancellationToken cancellationToken = default)
+        public async Task<string> GenerateCodeMultipleInvoiceAsync(string type,
+            CancellationToken cancellationToken = default)
         {
             return type switch
             {
                 nameof(DocumentType.Documented) => await GenerateCodeMultipleInvoiceForDocumented(cancellationToken),
-                nameof(DocumentType.Undocumented) => await GenerateCodeMultipleInvoiceForUnDocumented(cancellationToken),
+                nameof(DocumentType.Undocumented) =>
+                    await GenerateCodeMultipleInvoiceForUnDocumented(cancellationToken),
                 _ => throw new ArgumentException("Invalid type")
             };
         }
 
-        private async Task<string> GenerateCodeMultipleInvoiceForDocumented(CancellationToken cancellationToken = default)
+        private async Task<string> GenerateCodeMultipleInvoiceForDocumented(
+            CancellationToken cancellationToken = default)
         {
             var lastCv = await _db
                 .CheckVoucherHeaders
@@ -187,7 +197,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        private async Task<string> GenerateCodeMultipleInvoiceForUnDocumented(CancellationToken cancellationToken = default)
+        private async Task<string> GenerateCodeMultipleInvoiceForUnDocumented(
+            CancellationToken cancellationToken = default)
         {
             var lastCv = await _db
                 .CheckVoucherHeaders
@@ -211,17 +222,20 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 4) + incrementedNumber.ToString("D8");
         }
 
-        public async Task<string> GenerateCodeMultiplePaymentAsync(string type, CancellationToken cancellationToken = default)
+        public async Task<string> GenerateCodeMultiplePaymentAsync(string type,
+            CancellationToken cancellationToken = default)
         {
             return type switch
             {
                 nameof(DocumentType.Documented) => await GenerateCodeMultiplePaymentForDocumented(cancellationToken),
-                nameof(DocumentType.Undocumented) => await GenerateCodeMultiplePaymentForUnDocumented(cancellationToken),
+                nameof(DocumentType.Undocumented) =>
+                    await GenerateCodeMultiplePaymentForUnDocumented(cancellationToken),
                 _ => throw new ArgumentException("Invalid type")
             };
         }
 
-        private async Task<string> GenerateCodeMultiplePaymentForDocumented(CancellationToken cancellationToken = default)
+        private async Task<string> GenerateCodeMultiplePaymentForDocumented(
+            CancellationToken cancellationToken = default)
         {
             var lastCv = await _db
                 .CheckVoucherHeaders
@@ -245,7 +259,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        private async Task<string> GenerateCodeMultiplePaymentForUnDocumented(CancellationToken cancellationToken = default)
+        private async Task<string> GenerateCodeMultiplePaymentForUnDocumented(
+            CancellationToken cancellationToken = default)
         {
             var lastCv = await _db
                 .CheckVoucherHeaders
@@ -282,24 +297,24 @@ namespace IBS.DataAccess.Repository.Filpride
                 var account = accountTitlesDto.Find(c => c.AccountNumber == detail.AccountNo)
                               ?? throw new ArgumentException($"Account title '{detail.AccountNo}' not found.");
                 ledgers.Add(
-                        new GeneralLedgerBook
-                        {
-                            Date = header.Date,
-                            Reference = header.CheckVoucherHeaderNo!,
-                            Description = header.Particulars!,
-                            AccountId = account.AccountId,
-                            AccountNo = account.AccountNumber,
-                            AccountTitle = account.AccountName,
-                            Debit = detail.Debit,
-                            Credit = detail.Credit,
-                            CreatedBy = header.PostedBy!,
-                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                            SubAccountType = detail.SubAccountType,
-                            SubAccountId = detail.SubAccountId,
-                            SubAccountName = detail.SubAccountName,
-                            ModuleType = nameof(ModuleType.Disbursement)
-                        }
-                    );
+                    new GeneralLedgerBook
+                    {
+                        Date = header.Date,
+                        Reference = header.CheckVoucherHeaderNo!,
+                        Description = header.Particulars!,
+                        AccountId = account.AccountId,
+                        AccountNo = account.AccountNumber,
+                        AccountTitle = account.AccountName,
+                        Debit = detail.Debit,
+                        Credit = detail.Credit,
+                        CreatedBy = header.PostedBy!,
+                        CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
+                        SubAccountType = detail.SubAccountType,
+                        SubAccountId = detail.SubAccountId,
+                        SubAccountName = detail.SubAccountName,
+                        ModuleType = nameof(ModuleType.Disbursement)
+                    }
+                );
             }
 
             if (!IsJournalEntriesBalanced(ledgers))

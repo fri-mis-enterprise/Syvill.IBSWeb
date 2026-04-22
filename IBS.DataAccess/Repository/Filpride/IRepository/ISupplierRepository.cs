@@ -5,15 +5,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ISupplierRepository : IRepository<Supplier>
+    public interface ISupplierRepository: IRepository<Supplier>
     {
-        Task<bool> IsTinNoExistAsync(string tin, string branch, string category, CancellationToken cancellationToken = default);
+        Task<bool> IsTinNoExistAsync(string tin, string branch, string category,
+            CancellationToken cancellationToken = default);
 
-        Task<bool> IsSupplierExistAsync(string supplierName, string category, CancellationToken cancellationToken = default);
+        Task<bool> IsSupplierExistAsync(string supplierName, string category,
+            CancellationToken cancellationToken = default);
 
         Task<string> GenerateCodeAsync(CancellationToken cancellationToken = default);
 
-        Task<string> SaveProofOfRegistration(IFormFile file, string localPath, CancellationToken cancellationToken = default);
+        Task<string> SaveProofOfRegistration(IFormFile file, string localPath,
+            CancellationToken cancellationToken = default);
 
         Task UpdateAsync(Supplier model, CancellationToken cancellationToken = default);
     }

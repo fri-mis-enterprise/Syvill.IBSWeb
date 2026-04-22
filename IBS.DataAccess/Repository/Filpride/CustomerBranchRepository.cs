@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class CustomerBranchRepository : Repository<CustomerBranch>, ICustomerBranchRepository
+    public class CustomerBranchRepository: Repository<CustomerBranch>, ICustomerBranchRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public CustomerBranchRepository(ApplicationDbContext db) : base(db)
+        public CustomerBranchRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -33,7 +33,8 @@ namespace IBS.DataAccess.Repository.Filpride
             await _db.SaveChangesAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<CustomerBranch>> GetAllAsync(Expression<Func<CustomerBranch, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<CustomerBranch>> GetAllAsync(
+            Expression<Func<CustomerBranch, bool>>? filter, CancellationToken cancellationToken = default)
         {
             IQueryable<CustomerBranch> query = dbSet;
             if (filter != null)

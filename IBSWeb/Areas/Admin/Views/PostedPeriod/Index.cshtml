@@ -79,7 +79,8 @@
                                     }
                                     else
                                     {
-                                        <p class="text-muted mb-0">No modules available for posting in the selected period.</p>
+                                        <p class="text-muted mb-0">No modules available for posting in the selected
+                                            period.</p>
                                     }
                                 </div>
                             </div>
@@ -112,38 +113,39 @@
                     @if (Model.PostedPeriods.Any())
                     {
                         <div class="table-responsive">
-                            <table id="postedPeriodsTable" class="table table-striped table-hover table-bordered nowrap" style="width:100%">
+                            <table id="postedPeriodsTable" class="table table-striped table-hover table-bordered nowrap"
+                                   style="width:100%">
                                 <thead class="table-dark">
-                                    <tr>
-                                        <th>Module</th>
-                                        <th>Month</th>
-                                        <th>Year</th>
-                                        <th>Posted On</th>
-                                        <th>Posted By</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                <tr>
+                                    <th>Module</th>
+                                    <th>Month</th>
+                                    <th>Year</th>
+                                    <th>Posted On</th>
+                                    <th>Posted By</th>
+                                    <th>Actions</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var period in Model.PostedPeriods)
-                                    {
-                                        <tr>
-                                            <td><span class="badge bg-info">@period.Module</span></td>
-                                            <td>@(new DateTime(2000, period.Month, 1).ToString("MMMM"))</td>
-                                            <td>@period.Year</td>
-                                            <td>@period.PostedOn.ToString("yyyy-MM-dd HH:mm")</td>
-                                            <td>@period.PostedBy</td>
-                                            <td>
-                                                <form asp-action="UnpostPeriod" method="post" style="display:inline;"
-                                                      onsubmit="return confirm('Are you sure you want to unpost this period?');">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="id" value="@period.Id" />
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        <i class="fas fa-undo"></i> Unpost
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    }
+                                @foreach (var period in Model.PostedPeriods)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-info">@period.Module</span></td>
+                                        <td>@(new DateTime(2000, period.Month, 1).ToString("MMMM"))</td>
+                                        <td>@period.Year</td>
+                                        <td>@period.PostedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@period.PostedBy</td>
+                                        <td>
+                                            <form asp-action="UnpostPeriod" method="post" style="display:inline;"
+                                                  onsubmit="return confirm('Are you sure you want to unpost this period?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@period.Id"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-undo"></i> Unpost
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
                                 </tbody>
                             </table>
                         </div>
@@ -159,14 +161,14 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Refresh modules when month/year changes
         document.getElementById('monthSelect').addEventListener('change', refreshAvailableModules);
         document.getElementById('yearSelect').addEventListener('change', refreshAvailableModules);
         document.getElementById('refreshModules').addEventListener('click', refreshAvailableModules);
 
         // Form validation
-        document.getElementById('postPeriodForm').addEventListener('submit', function(e) {
+        document.getElementById('postPeriodForm').addEventListener('submit', function (e) {
             const checkedBoxes = document.querySelectorAll('input[name="SelectedModules"]:checked');
             if (checkedBoxes.length === 0) {
                 e.preventDefault();

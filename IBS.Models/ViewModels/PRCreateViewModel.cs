@@ -3,7 +3,7 @@ using IBS.Models.Enums;
 
 namespace IBS.Models.ViewModels
 {
-    public class PRCreateViewModel : ProvisionalReceiptViewModel
+    public class PRCreateViewModel: ProvisionalReceiptViewModel
     {
         [Required]
         [StringLength(20)]

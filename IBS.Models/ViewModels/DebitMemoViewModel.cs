@@ -8,8 +8,7 @@ namespace IBS.Models.ViewModels
     {
         public int DebitMemoId { get; set; }
 
-        [StringLength(20)]
-        public string Source { get; set; } = null!;
+        [StringLength(20)] public string Source { get; set; } = null!;
 
         [Column(TypeName = "date")]
         [DisplayFormat(DataFormatString = "{0:MMM dd, yyyy}")]
@@ -17,8 +16,7 @@ namespace IBS.Models.ViewModels
 
         public int ServiceInvoiceId { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateOnly Period { get; set; }
+        [Column(TypeName = "date")] public DateOnly Period { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -43,8 +41,7 @@ namespace IBS.Models.ViewModels
 
         private string _description = null!;
 
-        [NotMapped]
-        public List<SelectListItem>? ServiceInvoices { get; set; }
+        [NotMapped] public List<SelectListItem>? ServiceInvoices { get; set; }
 
         public DateTime MinDate { get; set; }
     }

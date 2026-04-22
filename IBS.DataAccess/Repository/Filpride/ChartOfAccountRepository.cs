@@ -9,20 +9,22 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ChartOfAccountRepository : Repository<ChartOfAccount>, IChartOfAccountRepository
+    public class ChartOfAccountRepository: Repository<ChartOfAccount>, IChartOfAccountRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public ChartOfAccountRepository(ApplicationDbContext db) : base(db)
+        public ChartOfAccountRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
 
-        public async Task<ChartOfAccount> GenerateAccount(ChartOfAccount model, string thirdLevel, CancellationToken cancellationToken = default)
+        public async Task<ChartOfAccount> GenerateAccount(ChartOfAccount model, string thirdLevel,
+            CancellationToken cancellationToken = default)
         {
             var existingCoa = await _db.ChartOfAccounts
-                .FirstOrDefaultAsync(coa => coa.AccountNumber == thirdLevel, cancellationToken)
-                              ?? throw new InvalidOperationException($"Chart of account with number '{thirdLevel}' not found.");
+                                  .FirstOrDefaultAsync(coa => coa.AccountNumber == thirdLevel, cancellationToken)
+                              ?? throw new InvalidOperationException(
+                                  $"Chart of account with number '{thirdLevel}' not found.");
 
             model.AccountType = existingCoa.AccountType;
             model.NormalBalance = existingCoa.NormalBalance;
@@ -40,21 +42,20 @@ namespace IBS.DataAccess.Repository.Filpride
                 .Where(c => c.Level == 1)
                 .Select(c => new SelectListItem
                 {
-                    Value = c.AccountNumber,
-                    Text = c.AccountNumber + " " + c.AccountName
+                    Value = c.AccountNumber, Text = c.AccountNumber + " " + c.AccountName
                 })
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SelectListItem>> GetMemberAccount(string parentAcc, CancellationToken cancellationToken = default)
+        public async Task<List<SelectListItem>> GetMemberAccount(string parentAcc,
+            CancellationToken cancellationToken = default)
         {
             return await _db.ChartOfAccounts
                 .OrderBy(c => c.AccountNumber)
                 //.Where(c => c.Parent == parentAcc)
                 .Select(c => new SelectListItem
                 {
-                    Value = c.AccountNumber,
-                    Text = c.AccountNumber + " " + c.AccountName
+                    Value = c.AccountNumber, Text = c.AccountNumber + " " + c.AccountName
                 })
                 .ToListAsync(cancellationToken);
         }
@@ -62,20 +63,24 @@ namespace IBS.DataAccess.Repository.Filpride
         public IEnumerable<ChartOfAccountDto> GetSummaryReportView(CancellationToken cancellationToken = default)
         {
             var query = from c in _db.ChartOfAccounts
-                        join gl in _db.GeneralLedgerBooks on c.AccountNumber equals gl.AccountNo into glGroup
-                        from gl in glGroup.DefaultIfEmpty()
-                        group new { c, gl } by new { c.Level, c.AccountNumber, c.AccountName, c.AccountType, } into g
-                        select new ChartOfAccountDto
-                        {
-                            Level = g.Key.Level,
-                            AccountNumber = g.Key.AccountNumber,
-                            AccountName = g.Key.AccountName,
-                            AccountType = g.Key.AccountType,
-                            Debit = g.Sum(x => x.gl.Debit),
-                            Credit = g.Sum(x => x.gl.Credit),
-                            Balance = g.Sum(x => x.gl.Debit) - g.Sum(x => x.gl.Credit),
-                            Children = new List<ChartOfAccountDto>()
-                        };
+                join gl in _db.GeneralLedgerBooks on c.AccountNumber equals gl.AccountNo into glGroup
+                from gl in glGroup.DefaultIfEmpty()
+                group new { c, gl } by new
+                {
+                    c.Level, c.AccountNumber, c.AccountName, c.AccountType,
+                }
+                into g
+                select new ChartOfAccountDto
+                {
+                    Level = g.Key.Level,
+                    AccountNumber = g.Key.AccountNumber,
+                    AccountName = g.Key.AccountName,
+                    AccountType = g.Key.AccountType,
+                    Debit = g.Sum(x => x.gl.Debit),
+                    Credit = g.Sum(x => x.gl.Credit),
+                    Balance = g.Sum(x => x.gl.Debit) - g.Sum(x => x.gl.Credit),
+                    Children = new List<ChartOfAccountDto>()
+                };
 
             // Dictionary to store account information by level and account number (key)
             var accountDictionary = query.ToDictionary(x => new { x.Level, x.AccountNumber }, x => x);
@@ -87,7 +92,8 @@ namespace IBS.DataAccess.Repository.Filpride
                 foreach (var account in accountDictionary.Where(x => x.Key.Level == level))
                 {
                     // UpdateAsync parent account if it exists and handle potential null reference
-                    if (account.Value.Parent != null && accountDictionary.TryGetValue(new { Level = level - 1, AccountNumber = account.Value.Parent }, out var parentAccount))
+                    if (account.Value.Parent != null && accountDictionary.TryGetValue(
+                            new { Level = level - 1, AccountNumber = account.Value.Parent }, out var parentAccount))
                     {
                         parentAccount.Debit += account.Value.Debit;
                         parentAccount.Credit += account.Value.Credit;
@@ -104,8 +110,9 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task UpdateAsync(ChartOfAccount model, CancellationToken cancellationToken = default)
         {
             var existingAccount = await _db.ChartOfAccounts
-                .FirstOrDefaultAsync(x => x.AccountId == model.AccountId, cancellationToken)
-                                  ?? throw new InvalidOperationException($"Account with id '{model.AccountId}' not found.");
+                                      .FirstOrDefaultAsync(x => x.AccountId == model.AccountId, cancellationToken)
+                                  ?? throw new InvalidOperationException(
+                                      $"Account with id '{model.AccountId}' not found.");
 
             existingAccount.AccountName = model.AccountName;
 
@@ -121,7 +128,8 @@ namespace IBS.DataAccess.Repository.Filpride
             }
         }
 
-        private async Task<string> GenerateNumberAsync(int? parentId, string thirdLevel, CancellationToken cancellationToken = default)
+        private async Task<string> GenerateNumberAsync(int? parentId, string thirdLevel,
+            CancellationToken cancellationToken = default)
         {
             var lastAccount = await _db.ChartOfAccounts
                 .OrderByDescending(c => c.AccountNumber!.Length)
@@ -139,14 +147,16 @@ namespace IBS.DataAccess.Repository.Filpride
             return generatedNo.ToString();
         }
 
-        public override async Task<ChartOfAccount?> GetAsync(Expression<Func<ChartOfAccount, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<ChartOfAccount?> GetAsync(Expression<Func<ChartOfAccount, bool>> filter,
+            CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(c => c.Children)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<ChartOfAccount>> GetAllAsync(Expression<Func<ChartOfAccount, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<ChartOfAccount>> GetAllAsync(
+            Expression<Func<ChartOfAccount, bool>>? filter, CancellationToken cancellationToken = default)
         {
             IQueryable<ChartOfAccount> query = dbSet
                 .Include(c => c.Children);

@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.MasterFile
 {
-    public class ProductRepository : Repository<Product>, IProductRepository
+    public class ProductRepository: Repository<Product>, IProductRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public ProductRepository(ApplicationDbContext db) : base(db)
+        public ProductRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -24,8 +24,9 @@ namespace IBS.DataAccess.Repository.MasterFile
         public async Task UpdateAsync(Product model, CancellationToken cancellationToken = default)
         {
             var existingProduct = await _db.Products
-                .FirstOrDefaultAsync(x => x.ProductId == model.ProductId, cancellationToken)
-                                  ?? throw new InvalidOperationException($"Product with id '{model.ProductId}' not found.");
+                                      .FirstOrDefaultAsync(x => x.ProductId == model.ProductId, cancellationToken)
+                                  ?? throw new InvalidOperationException(
+                                      $"Product with id '{model.ProductId}' not found.");
 
             existingProduct.ProductCode = model.ProductCode;
             existingProduct.ProductName = model.ProductName;

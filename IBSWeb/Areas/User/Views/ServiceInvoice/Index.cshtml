@@ -54,14 +54,14 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                     $.ajax({
+                    $.ajax({
                         url: '@Url.Action("Void", "ServiceInvoice", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -69,14 +69,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -100,15 +100,15 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                     $.ajax({
+                    $.ajax({
                         url: '@Url.Action("Cancel", "ServiceInvoice", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
                             cancellationRemarks: $("#cancellationRemarks").val()
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -116,14 +116,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -132,86 +132,86 @@
         }
     </script>
     <script>
-    $(document).ready(function() {
-        let filterValue = localStorage.getItem('filterDate') || "";
-        $('#inputDate').val(filterValue);
+        $(document).ready(function () {
+            let filterValue = localStorage.getItem('filterDate') || "";
+            $('#inputDate').val(filterValue);
 
-        let table = $('#paginatedTable').DataTable({
-            "processing": true, // Enable processing indicator
-            "serverSide": true, // Enable server-side processing
-            "stateSave": true,
-            "stateDuration": 86400,
-            "language": {
-                "processing": `<div class="d-flex justify-content-center">
+            let table = $('#paginatedTable').DataTable({
+                "processing": true, // Enable processing indicator
+                "serverSide": true, // Enable server-side processing
+                "stateSave": true,
+                "stateDuration": 86400,
+                "language": {
+                    "processing": `<div class="d-flex justify-content-center">
                                     <div class="spinner-border text-primary" role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
                                  </div>`
-            },
-            "ajax": {
-                "url": "@Url.Action("GetServiceInvoices", "ServiceInvoice", new { area = "User" })",
-                "type": "POST",
-                "data": function (d) {
-                    return $.extend({}, d, {
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
-
-                        // NEW PARAMETER FOR DATE — this goes to controller
-                        filterDate: filterValue
-                    });
                 },
-                "error": function (xhr, error, thrown) {
-                    console.error('DataTables error:', error);
-                    alert('An error occurred while loading the data');
-                }
-            },
-            "preDrawCallback": function(settings) {
-                $('#paginatedTable').addClass('table-loading');
-            },
-            "drawCallback": function(settings) {
-                $('#paginatedTable').removeClass('table-loading');
+                "ajax": {
+                    "url": "@Url.Action("GetServiceInvoices", "ServiceInvoice", new { area = "User" })",
+                    "type": "POST",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
 
-                // Initialize all tooltips
-                $('[data-bs-toggle="tooltip"]').tooltip();
-            },
-            "columns": [
-                { "data": "serviceInvoiceNo" },
-                { "data": "customer.customerName" },
-                { "data": "service.name" },
-                {
-                    "data": "period",
-                    "name": "period",
-                    "render": function (data, type, row) {
-                        // Assuming 'Date' is in ISO format like "2024-07-12T00:00:00"
-                        var date = new Date(data);
-                        return date.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
+                            // NEW PARAMETER FOR DATE — this goes to controller
+                            filterDate: filterValue
                         });
+                    },
+                    "error": function (xhr, error, thrown) {
+                        console.error('DataTables error:', error);
+                        alert('An error occurred while loading the data');
                     }
                 },
-                {
-                    "data": "total",
-                    "render": function (data, type, row) {
-                        var amount = $.fn.dataTable.render.number(',', '.', 2).display(data);
-                        return `<span class="d-block fw-medium">${amount}</span>`;
-                    }
+                "preDrawCallback": function (settings) {
+                    $('#paginatedTable').addClass('table-loading');
                 },
-                { "data": "createdBy" },
-                {
-                    "data": "status",
-                    "render": function(data, type, row) {
-                        var statusClass = row.status == "@nameof(Status.Posted)" ? "bg-info" :
-                                          row.status == "@nameof(Status.Voided)"  ? "bg-danger" :
-                                          row.status == "@nameof(Status.Canceled)" ? "bg-warning" : "";
+                "drawCallback": function (settings) {
+                    $('#paginatedTable').removeClass('table-loading');
 
-                        return `<span class="badge rounded-pill ${statusClass}">${row.status}</span>`;
-                    }
+                    // Initialize all tooltips
+                    $('[data-bs-toggle="tooltip"]').tooltip();
                 },
-                {
-                    "data": "serviceInvoiceId",
-                    "orderable": false,
-                    "render": function (data, type, row) {
-                        var dropdown = `<div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
+                "columns": [
+                    {"data": "serviceInvoiceNo"},
+                    {"data": "customer.customerName"},
+                    {"data": "service.name"},
+                    {
+                        "data": "period",
+                        "name": "period",
+                        "render": function (data, type, row) {
+                            // Assuming 'Date' is in ISO format like "2024-07-12T00:00:00"
+                            var date = new Date(data);
+                            return date.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                            });
+                        }
+                    },
+                    {
+                        "data": "total",
+                        "render": function (data, type, row) {
+                            var amount = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                            return `<span class="d-block fw-medium">${amount}</span>`;
+                        }
+                    },
+                    {"data": "createdBy"},
+                    {
+                        "data": "status",
+                        "render": function (data, type, row) {
+                            var statusClass = row.status == "@nameof(Status.Posted)" ? "bg-info" :
+                                row.status == "@nameof(Status.Voided)" ? "bg-danger" :
+                                    row.status == "@nameof(Status.Canceled)" ? "bg-warning" : "";
+
+                            return `<span class="badge rounded-pill ${statusClass}">${row.status}</span>`;
+                        }
+                    },
+                    {
+                        "data": "serviceInvoiceId",
+                        "orderable": false,
+                        "render": function (data, type, row) {
+                            var dropdown = `<div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
                                             <button class="btn btn-light btn-sm dropdown-toggle w-100"
                                                         type="button"
                                                         data-bs-toggle="dropdown"
@@ -233,19 +233,19 @@
                                                 `}
                                             </ul>
                                         </div>`;
-                        return dropdown;
+                            return dropdown;
+                        }
                     }
-                }
-            ],
-            "order": [[0, "asc"]], // Default sort by TransactionDate
-            "pageLength": 10 // Default number of rows per page
-        });
+                ],
+                "order": [[0, "asc"]], // Default sort by TransactionDate
+                "pageLength": 10 // Default number of rows per page
+            });
 
-        $('#inputDate').on('change', function() {
-            filterValue = $(this).val();
-            localStorage.setItem('filterDate', filterValue); // persist the date
-            table.ajax.reload();
+            $('#inputDate').on('change', function () {
+                filterValue = $(this).val();
+                localStorage.setItem('filterDate', filterValue); // persist the date
+                table.ajax.reload();
+            });
         });
-    });
     </script>
 }

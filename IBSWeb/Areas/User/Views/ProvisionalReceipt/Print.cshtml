@@ -42,14 +42,14 @@
     }
 </style>
 
-<br />
+<br/>
 <table class="w-100">
     <tbody>
     <tr>
         <td class="text-end">
             @if (selectedCompany == "Filpride")
             {
-                <img src="~/img/Filpride.jpg" width="130px" />
+                <img src="~/img/Filpride.jpg" width="130px"/>
             }
         </td>
     </tr>
@@ -57,8 +57,8 @@
         <td class="text-center">
             <h2 style="margin:0;"><u><b>&nbsp;FILPRIDE RESOURCES INC.&nbsp;</b></u></h2>
             <p style="margin:0; line-height:1;">
-                57 Westgate Office, Sampson Road, CBD, Subic Bay Freeport Zone,<br />
-                Kalaklan, Olongapo City, 2200 Zambales, Philippines<br />
+                57 Westgate Office, Sampson Road, CBD, Subic Bay Freeport Zone,<br/>
+                Kalaklan, Olongapo City, 2200 Zambales, Philippines<br/>
                 VAT Reg. TIN: 000-216-589-00000
             </p>
         </td>
@@ -66,7 +66,7 @@
     </tbody>
 </table>
 
-<br />
+<br/>
 
 <table class="table-borderless w-100">
     <tr>
@@ -77,7 +77,8 @@
             <h6><b>No.&nbsp;@Model.SeriesNumber</b></h6>
             <h6>
                 <b>Date:</b>
-                <span class="underline d-inline-block text-center">@Model.TransactionDate.ToString(SD.Date_Format)</span>
+                <span
+                    class="underline d-inline-block text-center">@Model.TransactionDate.ToString(SD.Date_Format)</span>
             </h6>
         </td>
     </tr>
@@ -94,10 +95,10 @@
         </tr>
         <tr>
             <td style="padding-left:10px;">TIN: @employeeTin</td>
-            <td style="padding-left:10px;">Buss. Style: </td>
+            <td style="padding-left:10px;">Buss. Style:</td>
         </tr>
         <tr>
-            <td colspan="2" style="padding-left:10px;">The sum of Pesos:<br /> @words</td>
+            <td colspan="2" style="padding-left:10px;">The sum of Pesos:<br/> @words</td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -179,7 +180,7 @@
 @if (Model.Type == nameof(DocumentType.Documented))
 {
     <div class="text-center w-100" style="margin-top:10px;">
-        <em class="p-4"><strong>"THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX"</strong><br /></em>
+        <em class="p-4"><strong>"THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX"</strong><br/></em>
     </div>
 
     if (!Model.IsPrinted)
@@ -202,11 +203,13 @@
     else
     {
         <div class="col-6 col-md-3">
-            <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Printed" asp-route-id="@Model.Id" onclick="window.print()" class="btn btn-primary form-control buttons">Print</a>
+            <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Printed" asp-route-id="@Model.Id"
+               onclick="window.print()" class="btn btn-primary form-control buttons">Print</a>
         </div>
     }
     <div class="col-6 col-md-3">
-        <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index" class="btn btn-outline-primary border form-control buttons">Back to List</a>
+        <a asp-area="User" asp-controller="ProvisionalReceipt" asp-action="Index"
+           class="btn btn-outline-primary border form-control buttons">Back to List</a>
     </div>
 </div>
 

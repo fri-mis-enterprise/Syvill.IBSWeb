@@ -12,7 +12,8 @@
             <h2 class="text-white m-0">@ViewData["Title"]</h2>
         </div>
         <div class="dropdown actions-dropdown">
-            <a asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Create" class="btn btn-light">
+            <a asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Create"
+               class="btn btn-light">
                 <i class="bi bi-plus-circle"></i> New Invoice
             </a>
         </div>
@@ -76,8 +77,8 @@
                             id: id
                         },
                         type: 'POST',
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -85,14 +86,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -122,8 +123,8 @@
                             id: id,
                             cancellationRemarks: $("#cancellationRemarks").val()
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -131,14 +132,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -180,10 +181,10 @@
                     }
 
                 },
-                "preDrawCallback": function(settings) {
+                "preDrawCallback": function (settings) {
                     $('#paginatedTable').addClass('table-loading');
                 },
-                "drawCallback": function(settings) {
+                "drawCallback": function (settings) {
                     $('#paginatedTable').removeClass('table-loading');
 
                     // Initialize all tooltips
@@ -305,7 +306,7 @@
                 }
             });
 
-            $('#inputDate').on('change', function() {
+            $('#inputDate').on('change', function () {
                 filterValue = $(this).val();
                 localStorage.setItem('filterDate', filterValue); // persist the date
                 table.ajax.reload();

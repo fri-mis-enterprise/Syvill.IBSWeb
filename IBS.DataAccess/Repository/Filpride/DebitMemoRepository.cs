@@ -7,16 +7,17 @@ using IBS.Models.AccountsReceivable;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class DebitMemoRepository : Repository<DebitMemo>, IDebitMemoRepository
+    public class DebitMemoRepository: Repository<DebitMemo>, IDebitMemoRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public DebitMemoRepository(ApplicationDbContext db) : base(db)
+        public DebitMemoRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
 
-        public async Task<string> GenerateCodeAsync(string company, string type, CancellationToken cancellationToken = default)
+        public async Task<string> GenerateCodeAsync(string company, string type,
+            CancellationToken cancellationToken = default)
         {
             return type switch
             {
@@ -26,7 +27,8 @@ namespace IBS.DataAccess.Repository.Filpride
             };
         }
 
-        private async Task<string> GenerateCodeForDocumented(string company, CancellationToken cancellationToken = default)
+        private async Task<string> GenerateCodeForDocumented(string company,
+            CancellationToken cancellationToken = default)
         {
             var lastDm = await _db
                 .DebitMemos
@@ -34,7 +36,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.DebitMemoNo!.Length)
                 .ThenByDescending(x => x.DebitMemoNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Type == nameof(DocumentType.Documented),
+                        x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastDm == null)
@@ -49,7 +51,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 2) + incrementedNumber.ToString("D10");
         }
 
-        private async Task<string> GenerateCodeForUnDocumented(string company, CancellationToken cancellationToken = default)
+        private async Task<string> GenerateCodeForUnDocumented(string company,
+            CancellationToken cancellationToken = default)
         {
             var lastDm = await _db
                 .DebitMemos
@@ -72,7 +75,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public override async Task<DebitMemo?> GetAsync(Expression<Func<DebitMemo, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<DebitMemo?> GetAsync(Expression<Func<DebitMemo, bool>> filter,
+            CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(c => c.ServiceInvoice)
@@ -82,7 +86,8 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<DebitMemo>> GetAllAsync(Expression<Func<DebitMemo, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<DebitMemo>> GetAllAsync(Expression<Func<DebitMemo, bool>>? filter,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<DebitMemo> query = dbSet
                 .Include(c => c.ServiceInvoice)

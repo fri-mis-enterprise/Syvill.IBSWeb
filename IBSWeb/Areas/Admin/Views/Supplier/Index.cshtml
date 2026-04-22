@@ -46,7 +46,7 @@
             var table = $('#paginatedTable').DataTable({
                 "order": [[0, 'asc']],
                 "columnDefs": [
-                    { "orderable": false, "targets": [6] }
+                    {"orderable": false, "targets": [6]}
                 ],
                 "processing": true,
                 "serverSide": true,
@@ -102,15 +102,14 @@
                     {
                         "data": "null",
                         "orderable": false,
-                        "render": function(data, type, row) {
+                        "render": function (data, type, row) {
                             let actions = `<div class="w-100 btn-group" role="group">`;
 
                             actions += `<a class="btn btn-primary mx-2" href="${editUrl}?id=${row.supplierId}"><i class="bi bi-pencil-square"></i> Edit</a>`;
 
-                            if(row.isActive){
+                            if (row.isActive) {
                                 actions += `<a class="btn btn-danger mx-2" href="${deactivateUrl}?id=${row.supplierId}"><i class="bi bi-person-fill-slash"></i> Deactivate</a>`;
-                            }
-                            else {
+                            } else {
                                 actions += `<a class="btn btn-success mx-2" href="${activateUrl}?id=${row.supplierId}"><i class="bi bi-person-fill-check"></i> Activate</a>`;
                             }
 

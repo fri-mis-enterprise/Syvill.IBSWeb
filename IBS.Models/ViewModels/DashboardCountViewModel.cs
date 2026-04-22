@@ -20,6 +20,5 @@ namespace IBS.Models.ViewModels
         public int JournalVoucherForApprovalCount { get; set; }
         public int CheckVoucherNonTradeInvoiceForApprovalCount { get; set; }
         public int CheckVoucherNonTradePayrollInvoiceForApprovalCount { get; set; }
-
     }
 }

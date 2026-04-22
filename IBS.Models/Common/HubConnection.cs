@@ -4,8 +4,7 @@ namespace IBS.Models.Common
 {
     public class HubConnection
     {
-        [Key]
-        public Guid Id { get; set; }
+        [Key] public Guid Id { get; set; }
 
         public string ConnectionId { get; set; } = null!;
 

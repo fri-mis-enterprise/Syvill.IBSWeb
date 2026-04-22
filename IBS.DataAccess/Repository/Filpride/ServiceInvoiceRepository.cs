@@ -10,11 +10,11 @@ using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class ServiceInvoiceRepository : Repository<ServiceInvoice>, IServiceInvoiceRepository
+    public class ServiceInvoiceRepository: Repository<ServiceInvoice>, IServiceInvoiceRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public ServiceInvoiceRepository(ApplicationDbContext db) : base(db)
+        public ServiceInvoiceRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -37,7 +37,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.ServiceInvoiceNo!.Length)
                 .ThenByDescending(x => x.ServiceInvoiceNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Type == nameof(DocumentType.Documented),
+                        x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastSv == null)
@@ -75,7 +75,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public override async Task<ServiceInvoice?> GetAsync(Expression<Func<ServiceInvoice, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<ServiceInvoice?> GetAsync(Expression<Func<ServiceInvoice, bool>> filter,
+            CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(s => s.Customer)
@@ -83,7 +84,8 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<ServiceInvoice>> GetAllAsync(Expression<Func<ServiceInvoice, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<ServiceInvoice>> GetAllAsync(
+            Expression<Func<ServiceInvoice, bool>>? filter, CancellationToken cancellationToken = default)
         {
             IQueryable<ServiceInvoice> query = dbSet
                 .Include(s => s.Customer)
@@ -101,10 +103,10 @@ namespace IBS.DataAccess.Repository.Filpride
         {
             IQueryable<ServiceInvoice> query =
                 dbSet
-                .Include(s => s.Customer)
-                .Include(s => s.Service)
-                .AsSplitQuery()
-                .AsNoTracking();
+                    .Include(s => s.Customer)
+                    .Include(s => s.Service)
+                    .AsSplitQuery()
+                    .AsNoTracking();
 
             if (filter != null)
             {
@@ -154,7 +156,8 @@ namespace IBS.DataAccess.Repository.Filpride
             var vatOutputTitle = accountTitlesDto.Find(c => c.AccountNumber == "201030100")
                                  ?? throw new ArgumentException("Account title '201030100' not found.");
             var servicesTitle = accountTitlesDto.Find(c => c.AccountNumber == model.Service!.CurrentAndPreviousNo!)
-                                ?? throw new ArgumentException($"Account title '{model.Service!.CurrentAndPreviousNo}' not found.");
+                                ?? throw new ArgumentException(
+                                    $"Account title '{model.Service!.CurrentAndPreviousNo}' not found.");
 
             ledgers.Add(
                 new GeneralLedgerBook
@@ -194,6 +197,7 @@ namespace IBS.DataAccess.Repository.Filpride
                     }
                 );
             }
+
             if (withHoldingVatAmount > 0)
             {
                 ledgers.Add(

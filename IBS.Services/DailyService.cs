@@ -11,7 +11,7 @@ using Quartz;
 namespace IBS.Services
 {
     [DisallowConcurrentExecution]
-    public class DailyService : IJob
+    public class DailyService: IJob
     {
         private readonly ApplicationDbContext _dbContext;
 

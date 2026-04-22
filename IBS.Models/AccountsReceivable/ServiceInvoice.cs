@@ -5,7 +5,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.Models.AccountsReceivable
 {
-    public class ServiceInvoice : BaseEntity
+    public class ServiceInvoice: BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,20 +21,15 @@ namespace IBS.Models.AccountsReceivable
         [Required(ErrorMessage = "The Customer is required.")]
         public int CustomerId { get; set; }
 
-        [ForeignKey(nameof(CustomerId))]
-        public Customer? Customer { get; set; }
+        [ForeignKey(nameof(CustomerId))] public Customer? Customer { get; set; }
 
-        [StringLength(200)]
-        public string CustomerName { get; set; } = string.Empty;
+        [StringLength(200)] public string CustomerName { get; set; } = string.Empty;
 
-        [StringLength(200)]
-        public string CustomerAddress { get; set; } = string.Empty;
+        [StringLength(200)] public string CustomerAddress { get; set; } = string.Empty;
 
-        [StringLength(20)]
-        public string CustomerTin { get; set; } = string.Empty;
+        [StringLength(20)] public string CustomerTin { get; set; } = string.Empty;
 
-        [StringLength(200)]
-        public string? CustomerBusinessStyle { get; set; }
+        [StringLength(200)] public string? CustomerBusinessStyle { get; set; }
 
         #endregion Customer properties
 
@@ -42,44 +37,32 @@ namespace IBS.Models.AccountsReceivable
         [Display(Name = "Particulars")]
         public int ServiceId { get; set; }
 
-        [ForeignKey(nameof(ServiceId))]
-        public Service? Service { get; set; }
+        [ForeignKey(nameof(ServiceId))] public Service? Service { get; set; }
 
-        [StringLength(100)]
-        public string ServiceName { get; set; } = string.Empty;
+        [StringLength(100)] public string ServiceName { get; set; } = string.Empty;
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal ServicePercent { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal ServicePercent { get; set; }
 
         [Required]
         [Display(Name = "Due Date")]
         [Column(TypeName = "date")]
         public DateOnly DueDate { get; set; }
 
-        [Required]
-        [Column(TypeName = "date")]
-        public DateOnly Period { get; set; }
+        [Required] [Column(TypeName = "date")] public DateOnly Period { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal Total { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal Total { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal Discount { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal Discount { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal CurrentAndPreviousAmount { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal CurrentAndPreviousAmount { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal UnearnedAmount { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal UnearnedAmount { get; set; }
 
-        [StringLength(20)]
-        public string PaymentStatus { get; set; } = nameof(Enums.Status.Pending);
+        [StringLength(20)] public string PaymentStatus { get; set; } = nameof(Enums.Status.Pending);
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal AmountPaid { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal AmountPaid { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal Balance { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal Balance { get; set; }
 
         [StringLength(1000)]
         public string Instructions
@@ -94,14 +77,11 @@ namespace IBS.Models.AccountsReceivable
 
         public bool IsPrinted { get; set; }
 
-        [StringLength(50)]
-        public string Status { get; set; } = nameof(Enums.Status.Pending);
+        [StringLength(50)] public string Status { get; set; } = nameof(Enums.Status.Pending);
 
-        [StringLength(13)]
-        public string Type { get; set; } = string.Empty;
+        [StringLength(13)] public string Type { get; set; } = string.Empty;
 
-        [StringLength(20)]
-        public string VatType { get; set; } = string.Empty;
+        [StringLength(20)] public string VatType { get; set; } = string.Empty;
 
         public bool HasEwt { get; set; }
 

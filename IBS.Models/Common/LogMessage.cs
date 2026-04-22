@@ -5,8 +5,7 @@ namespace IBS.Models.Common
 {
     public class LogMessage
     {
-        [Key]
-        public Guid LogId { get; set; }
+        [Key] public Guid LogId { get; set; }
 
         //Time of log
         [Column(TypeName = "timestamp without time zone")]
@@ -30,6 +29,5 @@ namespace IBS.Models.Common
             LoggerName = loggerName;
             Message = message;
         }
-
     }
 }

@@ -5,20 +5,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.Models.AccountsReceivable
 {
-    public class DebitMemo : BaseEntity
+    public class DebitMemo: BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DebitMemoId { get; set; }
 
-        [Display(Name = "SV No")]
-        public int ServiceInvoiceId { get; set; }
+        [Display(Name = "SV No")] public int ServiceInvoiceId { get; set; }
 
-        [ForeignKey(nameof(ServiceInvoiceId))]
-        public ServiceInvoice? ServiceInvoice { get; set; }
+        [ForeignKey(nameof(ServiceInvoiceId))] public ServiceInvoice? ServiceInvoice { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? ServiceInvoices { get; set; }
+        [NotMapped] public List<SelectListItem>? ServiceInvoices { get; set; }
 
         [StringLength(13)]
         [Display(Name = "DM No")]
@@ -43,8 +40,7 @@ namespace IBS.Models.AccountsReceivable
 
         private string _description = string.Empty;
 
-        [StringLength(20)]
-        public string Source { get; set; } = string.Empty;
+        [StringLength(20)] public string Source { get; set; } = string.Empty;
 
         [Required]
         [StringLength(1000)]
@@ -56,8 +52,7 @@ namespace IBS.Models.AccountsReceivable
 
         private string? _remarks;
 
-        [Column(TypeName = "date")]
-        public DateOnly Period { get; set; }
+        [Column(TypeName = "date")] public DateOnly Period { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -73,10 +68,8 @@ namespace IBS.Models.AccountsReceivable
 
         public bool IsPrinted { get; set; }
 
-        [StringLength(50)]
-        public string Status { get; set; } = nameof(Enums.Status.Pending);
+        [StringLength(50)] public string Status { get; set; } = nameof(Enums.Status.Pending);
 
-        [StringLength(13)]
-        public string? Type { get; set; }
+        [StringLength(13)] public string? Type { get; set; }
     }
 }

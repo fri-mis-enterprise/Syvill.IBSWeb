@@ -21,7 +21,8 @@
             <p class="fs-5 text-muted">Effortlessly manage and optimize your business tasks.</p>
             @if (!User.Identity!.IsAuthenticated)
             {
-                <a class="btn btn-primary btn-lg px-4 py-3 mt-4" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="">
+                <a class="btn btn-primary btn-lg px-4 py-3 mt-4" asp-area="Identity" asp-page="/Account/Login"
+                   asp-route-returnUrl="">
                     Login <i class="bi bi-box-arrow-in-right ms-2"></i>
                 </a>
             }
@@ -33,7 +34,8 @@
                         <h2 class="fw-semibold text-secondary mb-4">Accounting</h2>
                         <div class="row g-4">
                             <div class="col-md-4">
-                                <a href="@Url.Action("Index", "CheckVoucherNonTradeInvoice", new { area = "User", filterType = "ForApproval" })" class="text-decoration-none">
+                                <a href="@Url.Action("Index", "CheckVoucherNonTradeInvoice", new { area = "User", filterType = "ForApproval" })"
+                                   class="text-decoration-none">
                                     <div class="card shadow-sm h-100 border-0">
                                         <div class="card-body text-center">
                                             <h5 class="card-title text-dark fw-semibold">
@@ -46,7 +48,8 @@
                             </div>
 
                             <div class="col-md-4">
-                                <a href="@Url.Action("Index", "JournalVoucher", new { area = "User", filterType = "ForApproval" })" class="text-decoration-none">
+                                <a href="@Url.Action("Index", "JournalVoucher", new { area = "User", filterType = "ForApproval" })"
+                                   class="text-decoration-none">
                                     <div class="card shadow-sm h-100 border-0">
                                         <div class="card-body text-center">
                                             <h5 class="card-title text-dark fw-semibold">

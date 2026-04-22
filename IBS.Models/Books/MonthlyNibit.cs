@@ -13,17 +13,13 @@ namespace IBS.Models.Books
 
         public int Year { get; set; }
 
-        [Column(TypeName = "numeric(18, 4)")]
-        public decimal BeginningBalance { get; set; }
+        [Column(TypeName = "numeric(18, 4)")] public decimal BeginningBalance { get; set; }
 
-        [Column(TypeName = "numeric(18, 4)")]
-        public decimal NetIncome { get; set; }
+        [Column(TypeName = "numeric(18, 4)")] public decimal NetIncome { get; set; }
 
-        [Column(TypeName = "numeric(18, 4)")]
-        public decimal PriorPeriodAdjustment { get; set; }
+        [Column(TypeName = "numeric(18, 4)")] public decimal PriorPeriodAdjustment { get; set; }
 
-        [Column(TypeName = "numeric(18, 4)")]
-        public decimal EndingBalance { get; set; }
+        [Column(TypeName = "numeric(18, 4)")] public decimal EndingBalance { get; set; }
 
         public bool IsValid { get; set; } = true;
     }

@@ -1,6 +1,7 @@
 # IBSWeb — Integrated Business System
 
-IBSWeb is a web-based Accounting & Business-Management system built with ASP.NET (C#), designed to handle accounting, finance, and business operations in a structured, modular, and extensible way.
+IBSWeb is a web-based Accounting & Business-Management system built with ASP.NET (C#), designed to handle accounting,
+finance, and business operations in a structured, modular, and extensible way.
 
 ---
 

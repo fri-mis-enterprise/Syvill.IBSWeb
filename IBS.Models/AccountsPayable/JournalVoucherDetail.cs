@@ -10,14 +10,11 @@ namespace IBS.Models.AccountsPayable
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int JournalVoucherDetailId { get; set; }
 
-        [StringLength(20)]
-        public string AccountNo { get; set; } = string.Empty;
+        [StringLength(20)] public string AccountNo { get; set; } = string.Empty;
 
-        [StringLength(200)]
-        public string AccountName { get; set; } = string.Empty;
+        [StringLength(200)] public string AccountName { get; set; } = string.Empty;
 
-        [StringLength(13)]
-        public string TransactionNo { get; set; } = string.Empty;
+        [StringLength(13)] public string TransactionNo { get; set; } = string.Empty;
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -35,7 +32,6 @@ namespace IBS.Models.AccountsPayable
 
         public int? SubAccountId { get; set; }
 
-        [Column(TypeName = "varchar(200)")]
-        public string? SubAccountName { get; set; }
+        [Column(TypeName = "varchar(200)")] public string? SubAccountName { get; set; }
     }
 }

@@ -13,10 +13,10 @@
     'use strict';
 
     const STORAGE_KEY = 'qa_clicks';
-    const STATE_KEY   = 'qa_open';
-    const MAX_RECENT  = 5;
-    const MAX_TOP     = 8;
-    const MIN_COUNT   = 1;
+    const STATE_KEY = 'qa_open';
+    const MAX_RECENT = 5;
+    const MAX_TOP = 8;
+    const MIN_COUNT = 1;
 
     /* ─── Safe Storage Helpers ─── */
 
@@ -77,8 +77,11 @@
     /* ─── Data Helpers ─── */
 
     function getClicks() {
-        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-        catch { return {}; }
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch {
+            return {};
+        }
     }
 
     function saveClicks(data) {
@@ -89,18 +92,22 @@
         try {
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem('qa_recent');
-        } catch { /* quota/security error */ }
+        } catch { /* quota/security error */
+        }
     }
 
     function getRecent() {
-        try { return JSON.parse(localStorage.getItem('qa_recent') || '[]'); }
-        catch { return []; }
+        try {
+            return JSON.parse(localStorage.getItem('qa_recent') || '[]');
+        } catch {
+            return [];
+        }
     }
 
     function pushRecent(url, label, breadcrumb) {
         const company = getCompanyFromUrl(url);
-        let recent    = getRecent().filter(r => r.url !== url);
-        recent.unshift({ url, label, company, breadcrumb: breadcrumb || '' });
+        let recent = getRecent().filter(r => r.url !== url);
+        recent.unshift({url, label, company, breadcrumb: breadcrumb || ''});
         if (recent.length > MAX_RECENT) recent = recent.slice(0, MAX_RECENT);
         safeLocalSet('qa_recent', JSON.stringify(recent));
     }
@@ -117,7 +124,7 @@
 
     function getCurrentCompany() {
         const fromInput = (document.getElementById('hfCompany')?.value || '').trim();
-        const fromData  = (
+        const fromData = (
             document.documentElement.dataset.selectedCompany ||
             document.body.dataset.selectedCompany ||
             ''
@@ -129,7 +136,7 @@
         const lower = (url || '').toLowerCase();
         if (lower.includes('/filpride/')) return 'Filpride';
         if (lower.includes('/mobility/')) return 'Mobility';
-        if (lower.includes('/bienes/'))   return 'Bienes';
+        if (lower.includes('/bienes/')) return 'Bienes';
         return '';
     }
 
@@ -183,26 +190,26 @@
     /* ─── Collect all nav links from the DOM ─── */
 
     function getAllNavLinks() {
-        const seen  = new Set();
+        const seen = new Set();
         const links = [];
 
         document.querySelectorAll(
             'nav.navbar a.dropdown-item:not([href="#"]):not([href=""]),' +
             'nav.navbar a.nav-link:not([href="#"]):not([href=""])'
         ).forEach(anchor => {
-            const rawUrl  = anchor.getAttribute('href') || '';
-            const url     = sanitizeUrl(rawUrl);
-            const label   = (anchor.textContent || '').trim();
+            const rawUrl = anchor.getAttribute('href') || '';
+            const url = sanitizeUrl(rawUrl);
+            const label = (anchor.textContent || '').trim();
             if (!url || !label || isHomeUrl(url)) return;
             if (anchor.classList.contains('dropdown-toggle')) return;
             const company = getCompanyFromUrl(url);
-            const key     = url + '|' + company;
+            const key = url + '|' + company;
             if (seen.has(key)) return;
             seen.add(key);
             links.push({
                 url,
                 label,
-                breadcrumb : getBreadcrumb(anchor),
+                breadcrumb: getBreadcrumb(anchor),
                 company,
             });
         });
@@ -225,9 +232,9 @@
             _tracked.add(anchor);
 
             anchor.addEventListener('click', function () {
-                const rawUrl     = this.getAttribute('href') || this.href;
-                const url        = sanitizeUrl(rawUrl);
-                const label      = (this.textContent || '').trim();
+                const rawUrl = this.getAttribute('href') || this.href;
+                const url = sanitizeUrl(rawUrl);
+                const label = (this.textContent || '').trim();
                 const breadcrumb = getBreadcrumb(this);
                 if (!url || !label) return;
                 if (isHomeUrl(url)) return;
@@ -237,14 +244,14 @@
     }
 
     function recordClick(url, label, breadcrumb) {
-        const data    = getClicks();
+        const data = getClicks();
         const company = getCompanyFromUrl(url);
         if (!data[url]) {
-            data[url] = { label, count: 0, company, breadcrumb: breadcrumb || '' };
+            data[url] = {label, count: 0, company, breadcrumb: breadcrumb || ''};
         }
         data[url].count++;
-        data[url].label     = label;
-        data[url].company   = company;
+        data[url].label = label;
+        data[url].company = company;
         data[url].breadcrumb = breadcrumb || data[url].breadcrumb || '';
         saveClicks(data);
         pushRecent(url, label, breadcrumb);
@@ -311,8 +318,8 @@
         renderList(savedSearch.toLowerCase());
 
         document.addEventListener('click', function (e) {
-            const panel      = document.getElementById('qa-panel');
-            const toggleBtn  = document.getElementById('qa-toggle-btn');
+            const panel = document.getElementById('qa-panel');
+            const toggleBtn = document.getElementById('qa-toggle-btn');
             const navTrigger = document.getElementById('qa-nav-trigger');
             if (!panel.classList.contains('qa-hidden') &&
                 !panel.contains(e.target) &&
@@ -326,7 +333,7 @@
     /* ─── Render list ─── */
 
     function renderList(filter) {
-        const list   = document.getElementById('qa-list');
+        const list = document.getElementById('qa-list');
         if (!list) return;
         const clicks = getClicks();
         const recent = getRecent();
@@ -408,9 +415,9 @@
         const safeUrl = sanitizeUrl(url);
         const a = document.createElement('a');
         // codeql[js/xss-through-dom] safeUrl is always a same-origin relative path produced by sanitizeUrl()
-        a.href      = safeUrl !== null ? safeUrl : '#';
+        a.href = safeUrl !== null ? safeUrl : '#';
         a.className = 'qa-item';
-        a.title     = count > 1 ? `${label} — visited ${count}×` : label;
+        a.title = count > 1 ? `${label} — visited ${count}×` : label;
 
         const labelEl = document.createElement('span');
         labelEl.className = 'qa-item-label';
@@ -436,7 +443,7 @@
     /* ─── Toggle ─── */
 
     function togglePanel() {
-        const panel     = document.getElementById('qa-panel');
+        const panel = document.getElementById('qa-panel');
         const toggleBtn = document.getElementById('qa-toggle-btn');
         if (!panel) return;
         const isNowHidden = panel.classList.toggle('qa-hidden');
@@ -493,7 +500,7 @@
         const navbar = document.querySelector('nav.navbar');
         if (navbar) {
             const observer = new MutationObserver(() => attachTracking());
-            observer.observe(navbar, { childList: true, subtree: true });
+            observer.observe(navbar, {childList: true, subtree: true});
         }
     }
 

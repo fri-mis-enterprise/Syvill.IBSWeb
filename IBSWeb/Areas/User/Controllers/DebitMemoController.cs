@@ -21,7 +21,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
-    public class DebitMemoController : Controller
+    public class DebitMemoController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -31,7 +31,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         private readonly ILogger<DebitMemoController> _logger;
 
-        public DebitMemoController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<DebitMemoController> logger)
+        public DebitMemoController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork, ILogger<DebitMemoController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -64,7 +65,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetDebitMemos([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetDebitMemos([FromForm] DataTablesParameters parameters, DateOnly filterDate,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -90,8 +92,9 @@ namespace IBSWeb.Areas.User.Controllers
                             s.Remarks!.ToLower().Contains(searchValue) == true ||
                             s.Description.ToLower().Contains(searchValue) ||
                             s.CreatedBy!.ToLower().Contains(searchValue)
-                            );
+                        );
                 }
+
                 if (filterDate != DateOnly.MinValue && filterDate != default)
                 {
                     debitMemos = debitMemos.Where(s => s.TransactionDate == filterDate);
@@ -146,15 +149,12 @@ namespace IBSWeb.Areas.User.Controllers
 
 
             viewModel.ServiceInvoices = (await _unitOfWork.ServiceInvoice
-                .GetAllAsync(sv => sv.PostedBy != null, cancellationToken))
-                .Select(sv => new SelectListItem
-                {
-                    Value = sv.ServiceInvoiceId.ToString(),
-                    Text = sv.ServiceInvoiceNo
-                })
+                    .GetAllAsync(sv => sv.PostedBy != null, cancellationToken))
+                .Select(sv => new SelectListItem { Value = sv.ServiceInvoiceId.ToString(), Text = sv.ServiceInvoiceNo })
                 .ToList();
 
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.DebitMemo, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.DebitMemo, cancellationToken);
         }
 
         [HttpPost]
@@ -187,7 +187,7 @@ namespace IBSWeb.Areas.User.Controllers
             };
 
             var existingSv = await _unitOfWork.ServiceInvoice
-                        .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
+                .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -196,24 +196,30 @@ namespace IBSWeb.Areas.User.Controllers
                 #region -- checking for unposted DM or CM
 
                 var existingSVDMs = (await _unitOfWork.DebitMemo
-                        .GetAllAsync(si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null && si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
+                        .GetAllAsync(
+                            si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null &&
+                                  si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
                     .OrderBy(s => s.DebitMemoId)
                     .ToList();
                 if (existingSVDMs.Count > 0)
                 {
                     await IncludeSelectLists(viewModel, cancellationToken);
-                    ModelState.AddModelError("", $"Can’t proceed to create you have unposted DM/CM. {existingSVDMs.First().DebitMemoNo}");
+                    ModelState.AddModelError("",
+                        $"Can’t proceed to create you have unposted DM/CM. {existingSVDMs.First().DebitMemoNo}");
                     return View(viewModel);
                 }
 
                 var existingSVCMs = (await _unitOfWork.CreditMemo
-                        .GetAllAsync(si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null && si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
+                        .GetAllAsync(
+                            si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null &&
+                                  si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
                     .OrderBy(s => s.CreditMemoId)
                     .ToList();
                 if (existingSVCMs.Count > 0)
                 {
                     await IncludeSelectLists(viewModel, cancellationToken);
-                    ModelState.AddModelError("", $"Can’t proceed to create you have unposted DM/CM. {existingSVCMs.First().CreditMemoNo}");
+                    ModelState.AddModelError("",
+                        $"Can’t proceed to create you have unposted DM/CM. {existingSVCMs.First().CreditMemoNo}");
                     return View(viewModel);
                 }
 
@@ -221,13 +227,15 @@ namespace IBSWeb.Areas.User.Controllers
 
                 model.CreatedBy = GetUserFullName();
 
-                model.DebitMemoNo = await _unitOfWork.DebitMemo.GenerateCodeAsync(companyClaims, existingSv!.Type, cancellationToken);
+                model.DebitMemoNo =
+                    await _unitOfWork.DebitMemo.GenerateCodeAsync(companyClaims, existingSv!.Type, cancellationToken);
                 model.Type = existingSv.Type;
                 model.DebitAmount = model.Amount;
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new debit memo# {model.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new debit memo# {model.DebitMemoNo}",
+                    "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -241,7 +249,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 await IncludeSelectLists(viewModel, cancellationToken);
-                _logger.LogError(ex, "Failed to create debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to create debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -267,7 +276,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview debit memo# {debitMemo.DebitMemoNo}", "Debit Memo");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview debit memo# {debitMemo.DebitMemoNo}",
+                "Debit Memo");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -290,7 +300,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 if (await _unitOfWork.IsPeriodPostedAsync(Module.DebitMemo, model.TransactionDate, cancellationToken))
                 {
-                    throw new ArgumentException($"Cannot post this record because the period {model.TransactionDate:MMM yyyy} is already closed.");
+                    throw new ArgumentException(
+                        $"Cannot post this record because the period {model.TransactionDate:MMM yyyy} is already closed.");
                 }
 
                 model.PostedBy = GetUserFullName();
@@ -298,18 +309,25 @@ namespace IBSWeb.Areas.User.Controllers
                 model.Status = nameof(Status.Posted);
 
                 var accountTitlesDto = await _unitOfWork.ServiceInvoice.GetListOfAccountTitleDto(cancellationToken);
-                var arTradeReceivableTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020100") ?? throw new ArgumentException("Account title '101020100' not found.");
-                var arNonTradeTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020500") ?? throw new ArgumentException("Account title '101020500' not found.");
-                var arTradeCwt = accountTitlesDto.Find(c => c.AccountNumber == "101020200") ?? throw new ArgumentException("Account title '101020200' not found.");
-                var arTradeCwv = accountTitlesDto.Find(c => c.AccountNumber == "101020300") ?? throw new ArgumentException("Account title '101020300' not found.");
-                var vatOutputTitle = accountTitlesDto.Find(c => c.AccountNumber == "201030100") ?? throw new ArgumentException("Account title '201030100' not found.");
+                var arTradeReceivableTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020100") ??
+                                             throw new ArgumentException("Account title '101020100' not found.");
+                var arNonTradeTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020500") ??
+                                      throw new ArgumentException("Account title '101020500' not found.");
+                var arTradeCwt = accountTitlesDto.Find(c => c.AccountNumber == "101020200") ??
+                                 throw new ArgumentException("Account title '101020200' not found.");
+                var arTradeCwv = accountTitlesDto.Find(c => c.AccountNumber == "101020300") ??
+                                 throw new ArgumentException("Account title '101020300' not found.");
+                var vatOutputTitle = accountTitlesDto.Find(c => c.AccountNumber == "201030100") ??
+                                     throw new ArgumentException("Account title '201030100' not found.");
 
                 var existingSv = await _unitOfWork.ServiceInvoice
-                        .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
+                    .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
 
                 #region -- Computation --
 
-                viewModelDmcm.Period = DateOnly.FromDateTime(model.CreatedDate) >= model.Period ? DateOnly.FromDateTime(model.CreatedDate) : model.Period.AddMonths(1).AddDays(-1);
+                viewModelDmcm.Period = DateOnly.FromDateTime(model.CreatedDate) >= model.Period
+                    ? DateOnly.FromDateTime(model.CreatedDate)
+                    : model.Period.AddMonths(1).AddDays(-1);
 
                 var netDiscount = model.Amount - existingSv!.Discount;
                 var netOfVatAmount = model.ServiceInvoice!.VatType == SD.VatType_Vatable
@@ -370,6 +388,7 @@ namespace IBSWeb.Areas.User.Controllers
                         }
                     );
                 }
+
                 if (wvat > 0)
                 {
                     ledgers.Add(
@@ -438,7 +457,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted debit memo# {model.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrailBook =
+                    new(model.PostedBy!, $"Posted debit memo# {model.DebitMemoNo}", "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -449,7 +469,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to post debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to post debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -482,7 +503,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided debit memo# {model.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrailBook =
+                    new(model.VoidedBy!, $"Voided debit memo# {model.DebitMemoNo}", "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -490,11 +512,15 @@ namespace IBSWeb.Areas.User.Controllers
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Debit Memo #{model.DebitMemoNo} has been voided successfully." });
+                return Json(new
+                {
+                    success = true, message = $"Debit Memo #{model.DebitMemoNo} has been voided successfully."
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to void debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to void debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 return Json(new { success = false, message = ex.Message });
@@ -503,7 +529,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
+        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.DebitMemo.GetAsync(dm => dm.DebitMemoId == id, cancellationToken);
 
@@ -523,7 +550,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled debit memo# {model.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled debit memo# {model.DebitMemoNo}",
+                    "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -531,12 +559,16 @@ namespace IBSWeb.Areas.User.Controllers
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Debit Memo #{model.DebitMemoNo} has been cancelled successfully." });
+                return Json(new
+                {
+                    success = true, message = $"Debit Memo #{model.DebitMemoNo} has been cancelled successfully."
+                });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to cancel debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to cancel debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return Json(new { success = false, message = ex.Message });
             }
@@ -548,11 +580,7 @@ namespace IBSWeb.Areas.User.Controllers
             var model = await _unitOfWork.ServiceInvoice.GetAsync(sv => sv.ServiceInvoiceId == svId, cancellationToken);
             if (model != null)
             {
-                return Json(new
-                {
-                    model.Period,
-                    model.Total
-                });
+                return Json(new { model.Period, model.Total });
             }
 
             return Json(null);
@@ -576,8 +604,10 @@ namespace IBSWeb.Areas.User.Controllers
                     return NotFound();
                 }
 
-                var minDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.DebitMemo, cancellationToken);
-                if (await _unitOfWork.IsPeriodPostedAsync(Module.DebitMemo, debitMemo.TransactionDate, cancellationToken))
+                var minDate =
+                    await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.DebitMemo, cancellationToken);
+                if (await _unitOfWork.IsPeriodPostedAsync(Module.DebitMemo, debitMemo.TransactionDate,
+                        cancellationToken))
                 {
                     throw new ArgumentException(
                         $"Cannot edit this record because the period {debitMemo.TransactionDate:MMM yyyy} is already closed.");
@@ -648,7 +678,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(existingDm.EditedBy!, $"Edited debit memo# {existingDm.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrailBook = new(existingDm.EditedBy!, $"Edited debit memo# {existingDm.DebitMemoNo}",
+                    "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -661,7 +692,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 await IncludeSelectLists(viewModel, cancellationToken);
-                _logger.LogError(ex, "Failed to edit debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to edit debit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -683,7 +715,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of debit memo# {dm.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Printed original copy of debit memo# {dm.DebitMemoNo}", "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -695,7 +728,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of debit memo# {dm.DebitMemoNo}", "Debit Memo");
+                AuditTrail auditTrail = new(GetUserFullName(),
+                    $"Printed re-printed copy of debit memo# {dm.DebitMemoNo}", "Debit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording

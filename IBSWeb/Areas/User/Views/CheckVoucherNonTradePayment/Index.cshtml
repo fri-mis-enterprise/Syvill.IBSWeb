@@ -23,7 +23,8 @@
                     <a class="dropdown-item responsive-index-button" id="newAdvancesBtn">
                         <i class="bi bi-plus-circle"></i> New Advances
                     </a>
-                    <a class="dropdown-item responsive-index-button" asp-area="User" asp-controller="CheckVoucherNonTradePayment" asp-action="Create">
+                    <a class="dropdown-item responsive-index-button" asp-area="User"
+                       asp-controller="CheckVoucherNonTradePayment" asp-action="Create">
                         <i class="bi bi-plus-circle"></i> New Payment
                     </a>
                 </li>
@@ -84,14 +85,14 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                     $.ajax({
+                    $.ajax({
                         url: '@Url.Action("Void", "CheckVoucherNonTradePayment", new { area = "User" })',
                         type: 'POST',
                         data: {
                             id: id,
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -99,14 +100,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -130,33 +131,33 @@
                 confirmButtonText: 'Yes'
             }).then((result) => {
                 if (result.isConfirmed) {
-                     $.ajax({
-                         url: '@Url.Action("Cancel", "CheckVoucherNonTradePayment", new { area = "User" })',
-                         type: 'POST',
-                         data: {
-                             id: id,
-                             cancellationRemarks: $("#cancellationRemarks").val()
-                         },
-                         headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                         success: function(response) {
-                             if (response.success) {
-                                 Swal.fire({
-                                     icon: 'success',
-                                     title: 'Success',
-                                     text: response.message,
-                                     showConfirmButton: false,
-                                     timer: 2000
-                                 }).then(function() {
-                                     window.location.reload();
-                                 });
-                             } else {
-                                 Swal.fire('Error', response.message, 'error');
-                             }
-                         },
-                         error: function() {
-                             Swal.fire('Error', 'Something went wrong.', 'error');
-                         }
-                     });
+                    $.ajax({
+                        url: '@Url.Action("Cancel", "CheckVoucherNonTradePayment", new { area = "User" })',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            cancellationRemarks: $("#cancellationRemarks").val()
+                        },
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Something went wrong.', 'error');
+                        }
+                    });
                 }
             })
         }
@@ -220,17 +221,17 @@
                         alert('An error occurred while loading the data');
                     }
                 },
-                "preDrawCallback": function(settings) {
+                "preDrawCallback": function (settings) {
                     $('#paginatedTable').addClass('table-loading');
                 },
-                "drawCallback": function(settings) {
+                "drawCallback": function (settings) {
                     $('#paginatedTable').removeClass('table-loading');
 
                     // Initialize all tooltips
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 },
                 "columns": [
-                    { "data": "checkVoucherHeaderNo" },
+                    {"data": "checkVoucherHeaderNo"},
                     {
                         "data": "date",
                         "name": "date",
@@ -244,7 +245,7 @@
                             });
                         }
                     },
-                    { "data": "payee" },
+                    {"data": "payee"},
                     {
                         "data": "reference",
                         "name": "reference",
@@ -252,7 +253,7 @@
                             return data ?? "";
                         }
                     },
-                    { "data": "checkNo" },
+                    {"data": "checkNo"},
                     {
                         "data": "total",
                         "render": function (data, type, row) {
@@ -289,14 +290,14 @@
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                               ${row.postedBy == null ?
-                                                 `<li>
+                                `<li>
                                                    <a class="dropdown-item" href="${
-                                                                                row.isAdvances
-                                                                                    ? (row.employeeId
-                                                                                        ? '@Url.Action("EditAdvancesToEmployee", "CheckVoucherNonTradePayment", new { area = "User" })/'
-                                                                                        : '@Url.Action("EditAdvancesToSupplier", "CheckVoucherNonTradePayment", new { area = "User" })/')
-                                                                                    : '@Url.Action("Edit", "CheckVoucherNonTradePayment", new { area = "User" })/'
-                                                                            }${row.checkVoucherHeaderId}">Edit</a>
+                                    row.isAdvances
+                                        ? (row.employeeId
+                                            ? '@Url.Action("EditAdvancesToEmployee", "CheckVoucherNonTradePayment", new { area = "User" })/'
+                                            : '@Url.Action("EditAdvancesToSupplier", "CheckVoucherNonTradePayment", new { area = "User" })/')
+                                        : '@Url.Action("Edit", "CheckVoucherNonTradePayment", new { area = "User" })/'
+                                }${row.checkVoucherHeaderId}">Edit</a>
                                                  </li>
                                                  <li>
                                                    <a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "User" })?id=${row.checkVoucherHeaderId}">Preview</a>
@@ -304,7 +305,7 @@
                                                  <li>
                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="confirmCancel(${row.checkVoucherHeaderId})">Cancel</a>
                                                  </li>` :
-                                                `<li>
+                                `<li>
                                                    <a class="dropdown-item" href="@Url.Action("Print", "CheckVoucherNonTradePayment", new { area = "User" })?id=${row.checkVoucherHeaderId}">Preview</a>
                                                  </li>
                                                  <li>
@@ -320,7 +321,7 @@
                                                 ` : ``}
 
                                                  `
-                                              }
+                            }
                                             </ul>
                                         </div>`;
                         }
@@ -342,7 +343,7 @@
                 }
             });
 
-            $('#inputDate').on('change', function() {
+            $('#inputDate').on('change', function () {
                 filterValue = $(this).val();
                 localStorage.setItem('filterDate', filterValue); // persist the date
                 table.ajax.reload();

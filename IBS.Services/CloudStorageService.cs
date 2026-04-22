@@ -21,7 +21,7 @@ namespace IBS.Services
         Task<IFormFile?> GetFileAsFormFile(string fileName);
     }
 
-    public class CloudStorageService : ICloudStorageService
+    public class CloudStorageService: ICloudStorageService
     {
         private readonly GCSConfigOptions _options;
         private readonly ILogger<CloudStorageService> _logger;
@@ -86,7 +86,8 @@ namespace IBS.Services
                 var bucketName = _options.GoogleCloudStorageBucketName;
                 var urlSigner = UrlSigner.FromCredential(_googleCredential);
 
-                var signedUrl = await urlSigner.SignAsync(bucketName, fileNameToRead, TimeSpan.FromMinutes(timeOutInMinutes));
+                var signedUrl =
+                    await urlSigner.SignAsync(bucketName, fileNameToRead, TimeSpan.FromMinutes(timeOutInMinutes));
 
                 _logger.LogInformation($"Signed URL obtained for file '{fileNameToRead}'");
                 return signedUrl.ToString();
@@ -135,7 +136,8 @@ namespace IBS.Services
             {
                 using var storageClient = await StorageClient.CreateAsync(_googleCredential);
                 var memoryStream = new MemoryStream();
-                await storageClient.DownloadObjectAsync(_options.GoogleCloudStorageBucketName, fileNameToDownload, memoryStream);
+                await storageClient.DownloadObjectAsync(_options.GoogleCloudStorageBucketName, fileNameToDownload,
+                    memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin); // Reset stream position to the beginning for reading
                 _logger.LogInformation($"File {fileNameToDownload} downloaded successfully");
                 return memoryStream;
@@ -165,8 +167,7 @@ namespace IBS.Services
 
                 var formFile = new FormFile(fileStream, 0, fileStream.Length, "file", fileName)
                 {
-                    Headers = new HeaderDictionary(),
-                    ContentType = "application/octet-stream",
+                    Headers = new HeaderDictionary(), ContentType = "application/octet-stream",
                 };
 
                 return formFile;

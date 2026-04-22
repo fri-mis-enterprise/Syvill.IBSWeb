@@ -122,7 +122,7 @@ dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 
 # Modifier ordering
-csharp_preferred_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, file, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, required, volatile, async:suggestion
 
 # Naming rules
 dotnet_naming_rule.interfaces_should_begin_with_i.severity = suggestion
@@ -145,11 +145,11 @@ dotnet_naming_symbols.interfaces.applicable_kinds = interface
 dotnet_naming_symbols.interfaces.applicable_accessibilities = *
 dotnet_naming_symbols.interfaces.required_modifiers =
 
-dotnet_naming_symbols.types.applicable_kinds = class,struct,interface,enum
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
 dotnet_naming_symbols.types.applicable_accessibilities = *
 dotnet_naming_symbols.types.required_modifiers =
 
-dotnet_naming_symbols.non_field_members.applicable_kinds = property,event,method
+dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
 dotnet_naming_symbols.non_field_members.applicable_accessibilities = *
 dotnet_naming_symbols.non_field_members.required_modifiers =
 

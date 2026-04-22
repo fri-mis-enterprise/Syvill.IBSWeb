@@ -22,7 +22,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
-    public class CreditMemoController : Controller
+    public class CreditMemoController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -32,7 +32,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         private readonly ILogger<CreditMemoController> _logger;
 
-        public CreditMemoController(IUnitOfWork unitOfWork, ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, ILogger<CreditMemoController> logger)
+        public CreditMemoController(IUnitOfWork unitOfWork, ApplicationDbContext dbContext,
+            UserManager<ApplicationUser> userManager, ILogger<CreditMemoController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -65,7 +66,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetCreditMemos([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCreditMemos([FromForm] DataTablesParameters parameters, DateOnly filterDate,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -83,16 +85,17 @@ namespace IBSWeb.Areas.User.Controllers
                     var hasTransactionDate = DateOnly.TryParse(searchValue, out var transactionDate);
 
                     creditMemos = creditMemos
-                    .Where(s =>
-                        s.CreditMemoNo!.ToLower().Contains(searchValue) ||
-                        s.ServiceInvoice!.ServiceInvoiceNo.ToLower().Contains(searchValue) == true ||
-                        (hasTransactionDate && s.TransactionDate == transactionDate) ||
-                        s.CreditAmount.ToString().Contains(searchValue) ||
-                        s.Remarks!.ToLower().Contains(searchValue) == true ||
-                        s.Description.ToLower().Contains(searchValue) ||
-                        s.CreatedBy!.ToLower().Contains(searchValue)
+                        .Where(s =>
+                            s.CreditMemoNo!.ToLower().Contains(searchValue) ||
+                            s.ServiceInvoice!.ServiceInvoiceNo.ToLower().Contains(searchValue) == true ||
+                            (hasTransactionDate && s.TransactionDate == transactionDate) ||
+                            s.CreditAmount.ToString().Contains(searchValue) ||
+                            s.Remarks!.ToLower().Contains(searchValue) == true ||
+                            s.Description.ToLower().Contains(searchValue) ||
+                            s.CreatedBy!.ToLower().Contains(searchValue)
                         );
                 }
+
                 if (filterDate != DateOnly.MinValue && filterDate != default)
                 {
                     creditMemos = creditMemos.Where(s => s.TransactionDate == filterDate);
@@ -139,14 +142,11 @@ namespace IBSWeb.Areas.User.Controllers
 
             viewModel.ServiceInvoices = (await _unitOfWork.ServiceInvoice
                     .GetAllAsync(sv => sv.PostedBy != null, cancellationToken))
-                .Select(sv => new SelectListItem
-                {
-                    Value = sv.ServiceInvoiceId.ToString(),
-                    Text = sv.ServiceInvoiceNo
-                })
+                .Select(sv => new SelectListItem { Value = sv.ServiceInvoiceId.ToString(), Text = sv.ServiceInvoiceNo })
                 .ToList();
 
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CreditMemo, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CreditMemo, cancellationToken);
         }
 
         public async Task<IActionResult> Create(CancellationToken cancellationToken)
@@ -186,7 +186,7 @@ namespace IBSWeb.Areas.User.Controllers
             }
 
             var existingSv = await _unitOfWork.ServiceInvoice
-                        .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
+                .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -195,24 +195,30 @@ namespace IBSWeb.Areas.User.Controllers
                 #region -- check for unposted DM or CM
 
                 var existingSOADMs = (await _unitOfWork.DebitMemo
-                        .GetAllAsync(si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null && si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
+                        .GetAllAsync(
+                            si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null &&
+                                  si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
                     .OrderBy(s => s.ServiceInvoiceId)
                     .ToList();
                 if (existingSOADMs.Count > 0)
                 {
                     await IncludeSelectLists(viewModel, cancellationToken);
-                    ModelState.AddModelError("", $"Can’t proceed to create you have unposted DM/CM. {existingSOADMs.First().DebitMemoNo}");
+                    ModelState.AddModelError("",
+                        $"Can’t proceed to create you have unposted DM/CM. {existingSOADMs.First().DebitMemoNo}");
                     return View(viewModel);
                 }
 
                 var existingSOACMs = (await _unitOfWork.CreditMemo
-                        .GetAllAsync(si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null && si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
+                        .GetAllAsync(
+                            si => si.ServiceInvoiceId == model.ServiceInvoiceId && si.PostedBy != null &&
+                                  si.CanceledBy != null && si.VoidedBy != null, cancellationToken))
                     .OrderBy(s => s.ServiceInvoiceId)
                     .ToList();
                 if (existingSOACMs.Count > 0)
                 {
                     await IncludeSelectLists(viewModel, cancellationToken);
-                    ModelState.AddModelError("", $"Can’t proceed to create you have unposted DM/CM. {existingSOACMs.First().CreditMemoNo}");
+                    ModelState.AddModelError("",
+                        $"Can’t proceed to create you have unposted DM/CM. {existingSOACMs.First().CreditMemoNo}");
                     return View(viewModel);
                 }
 
@@ -220,7 +226,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 model.CreatedBy = GetUserFullName();
 
-                model.CreditMemoNo = await _unitOfWork.CreditMemo.GenerateCodeAsync(companyClaims, existingSv!.Type, cancellationToken);
+                model.CreditMemoNo =
+                    await _unitOfWork.CreditMemo.GenerateCodeAsync(companyClaims, existingSv!.Type, cancellationToken);
                 model.Type = existingSv.Type;
                 model.CreditAmount = -model.Amount;
 
@@ -228,7 +235,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new credit memo# {model.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Create new credit memo# {model.CreditMemoNo}",
+                    "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -241,7 +249,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 await IncludeSelectLists(viewModel, cancellationToken);
-                _logger.LogError(ex, "Failed to create credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to create credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -267,8 +276,10 @@ namespace IBSWeb.Areas.User.Controllers
                     return NotFound();
                 }
 
-                var minDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CreditMemo, cancellationToken);
-                if (await _unitOfWork.IsPeriodPostedAsync(Module.CreditMemo, creditMemo.TransactionDate, cancellationToken))
+                var minDate =
+                    await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CreditMemo, cancellationToken);
+                if (await _unitOfWork.IsPeriodPostedAsync(Module.CreditMemo, creditMemo.TransactionDate,
+                        cancellationToken))
                 {
                     throw new ArgumentException(
                         $"Cannot edit this record because the period {creditMemo.TransactionDate:MMM yyyy} is already closed.");
@@ -328,7 +339,7 @@ namespace IBSWeb.Areas.User.Controllers
             try
             {
                 var existingCm = await _unitOfWork.CreditMemo
-                                .GetAsync(cm => cm.CreditMemoId == model.CreditMemoId, cancellationToken);
+                    .GetAsync(cm => cm.CreditMemoId == model.CreditMemoId, cancellationToken);
 
                 if (existingCm == null)
                 {
@@ -341,6 +352,7 @@ namespace IBSWeb.Areas.User.Controllers
                 switch (model.Source)
                 {
                     case "Service Invoice":
+
                         #region -- Saving Default Enries --
 
                         existingCm.TransactionDate = model.TransactionDate;
@@ -361,7 +373,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(existingCm.EditedBy!, $"Edited credit memo# {existingCm.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(existingCm.EditedBy!, $"Edited credit memo# {existingCm.CreditMemoNo}",
+                    "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -374,7 +387,8 @@ namespace IBSWeb.Areas.User.Controllers
             catch (Exception ex)
             {
                 await IncludeSelectLists(viewModel, cancellationToken);
-                _logger.LogError(ex, "Failed to edit credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to edit credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -406,7 +420,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview credit memo# {creditMemo.CreditMemoNo}", "Credit Memo");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview credit memo# {creditMemo.CreditMemoNo}",
+                "Credit Memo");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -429,7 +444,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 if (await _unitOfWork.IsPeriodPostedAsync(Module.CreditMemo, model.TransactionDate, cancellationToken))
                 {
-                    throw new ArgumentException($"Cannot post this record because the period {model.TransactionDate:MMM yyyy} is already closed.");
+                    throw new ArgumentException(
+                        $"Cannot post this record because the period {model.TransactionDate:MMM yyyy} is already closed.");
                 }
 
                 model.PostedBy = GetUserFullName();
@@ -437,189 +453,200 @@ namespace IBSWeb.Areas.User.Controllers
                 model.Status = nameof(Status.Posted);
 
                 var accountTitlesDto = await _unitOfWork.ServiceInvoice.GetListOfAccountTitleDto(cancellationToken);
-                var arTradeReceivableTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020100") ?? throw new ArgumentException("Account title '101020100' not found.");
-                var arNonTradeTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020500") ?? throw new ArgumentException("Account title '101020500' not found.");
-                var arTradeCwt = accountTitlesDto.Find(c => c.AccountNumber == "101020200") ?? throw new ArgumentException("Account title '101020200' not found.");
-                var arTradeCwv = accountTitlesDto.Find(c => c.AccountNumber == "101020300") ?? throw new ArgumentException("Account title '101020300' not found.");
-                var vatOutputTitle = accountTitlesDto.Find(c => c.AccountNumber == "201030100") ?? throw new ArgumentException("Account title '201030100' not found.");
+                var arTradeReceivableTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020100") ??
+                                             throw new ArgumentException("Account title '101020100' not found.");
+                var arNonTradeTitle = accountTitlesDto.Find(c => c.AccountNumber == "101020500") ??
+                                      throw new ArgumentException("Account title '101020500' not found.");
+                var arTradeCwt = accountTitlesDto.Find(c => c.AccountNumber == "101020200") ??
+                                 throw new ArgumentException("Account title '101020200' not found.");
+                var arTradeCwv = accountTitlesDto.Find(c => c.AccountNumber == "101020300") ??
+                                 throw new ArgumentException("Account title '101020300' not found.");
+                var vatOutputTitle = accountTitlesDto.Find(c => c.AccountNumber == "201030100") ??
+                                     throw new ArgumentException("Account title '201030100' not found.");
 
                 var existingSv = await _unitOfWork.ServiceInvoice
-                        .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
+                    .GetAsync(sv => sv.ServiceInvoiceId == model.ServiceInvoiceId, cancellationToken);
 
-                    #region --SV Computation--
+                #region --SV Computation--
 
-                    viewModelDmcm.Period = DateOnly.FromDateTime(model.CreatedDate) >= model.Period ? DateOnly.FromDateTime(model.CreatedDate) : model.Period.AddMonths(1).AddDays(-1);
+                viewModelDmcm.Period = DateOnly.FromDateTime(model.CreatedDate) >= model.Period
+                    ? DateOnly.FromDateTime(model.CreatedDate)
+                    : model.Period.AddMonths(1).AddDays(-1);
 
-                    if (existingSv!.VatType == SD.VatType_Vatable)
+                if (existingSv!.VatType == SD.VatType_Vatable)
+                {
+                    viewModelDmcm.Total = -model.Amount;
+                    viewModelDmcm.NetAmount = (model.Amount - existingSv.Discount) / 1.12m;
+                    viewModelDmcm.VatAmount = model.Amount - existingSv.Discount - viewModelDmcm.NetAmount;
+                    viewModelDmcm.WithholdingTaxAmount = viewModelDmcm.NetAmount * (existingSv.ServicePercent / 100m);
+                    if (existingSv.HasWvat)
                     {
-                        viewModelDmcm.Total = -model.Amount;
-                        viewModelDmcm.NetAmount = (model.Amount - existingSv.Discount) / 1.12m;
-                        viewModelDmcm.VatAmount = model.Amount - existingSv.Discount - viewModelDmcm.NetAmount;
-                        viewModelDmcm.WithholdingTaxAmount = viewModelDmcm.NetAmount * (existingSv.ServicePercent / 100m);
-                        if (existingSv.HasWvat)
-                        {
-                            viewModelDmcm.WithholdingVatAmount = viewModelDmcm.NetAmount * 0.05m;
-                        }
+                        viewModelDmcm.WithholdingVatAmount = viewModelDmcm.NetAmount * 0.05m;
                     }
-                    else
+                }
+                else
+                {
+                    viewModelDmcm.NetAmount = model.Amount - existingSv.Discount;
+                    viewModelDmcm.WithholdingTaxAmount = viewModelDmcm.NetAmount * (existingSv.ServicePercent / 100m);
+                    if (existingSv.HasWvat)
                     {
-                        viewModelDmcm.NetAmount = model.Amount - existingSv.Discount;
-                        viewModelDmcm.WithholdingTaxAmount = viewModelDmcm.NetAmount * (existingSv.ServicePercent / 100m);
-                        if (existingSv.HasWvat)
-                        {
-                            viewModelDmcm.WithholdingVatAmount = viewModelDmcm.NetAmount * 0.05m;
-                        }
+                        viewModelDmcm.WithholdingVatAmount = viewModelDmcm.NetAmount * 0.05m;
                     }
+                }
 
-                    if (existingSv.VatType == "Vatable")
+                if (existingSv.VatType == "Vatable")
+                {
+                    var total = Math.Round(model.Amount / 1.12m, 4);
+
+                    var roundedNetAmount = Math.Round(viewModelDmcm.NetAmount, 4);
+
+                    if (roundedNetAmount > total)
                     {
-                        var total = Math.Round(model.Amount / 1.12m, 4);
+                        var shortAmount = viewModelDmcm.NetAmount - total;
 
-                        var roundedNetAmount = Math.Round(viewModelDmcm.NetAmount, 4);
-
-                        if (roundedNetAmount > total)
-                        {
-                            var shortAmount = viewModelDmcm.NetAmount - total;
-
-                            viewModelDmcm.Amount += shortAmount;
-                        }
+                        viewModelDmcm.Amount += shortAmount;
                     }
+                }
 
-                    #endregion --SV Computation--
+                #endregion --SV Computation--
 
-                    #region --General Ledger Book Recording(SV)--
+                #region --General Ledger Book Recording(SV)--
 
-                    decimal withHoldingTaxAmount = 0;
-                    decimal withHoldingVatAmount = 0;
-                    decimal netOfVatAmount = 0;
-                    decimal vatAmount = 0;
+                decimal withHoldingTaxAmount = 0;
+                decimal withHoldingVatAmount = 0;
+                decimal netOfVatAmount = 0;
+                decimal vatAmount = 0;
 
-                    if (model.ServiceInvoice!.VatType == SD.VatType_Vatable)
-                    {
-                        netOfVatAmount = (_unitOfWork.CreditMemo.ComputeNetOfVat(Math.Abs(model.CreditAmount))) * -1;
-                        vatAmount = (_unitOfWork.CreditMemo.ComputeVatAmount(Math.Abs(netOfVatAmount))) * -1;
-                    }
-                    else
-                    {
-                        netOfVatAmount = model.CreditAmount;
-                    }
+                if (model.ServiceInvoice!.VatType == SD.VatType_Vatable)
+                {
+                    netOfVatAmount = (_unitOfWork.CreditMemo.ComputeNetOfVat(Math.Abs(model.CreditAmount))) * -1;
+                    vatAmount = (_unitOfWork.CreditMemo.ComputeVatAmount(Math.Abs(netOfVatAmount))) * -1;
+                }
+                else
+                {
+                    netOfVatAmount = model.CreditAmount;
+                }
 
-                    if (model.ServiceInvoice.HasEwt)
-                    {
-                        withHoldingTaxAmount = (_unitOfWork.CreditMemo.ComputeEwtAmount(Math.Abs(netOfVatAmount), 0.01m)) * -1;
-                    }
+                if (model.ServiceInvoice.HasEwt)
+                {
+                    withHoldingTaxAmount =
+                        (_unitOfWork.CreditMemo.ComputeEwtAmount(Math.Abs(netOfVatAmount), 0.01m)) * -1;
+                }
 
-                    if (model.ServiceInvoice.HasWvat)
-                    {
-                        withHoldingVatAmount = (_unitOfWork.CreditMemo.ComputeEwtAmount(Math.Abs(netOfVatAmount), 0.05m)) * -1;
-                    }
+                if (model.ServiceInvoice.HasWvat)
+                {
+                    withHoldingVatAmount =
+                        (_unitOfWork.CreditMemo.ComputeEwtAmount(Math.Abs(netOfVatAmount), 0.05m)) * -1;
+                }
 
-                    var ledgers = new List<GeneralLedgerBook>
-                    {
-                        new()
-                        {
-                            Date = model.TransactionDate,
-                            Reference = model.CreditMemoNo!,
-                            Description = model.ServiceInvoice.ServiceName,
-                            AccountId = arNonTradeTitle.AccountId,
-                            AccountNo = arNonTradeTitle.AccountNumber,
-                            AccountTitle = arNonTradeTitle.AccountName,
-                            Debit = 0,
-                            Credit = Math.Abs(model.CreditAmount - (withHoldingTaxAmount + withHoldingVatAmount)),
-                            CreatedBy = model.PostedBy,
-                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                            SubAccountType = SubAccountType.Customer,
-                            SubAccountId = model.ServiceInvoice.CustomerId,
-                            SubAccountName = model.ServiceInvoice.CustomerName,
-                            ModuleType = nameof(ModuleType.CreditMemo)
-                        }
-                    };
-
-                    if (withHoldingTaxAmount < 0)
-                    {
-                        ledgers.Add(
-                            new GeneralLedgerBook
-                            {
-                                Date = model.TransactionDate,
-                                Reference = model.CreditMemoNo!,
-                                Description = model.ServiceInvoice.ServiceName,
-                                AccountId = arTradeCwt.AccountId,
-                                AccountNo = arTradeCwt.AccountNumber,
-                                AccountTitle = arTradeCwt.AccountName,
-                                Debit = 0,
-                                Credit = Math.Abs(withHoldingTaxAmount),
-                                CreatedBy = model.PostedBy,
-                                CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                                ModuleType = nameof(ModuleType.CreditMemo)
-                            }
-                        );
-                    }
-                    if (withHoldingVatAmount < 0)
-                    {
-                        ledgers.Add(
-                            new GeneralLedgerBook
-                            {
-                                Date = model.TransactionDate,
-                                Reference = model.CreditMemoNo!,
-                                Description = model.ServiceInvoice.ServiceName,
-                                AccountId = arTradeCwv.AccountId,
-                                AccountNo = arTradeCwv.AccountNumber,
-                                AccountTitle = arTradeCwv.AccountName,
-                                Debit = 0,
-                                Credit = Math.Abs(withHoldingVatAmount),
-                                CreatedBy = model.PostedBy,
-                                CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                                ModuleType = nameof(ModuleType.CreditMemo)
-                            }
-                        );
-                    }
-
-                    ledgers.Add(new GeneralLedgerBook
+                var ledgers = new List<GeneralLedgerBook>
+                {
+                    new()
                     {
                         Date = model.TransactionDate,
                         Reference = model.CreditMemoNo!,
                         Description = model.ServiceInvoice.ServiceName,
-                        AccountNo = model.ServiceInvoice.Service!.CurrentAndPreviousNo!,
-                        AccountTitle = model.ServiceInvoice.Service.CurrentAndPreviousTitle!,
-                        Debit = viewModelDmcm.NetAmount,
-                        Credit = 0,
+                        AccountId = arNonTradeTitle.AccountId,
+                        AccountNo = arNonTradeTitle.AccountNumber,
+                        AccountTitle = arNonTradeTitle.AccountName,
+                        Debit = 0,
+                        Credit = Math.Abs(model.CreditAmount - (withHoldingTaxAmount + withHoldingVatAmount)),
                         CreatedBy = model.PostedBy,
                         CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
+                        SubAccountType = SubAccountType.Customer,
+                        SubAccountId = model.ServiceInvoice.CustomerId,
+                        SubAccountName = model.ServiceInvoice.CustomerName,
                         ModuleType = nameof(ModuleType.CreditMemo)
-                    });
-
-                    if (vatAmount < 0)
-                    {
-                        ledgers.Add(
-                            new GeneralLedgerBook
-                            {
-                                Date = model.TransactionDate,
-                                Reference = model.CreditMemoNo!,
-                                Description = model.ServiceInvoice.ServiceName,
-                                AccountId = vatOutputTitle.AccountId,
-                                AccountNo = vatOutputTitle.AccountNumber,
-                                AccountTitle = vatOutputTitle.AccountName,
-                                Debit = Math.Abs(vatAmount),
-                                Credit = 0,
-                                CreatedBy = model.PostedBy,
-                                CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
-                                ModuleType = nameof(ModuleType.CreditMemo)
-                            }
-                        );
                     }
+                };
 
-                    if (!_unitOfWork.CreditMemo.IsJournalEntriesBalanced(ledgers))
-                    {
-                        throw new ArgumentException("Debit and Credit is not equal, check your entries.");
-                    }
+                if (withHoldingTaxAmount < 0)
+                {
+                    ledgers.Add(
+                        new GeneralLedgerBook
+                        {
+                            Date = model.TransactionDate,
+                            Reference = model.CreditMemoNo!,
+                            Description = model.ServiceInvoice.ServiceName,
+                            AccountId = arTradeCwt.AccountId,
+                            AccountNo = arTradeCwt.AccountNumber,
+                            AccountTitle = arTradeCwt.AccountName,
+                            Debit = 0,
+                            Credit = Math.Abs(withHoldingTaxAmount),
+                            CreatedBy = model.PostedBy,
+                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
+                            ModuleType = nameof(ModuleType.CreditMemo)
+                        }
+                    );
+                }
 
-                    await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+                if (withHoldingVatAmount < 0)
+                {
+                    ledgers.Add(
+                        new GeneralLedgerBook
+                        {
+                            Date = model.TransactionDate,
+                            Reference = model.CreditMemoNo!,
+                            Description = model.ServiceInvoice.ServiceName,
+                            AccountId = arTradeCwv.AccountId,
+                            AccountNo = arTradeCwv.AccountNumber,
+                            AccountTitle = arTradeCwv.AccountName,
+                            Debit = 0,
+                            Credit = Math.Abs(withHoldingVatAmount),
+                            CreatedBy = model.PostedBy,
+                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
+                            ModuleType = nameof(ModuleType.CreditMemo)
+                        }
+                    );
+                }
 
-                    #endregion --General Ledger Book Recording(SV)--
+                ledgers.Add(new GeneralLedgerBook
+                {
+                    Date = model.TransactionDate,
+                    Reference = model.CreditMemoNo!,
+                    Description = model.ServiceInvoice.ServiceName,
+                    AccountNo = model.ServiceInvoice.Service!.CurrentAndPreviousNo!,
+                    AccountTitle = model.ServiceInvoice.Service.CurrentAndPreviousTitle!,
+                    Debit = viewModelDmcm.NetAmount,
+                    Credit = 0,
+                    CreatedBy = model.PostedBy,
+                    CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
+                    ModuleType = nameof(ModuleType.CreditMemo)
+                });
+
+                if (vatAmount < 0)
+                {
+                    ledgers.Add(
+                        new GeneralLedgerBook
+                        {
+                            Date = model.TransactionDate,
+                            Reference = model.CreditMemoNo!,
+                            Description = model.ServiceInvoice.ServiceName,
+                            AccountId = vatOutputTitle.AccountId,
+                            AccountNo = vatOutputTitle.AccountNumber,
+                            AccountTitle = vatOutputTitle.AccountName,
+                            Debit = Math.Abs(vatAmount),
+                            Credit = 0,
+                            CreatedBy = model.PostedBy,
+                            CreatedDate = DateTimeHelper.GetCurrentPhilippineTime(),
+                            ModuleType = nameof(ModuleType.CreditMemo)
+                        }
+                    );
+                }
+
+                if (!_unitOfWork.CreditMemo.IsJournalEntriesBalanced(ledgers))
+                {
+                    throw new ArgumentException("Debit and Credit is not equal, check your entries.");
+                }
+
+                await _dbContext.GeneralLedgerBooks.AddRangeAsync(ledgers, cancellationToken);
+
+                #endregion --General Ledger Book Recording(SV)--
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted credit memo# {model.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted credit memo# {model.CreditMemoNo}",
+                    "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -631,7 +658,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to post credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to post credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -664,7 +692,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided credit memo# {model.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided credit memo# {model.CreditMemoNo}",
+                    "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -672,11 +701,15 @@ namespace IBSWeb.Areas.User.Controllers
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Credit Memo #{model.CreditMemoNo} has been voided successfully." });
+                return Json(new
+                {
+                    success = true, message = $"Credit Memo #{model.CreditMemoNo} has been voided successfully."
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to void credit memo. Voided by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to void credit memo. Voided by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 return Json(new { success = false, message = ex.Message });
             }
@@ -684,7 +717,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
+        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.CreditMemo
                 .GetAsync(cm => cm.CreditMemoId == id, cancellationToken);
@@ -705,7 +739,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled credit memo# {model.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled credit memo# {model.CreditMemoNo}",
+                    "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -713,12 +748,17 @@ namespace IBSWeb.Areas.User.Controllers
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Collection Receipt #{model.CreditMemoNo} has been cancelled successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Collection Receipt #{model.CreditMemoNo} has been cancelled successfully."
+                });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to cancel credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to cancel credit memo. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return Json(new { success = false, message = ex.Message });
             }
@@ -733,11 +773,7 @@ namespace IBSWeb.Areas.User.Controllers
                 return Json(null);
             }
 
-            return Json(new
-            {
-                model.Period,
-                model.Total
-            });
+            return Json(new { model.Period, model.Total });
         }
 
         public async Task<IActionResult> Printed(int id, CancellationToken cancellationToken)
@@ -754,7 +790,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of credit memo# {cm.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Printed original copy of credit memo# {cm.CreditMemoNo}", "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -767,7 +804,8 @@ namespace IBSWeb.Areas.User.Controllers
                 #region --Audit Trail Recording
 
                 var printedBy = GetUserFullName();
-                AuditTrail auditTrailBook = new(printedBy, $"Printed re-printed copy of credit memo# {cm.CreditMemoNo}", "Credit Memo");
+                AuditTrail auditTrailBook = new(printedBy, $"Printed re-printed copy of credit memo# {cm.CreditMemoNo}",
+                    "Credit Memo");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording

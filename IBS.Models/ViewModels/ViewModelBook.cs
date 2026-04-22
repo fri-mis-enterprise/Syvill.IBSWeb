@@ -5,11 +5,9 @@ namespace IBS.Models.ViewModels
 {
     public class ViewModelBook
     {
-        [Display(Name = "Date From")]
-        public DateOnly DateFrom { get; set; }
+        [Display(Name = "Date From")] public DateOnly DateFrom { get; set; }
 
-        [Display(Name = "Date To")]
-        public DateOnly DateTo { get; set; }
+        [Display(Name = "Date To")] public DateOnly DateTo { get; set; }
 
         #region Filtering
 
@@ -50,8 +48,7 @@ namespace IBS.Models.ViewModels
 
         #region Accounts Payable Report
 
-        [Display(Name = "Status Filter")]
-        public string StatusFilter { get; set; } = "ValidOnly";
+        [Display(Name = "Status Filter")] public string StatusFilter { get; set; } = "ValidOnly";
 
         #endregion
 

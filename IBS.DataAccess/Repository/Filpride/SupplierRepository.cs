@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class SupplierRepository : Repository<Supplier>, ISupplierRepository
+    public class SupplierRepository: Repository<Supplier>, ISupplierRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public SupplierRepository(ApplicationDbContext db) : base(db)
+        public SupplierRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -39,13 +39,15 @@ namespace IBS.DataAccess.Repository.Filpride
             return $"{lastCode[0]}{incrementedNumber:D6}"; //e.g S000002
         }
 
-        public async Task<bool> IsSupplierExistAsync(string supplierName, string category, CancellationToken cancellationToken = default)
+        public async Task<bool> IsSupplierExistAsync(string supplierName, string category,
+            CancellationToken cancellationToken = default)
         {
             return await _db.Suppliers
                 .AnyAsync(s => s.SupplierName == supplierName && s.Category == category, cancellationToken);
         }
 
-        public async Task<bool> IsTinNoExistAsync(string tin, string branch, string category, CancellationToken cancellationToken = default)
+        public async Task<bool> IsTinNoExistAsync(string tin, string branch, string category,
+            CancellationToken cancellationToken = default)
         {
             if (tin == "000-000-000-00000")
             {
@@ -54,13 +56,14 @@ namespace IBS.DataAccess.Repository.Filpride
 
             return await _db.Suppliers
                 .AnyAsync(s =>
-                    s.SupplierTin == tin &&
-                    s.Branch == branch &&
-                    s.Category == category,
+                        s.SupplierTin == tin &&
+                        s.Branch == branch &&
+                        s.Category == category,
                     cancellationToken);
         }
 
-        public async Task<string> SaveProofOfRegistration(IFormFile file, string localPath, CancellationToken cancellationToken = default)
+        public async Task<string> SaveProofOfRegistration(IFormFile file, string localPath,
+            CancellationToken cancellationToken = default)
         {
             if (!Directory.Exists(localPath))
             {
@@ -79,8 +82,9 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task UpdateAsync(Supplier model, CancellationToken cancellationToken = default)
         {
             var existingSupplier = await _db.Suppliers
-                .FirstOrDefaultAsync(x => x.SupplierId == model.SupplierId, cancellationToken)
-                                   ?? throw new InvalidOperationException($"Supplier with id '{model.SupplierId}' not found.");
+                                       .FirstOrDefaultAsync(x => x.SupplierId == model.SupplierId, cancellationToken)
+                                   ?? throw new InvalidOperationException(
+                                       $"Supplier with id '{model.SupplierId}' not found.");
 
             existingSupplier.Category = model.Category;
             existingSupplier.SupplierName = model.SupplierName;
@@ -95,12 +99,14 @@ namespace IBS.DataAccess.Repository.Filpride
             existingSupplier.ZipCode = model.ZipCode;
             existingSupplier.WithholdingTaxTitle = model.WithholdingTaxTitle;
 
-            if (model.ProofOfRegistrationFilePath != null && existingSupplier.ProofOfRegistrationFilePath != model.ProofOfRegistrationFilePath)
+            if (model.ProofOfRegistrationFilePath != null &&
+                existingSupplier.ProofOfRegistrationFilePath != model.ProofOfRegistrationFilePath)
             {
                 existingSupplier.ProofOfRegistrationFilePath = model.ProofOfRegistrationFilePath;
             }
 
-            if (model.ProofOfExemptionFilePath != null && existingSupplier.ProofOfExemptionFilePath != model.ProofOfExemptionFilePath)
+            if (model.ProofOfExemptionFilePath != null &&
+                existingSupplier.ProofOfExemptionFilePath != model.ProofOfExemptionFilePath)
             {
                 existingSupplier.ProofOfExemptionFilePath = model.ProofOfExemptionFilePath;
             }

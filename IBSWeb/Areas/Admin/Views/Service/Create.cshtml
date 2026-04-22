@@ -29,8 +29,10 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="CurrentAndPreviousTitle" class="form-label">Current and Previous Title<span class="required">*</span></label>
-                <select asp-for="CurrentAndPreviousId" asp-items="@Model.CurrentAndPreviousTitles" class="form-select js-select2" style="width: 100%" required>
+                <label asp-for="CurrentAndPreviousTitle" class="form-label">Current and Previous Title<span
+                        class="required">*</span></label>
+                <select asp-for="CurrentAndPreviousId" asp-items="@Model.CurrentAndPreviousTitles"
+                        class="form-select js-select2" style="width: 100%" required>
                     <option value="">-- Select a title --</option>
                 </select>
                 <span asp-validation-for="CurrentAndPreviousTitle" class="text-danger"></span>
@@ -38,7 +40,8 @@
 
             <div class="form-group mb-3">
                 <label asp-for="UnearnedTitle" class="form-label">Unearned Title<span class="required">*</span></label>
-                <select asp-for="UnearnedId" asp-items="@Model.UnearnedTitles" class="form-select js-select2" style="width: 100%" required>
+                <select asp-for="UnearnedId" asp-items="@Model.UnearnedTitles" class="form-select js-select2"
+                        style="width: 100%" required>
                     <option value="">-- Select a title --</option>
                 </select>
                 <span asp-validation-for="UnearnedTitle" class="text-danger"></span>
@@ -46,7 +49,8 @@
 
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">%</span>
-                <input asp-for="Percent" type="text" class="form-control" placeholder="Percentage" aria-label="Percentage" aria-describedby="basic-addon1" required>
+                <input asp-for="Percent" type="text" class="form-control" placeholder="Percentage"
+                       aria-label="Percentage" aria-describedby="basic-addon1" required>
             </div>
             <div class="input-group mb-3">
                 <span asp-validation-for="Percent" class="text-danger"></span>
@@ -57,7 +61,8 @@
                     <button type="submit" class="btn btn-primary form-control">Create</button>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a asp-area="Admin" asp-controller="Service" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                    <a asp-area="Admin" asp-controller="Service" asp-action="Index"
+                       class="btn btn-outline-primary border  form-control ">Back to List</a>
                 </div>
             </div>
         </form>

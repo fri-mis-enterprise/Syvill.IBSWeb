@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace IBS.Utility
 {
-    public class GcsXmlRepository : IXmlRepository
+    public class GcsXmlRepository: IXmlRepository
     {
         private readonly StorageClient _storageClient;
         private readonly string _bucketName;

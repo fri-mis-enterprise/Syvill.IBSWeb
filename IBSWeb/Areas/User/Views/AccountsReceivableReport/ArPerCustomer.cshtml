@@ -17,24 +17,28 @@
             <div class="row">
                 <div class="mb-3">
                     <label asp-for="DateFrom" class="control-label"></label>
-                    <input type="date" asp-for="DateFrom" class="form-control" value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")" />
+                    <input type="date" asp-for="DateFrom" class="form-control"
+                           value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")"/>
                     <span asp-validation-for="DateFrom" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label asp-for="DateTo" class="control-label"></label>
-                    <input type="date" asp-for="DateTo" class="form-control" value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")" />
+                    <input type="date" asp-for="DateTo" class="form-control"
+                           value="@DateTimeHelper.GetCurrentPhilippineTime().ToString("yyyy-MM-dd")"/>
                     <span asp-validation-for="DateTo" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Customers" class="control-label">
                         Customer List <small class="text-muted">(optional)</small>
                     </label>
-                    <select asp-for="Customers" asp-items="@Model.CustomerList" class="form-select js-multiple" multiple="multiple" style="width:100%">
+                    <select asp-for="Customers" asp-items="@Model.CustomerList" class="form-select js-multiple"
+                            multiple="multiple" style="width:100%">
                         <option></option>
                     </select>
                     <span asp-validation-for="Customers" class="text-danger"></span>
                     <div class="form-text text-muted">
-                        Leave empty to include all customers by default. You can select more than one customer to filter results.
+                        Leave empty to include all customers by default. You can select more than one customer to filter
+                        results.
                     </div>
                 </div>
                 <div class="mb-3">
@@ -51,7 +55,10 @@
                     @*     <button type="button" class="btn btn-primary form-control" onclick="submitForm('GeneratedArPerCustomer')"><i class="bi bi-printer"></i> Generate</button> *@
                     @* </div> *@
                     <div class="col-6 col-md-3">
-                        <button type="button" class="btn btn-primary form-control" onclick="submitForm('GenerateArPerCustomerExcelFile')"><i class="bi bi-file-text"></i> Generate as Excel file</button>
+                        <button type="button" class="btn btn-primary form-control"
+                                onclick="submitForm('GenerateArPerCustomerExcelFile')"><i class="bi bi-file-text"></i>
+                            Generate as Excel file
+                        </button>
                     </div>
                 </div>
             </div>

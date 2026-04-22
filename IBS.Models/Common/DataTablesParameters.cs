@@ -34,6 +34,7 @@ namespace IBS.Models.Common
             get => _value;
             set => _value = value?.Trim().ToLower() ?? string.Empty;
         }
+
         public bool Regex { get; set; }
     }
 }

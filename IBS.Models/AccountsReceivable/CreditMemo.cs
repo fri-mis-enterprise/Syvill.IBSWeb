@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.Models.AccountsReceivable
 {
-    public class CreditMemo : BaseEntity
+    public class CreditMemo: BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,14 +20,11 @@ namespace IBS.Models.AccountsReceivable
         [DisplayFormat(DataFormatString = "{0:MMM dd, yyyy}")]
         public DateOnly TransactionDate { get; set; }
 
-        [Display(Name = "SV No")]
-        public int ServiceInvoiceId { get; set; }
+        [Display(Name = "SV No")] public int ServiceInvoiceId { get; set; }
 
-        [ForeignKey(nameof(ServiceInvoiceId))]
-        public ServiceInvoice? ServiceInvoice { get; set; }
+        [ForeignKey(nameof(ServiceInvoiceId))] public ServiceInvoice? ServiceInvoice { get; set; }
 
-        [NotMapped]
-        public List<SelectListItem>? ServiceInvoices { get; set; }
+        [NotMapped] public List<SelectListItem>? ServiceInvoices { get; set; }
 
         [StringLength(1000)]
         public string Description
@@ -43,9 +40,7 @@ namespace IBS.Models.AccountsReceivable
         [Column(TypeName = "numeric(18,4)")]
         public decimal CreditAmount { get; set; }
 
-        [Required]
-        [StringLength(20)]
-        public string Source { get; set; } = string.Empty;
+        [Required] [StringLength(20)] public string Source { get; set; } = string.Empty;
 
         [StringLength(1000)]
         public string? Remarks
@@ -56,8 +51,7 @@ namespace IBS.Models.AccountsReceivable
 
         private string? _remarks;
 
-        [Column(TypeName = "date")]
-        public DateOnly Period { get; set; }
+        [Column(TypeName = "date")] public DateOnly Period { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = false)]
         [Column(TypeName = "numeric(18,4)")]
@@ -73,10 +67,8 @@ namespace IBS.Models.AccountsReceivable
 
         public bool IsPrinted { get; set; }
 
-        [StringLength(50)]
-        public string Status { get; set; } = nameof(Enums.Status.Pending);
+        [StringLength(50)] public string Status { get; set; } = nameof(Enums.Status.Pending);
 
-        [StringLength(13)]
-        public string? Type { get; set; }
+        [StringLength(13)] public string? Type { get; set; }
     }
 }

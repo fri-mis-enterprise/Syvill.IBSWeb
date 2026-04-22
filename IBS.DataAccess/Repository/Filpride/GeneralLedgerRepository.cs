@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class GeneralLedgerRepository : Repository<GeneralLedgerBook>, IGeneralLedgerRepository
+    public class GeneralLedgerRepository: Repository<GeneralLedgerBook>, IGeneralLedgerRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public GeneralLedgerRepository(ApplicationDbContext db) : base(db)
+        public GeneralLedgerRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -32,8 +32,8 @@ namespace IBS.DataAccess.Repository.Filpride
                 Description = $"Reversal of '{gl.Description}'",
                 AccountNo = gl.AccountNo,
                 AccountTitle = gl.AccountTitle,
-                Debit = gl.Credit,   // Swap
-                Credit = gl.Debit,   // Swap
+                Debit = gl.Credit, // Swap
+                Credit = gl.Debit, // Swap
                 CreatedBy = gl.CreatedBy,
                 CreatedDate = reversingDate,
                 IsPosted = gl.IsPosted,

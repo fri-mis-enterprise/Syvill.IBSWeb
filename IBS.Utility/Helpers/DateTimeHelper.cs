@@ -22,7 +22,7 @@ namespace IBS.Utility.Helpers
                 var baseDate = date.ToDateTime(TimeOnly.MinValue);
 
                 var workStart = baseDate.AddHours(8).AddMinutes(30); // 8:30 AM
-                var workEnd = baseDate.AddHours(17).AddMinutes(30);  // 5:30 PM
+                var workEnd = baseDate.AddHours(17).AddMinutes(30); // 5:30 PM
 
                 var random = Random.Shared;
 
@@ -30,7 +30,7 @@ namespace IBS.Utility.Helpers
                 if (_lastGeneratedTime == null || _lastGeneratedTime.Value.Date != baseDate.Date)
                 {
                     var initial = workStart
-                        .AddMinutes(random.Next(2, 6))   // 2–5 mins
+                        .AddMinutes(random.Next(2, 6)) // 2–5 mins
                         .AddSeconds(random.Next(0, 60)); // 0–59 secs
 
                     _lastGeneratedTime = initial;
@@ -53,13 +53,15 @@ namespace IBS.Utility.Helpers
             }
         }
 
-        public static string GetCurrentPhilippineTimeFormatted(DateTime dateTime = default, string format = "MM/dd/yyyy hh:mm tt")
+        public static string GetCurrentPhilippineTimeFormatted(DateTime dateTime = default,
+            string format = "MM/dd/yyyy hh:mm tt")
         {
             var philippineTime = dateTime != default ? dateTime : GetCurrentPhilippineTime();
             return philippineTime.ToString(format);
         }
 
-        public static async Task<List<DateOnly>> GetNonWorkingDays(DateOnly startDate, DateOnly endDate, string countryCode)
+        public static async Task<List<DateOnly>> GetNonWorkingDays(DateOnly startDate, DateOnly endDate,
+            string countryCode)
         {
             var nonWorkingDays = new List<DateOnly>();
 
@@ -69,7 +71,8 @@ namespace IBS.Utility.Helpers
             // Get holidays for all years in the range
             for (int year = startDate.Year; year <= endDate.Year; year++)
             {
-                using var response = await httpClient.GetAsync($"https://date.nager.at/api/v3/publicholidays/{year}/{countryCode}");
+                using var response =
+                    await httpClient.GetAsync($"https://date.nager.at/api/v3/publicholidays/{year}/{countryCode}");
 
                 if (response.IsSuccessStatusCode)
                 {

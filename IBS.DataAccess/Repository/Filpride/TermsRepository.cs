@@ -8,16 +8,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class TermsRepository : Repository<Terms>, ITermsRepository
+    public class TermsRepository: Repository<Terms>, ITermsRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public TermsRepository(ApplicationDbContext db) : base(db)
+        public TermsRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
 
-        public override async Task<IEnumerable<Terms>> GetAllAsync(Expression<Func<Terms, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Terms>> GetAllAsync(Expression<Func<Terms, bool>>? filter,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<Terms> query = dbSet;
 
@@ -32,8 +33,9 @@ namespace IBS.DataAccess.Repository.Filpride
         public async Task UpdateAsync(Terms model, CancellationToken cancellationToken = default)
         {
             var existingTerms = await _db.Terms
-                .FirstOrDefaultAsync(x => x.TermsCode == model.TermsCode, cancellationToken)
-                                   ?? throw new InvalidOperationException($"Terms with code '{model.TermsCode}' not found.");
+                                    .FirstOrDefaultAsync(x => x.TermsCode == model.TermsCode, cancellationToken)
+                                ?? throw new InvalidOperationException(
+                                    $"Terms with code '{model.TermsCode}' not found.");
 
             existingTerms.TermsCode = model.TermsCode;
             existingTerms.NumberOfDays = model.NumberOfDays;
@@ -55,11 +57,7 @@ namespace IBS.DataAccess.Repository.Filpride
         {
             return await _db.Terms
                 .OrderBy(x => x.TermsCode)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.TermsCode,
-                    Text = x.TermsCode
-                })
+                .Select(x => new SelectListItem { Value = x.TermsCode, Text = x.TermsCode })
                 .ToListAsync(cancellationToken);
         }
     }

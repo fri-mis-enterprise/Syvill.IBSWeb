@@ -8,11 +8,11 @@ using IBS.Models.Books;
 
 namespace IBS.DataAccess.Repository.Filpride
 {
-    public class JournalVoucherRepository : Repository<JournalVoucherHeader>, IJournalVoucherRepository
+    public class JournalVoucherRepository: Repository<JournalVoucherHeader>, IJournalVoucherRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public JournalVoucherRepository(ApplicationDbContext db) : base(db)
+        public JournalVoucherRepository(ApplicationDbContext db): base(db)
         {
             _db = db;
         }
@@ -35,7 +35,7 @@ namespace IBS.DataAccess.Repository.Filpride
                 .OrderByDescending(x => x.JournalVoucherHeaderNo!.Length)
                 .ThenByDescending(x => x.JournalVoucherHeaderNo)
                 .FirstOrDefaultAsync(x =>
-                    x.Type == nameof(DocumentType.Documented),
+                        x.Type == nameof(DocumentType.Documented),
                     cancellationToken);
 
             if (lastJv == null)
@@ -73,7 +73,8 @@ namespace IBS.DataAccess.Repository.Filpride
             return lastSeries.Substring(0, 3) + incrementedNumber.ToString("D9");
         }
 
-        public override async Task<JournalVoucherHeader?> GetAsync(Expression<Func<JournalVoucherHeader, bool>> filter, CancellationToken cancellationToken = default)
+        public override async Task<JournalVoucherHeader?> GetAsync(Expression<Func<JournalVoucherHeader, bool>> filter,
+            CancellationToken cancellationToken = default)
         {
             return await dbSet.Where(filter)
                 .Include(cv => cv.CheckVoucherHeader)
@@ -81,7 +82,8 @@ namespace IBS.DataAccess.Repository.Filpride
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public override async Task<IEnumerable<JournalVoucherHeader>> GetAllAsync(Expression<Func<JournalVoucherHeader, bool>>? filter, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<JournalVoucherHeader>> GetAllAsync(
+            Expression<Func<JournalVoucherHeader, bool>>? filter, CancellationToken cancellationToken = default)
         {
             IQueryable<JournalVoucherHeader> query = dbSet
                 .Include(cv => cv.CheckVoucherHeader)
@@ -95,14 +97,15 @@ namespace IBS.DataAccess.Repository.Filpride
             return await query.ToListAsync(cancellationToken);
         }
 
-        public override IQueryable<JournalVoucherHeader> GetAllQuery(Expression<Func<JournalVoucherHeader, bool>>? filter = null)
+        public override IQueryable<JournalVoucherHeader> GetAllQuery(
+            Expression<Func<JournalVoucherHeader, bool>>? filter = null)
         {
             IQueryable<JournalVoucherHeader> query =
                 dbSet
-                .Include(cv => cv.CheckVoucherHeader)
-                .ThenInclude(supplier => supplier!.Supplier)
-                .AsSplitQuery()
-                .AsNoTracking();
+                    .Include(cv => cv.CheckVoucherHeader)
+                    .ThenInclude(supplier => supplier!.Supplier)
+                    .AsSplitQuery()
+                    .AsNoTracking();
 
             if (filter != null)
             {
@@ -123,7 +126,8 @@ namespace IBS.DataAccess.Repository.Filpride
 
             foreach (var detail in details)
             {
-                var account = accountTitlesDto.Find(c => c.AccountNumber == detail.AccountNo) ?? throw new ArgumentException($"Account title '{detail.AccountNo}' not found.");
+                var account = accountTitlesDto.Find(c => c.AccountNumber == detail.AccountNo) ??
+                              throw new ArgumentException($"Account title '{detail.AccountNo}' not found.");
                 ledgers.Add(
                     new GeneralLedgerBook
                     {

@@ -22,7 +22,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_Finance, SD.Department_RCD)]
-    public class CollectionReceiptController : Controller
+    public class CollectionReceiptController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -62,13 +62,15 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            ViewBag.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+            ViewBag.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetCollectionReceipts([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCollectionReceipts([FromForm] DataTablesParameters parameters,
+            DateOnly filterDate, CancellationToken cancellationToken)
         {
             try
             {
@@ -92,8 +94,9 @@ namespace IBSWeb.Areas.User.Controllers
                             (hasTransactionDate && s.TransactionDate == transactionDate) ||
                             s.CreatedBy!.ToLower().Contains(searchValue) ||
                             s.Status.ToLower().Contains(searchValue)
-                            );
+                        );
                 }
+
                 if (filterDate != DateOnly.MinValue && filterDate != default)
                 {
                     collectionReceipts = collectionReceipts.Where(s => s.TransactionDate == filterDate);
@@ -157,7 +160,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Deposit(int id, int bankId, DateOnly depositDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> Deposit(int id, int bankId, DateOnly depositDate,
+            CancellationToken cancellationToken)
         {
             var bank = await _unitOfWork.BankAccount
                 .GetAsync(b => b.BankAccountId == bankId, cancellationToken);
@@ -209,7 +213,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to record deposit date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to record deposit date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(Index));
             }
@@ -217,7 +222,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         public async Task<IActionResult> Print(int id, CancellationToken cancellationToken)
         {
-            var cr = await _unitOfWork.CollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
+            var cr = await _unitOfWork.CollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id,
+                cancellationToken);
 
             if (cr == null)
             {
@@ -226,7 +232,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview collection receipt# {cr.CollectionReceiptNo}",
+                "Collection Receipt");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -235,7 +242,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServiceInvoices(int customerNo, int? crId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetServiceInvoices(int customerNo, int? crId,
+            CancellationToken cancellationToken)
         {
             List<ServiceInvoice> invoices;
 
@@ -269,18 +277,19 @@ namespace IBSWeb.Areas.User.Controllers
 
             var invoiceList = invoices.Select(si => new SelectListItem
             {
-                Value = si.ServiceInvoiceId.ToString(),   // Replace with your actual ID property
-                Text = si.ServiceInvoiceNo              // Replace with your actual property for display text
+                Value = si.ServiceInvoiceId.ToString(), // Replace with your actual ID property
+                Text = si.ServiceInvoiceNo // Replace with your actual property for display text
             }).ToList();
 
             return Json(invoiceList);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetInvoiceDetails(int invoiceNo, bool isSales, bool isServices, int? crId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetInvoiceDetails(int invoiceNo, bool isSales, bool isServices, int? crId,
+            CancellationToken cancellationToken)
         {
             var sv = await _unitOfWork.ServiceInvoice
-                    .GetAsync(s => s.ServiceInvoiceId == invoiceNo, cancellationToken);
+                .GetAsync(s => s.ServiceInvoiceId == invoiceNo, cancellationToken);
 
             if (sv == null)
             {
@@ -338,6 +347,7 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 return NotFound();
             }
+
             var existingModel = await _unitOfWork.CollectionReceipt
                 .GetAsync(x => x.CollectionReceiptId == id, cancellationToken);
 
@@ -346,11 +356,14 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            var minDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+            var minDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
-            if (await _unitOfWork.IsPeriodPostedAsync(Module.CollectionReceipt, existingModel.TransactionDate, cancellationToken))
+            if (await _unitOfWork.IsPeriodPostedAsync(Module.CollectionReceipt, existingModel.TransactionDate,
+                    cancellationToken))
             {
-                throw new ArgumentException($"Cannot edit this record because the period {existingModel.TransactionDate:MMM yyyy} is already closed.");
+                throw new ArgumentException(
+                    $"Cannot edit this record because the period {existingModel.TransactionDate:MMM yyyy} is already closed.");
             }
 
             var invoicesPaid = await _dbContext.CollectionReceiptDetails
@@ -378,8 +391,7 @@ namespace IBSWeb.Areas.User.Controllers
                     .OrderBy(si => si.ServiceInvoiceId)
                     .Select(s => new SelectListItem
                     {
-                        Value = s.ServiceInvoiceId.ToString(),
-                        Text = s.ServiceInvoiceNo
+                        Value = s.ServiceInvoiceId.ToString(), Text = s.ServiceInvoiceNo
                     })
                     .ToList(),
                 CashAmount = existingModel.CashAmount,
@@ -408,7 +420,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CollectionReceiptServiceViewModel viewModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> Edit(CollectionReceiptServiceViewModel viewModel,
+            CancellationToken cancellationToken)
         {
             var existingModel = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == viewModel.CollectionReceiptId, cancellationToken);
@@ -430,20 +443,18 @@ namespace IBSWeb.Areas.User.Controllers
                                        && si.CustomerId == existingModel.CustomerId
                                        && si.PostedBy != null, cancellationToken))
                 .OrderBy(si => si.ServiceInvoiceId)
-                .Select(s => new SelectListItem
-                {
-                    Value = s.ServiceInvoiceId.ToString(),
-                    Text = s.ServiceInvoiceNo
-                })
+                .Select(s => new SelectListItem { Value = s.ServiceInvoiceId.ToString(), Text = s.ServiceInvoiceNo })
                 .ToList();
 
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
 
             viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken);
 
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
-            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT + viewModel.WVAT;
+            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT +
+                        viewModel.WVAT;
             if (total == 0)
             {
                 TempData["warning"] = "Please input at least one type form of payment";
@@ -506,14 +517,16 @@ namespace IBSWeb.Areas.User.Controllers
                 if (viewModel.Bir2306 != null && viewModel.Bir2306.Length > 0)
                 {
                     existingModel.F2306FileName = GenerateFileNameToSave(viewModel.Bir2306.FileName);
-                    existingModel.F2306FilePath = await _cloudStorageService.UploadFileAsync(viewModel.Bir2306, existingModel.F2306FileName!);
+                    existingModel.F2306FilePath =
+                        await _cloudStorageService.UploadFileAsync(viewModel.Bir2306, existingModel.F2306FileName!);
                     existingModel.IsCertificateUpload = true;
                 }
 
                 if (viewModel.Bir2307 != null && viewModel.Bir2307.Length > 0)
                 {
                     existingModel.F2307FileName = GenerateFileNameToSave(viewModel.Bir2307.FileName);
-                    existingModel.F2307FilePath = await _cloudStorageService.UploadFileAsync(viewModel.Bir2307, existingModel.F2307FileName!);
+                    existingModel.F2307FilePath =
+                        await _cloudStorageService.UploadFileAsync(viewModel.Bir2307, existingModel.F2307FileName!);
                     existingModel.IsCertificateUpload = true;
                 }
 
@@ -542,13 +555,15 @@ namespace IBSWeb.Areas.User.Controllers
                 await _dbContext.CollectionReceiptDetails.AddAsync(details, cancellationToken);
                 await _unitOfWork.SaveAsync(cancellationToken);
 
-                await _unitOfWork.CollectionReceipt.UpdateSV(existingModel.ServiceInvoice!.ServiceInvoiceId, existingModel.Total, cancellationToken);
+                await _unitOfWork.CollectionReceipt.UpdateSV(existingModel.ServiceInvoice!.ServiceInvoiceId,
+                    existingModel.Total, cancellationToken);
 
                 #endregion --Saving default value
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(existingModel.EditedBy!, $"Edited collection receipt# {existingModel.CollectionReceiptNo}", "Collection Receipt");
+                AuditTrail auditTrailBook = new(existingModel.EditedBy!,
+                    $"Edited collection receipt# {existingModel.CollectionReceiptNo}", "Collection Receipt");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -559,7 +574,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to edit collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -578,9 +594,11 @@ namespace IBSWeb.Areas.User.Controllers
                 return NotFound();
             }
 
-            if (await _unitOfWork.IsPeriodPostedAsync(Module.CollectionReceipt, model.TransactionDate, cancellationToken))
+            if (await _unitOfWork.IsPeriodPostedAsync(Module.CollectionReceipt, model.TransactionDate,
+                    cancellationToken))
             {
-                throw new ArgumentException($"Cannot post this record because the period {model.TransactionDate:MMM yyyy} is already closed.");
+                throw new ArgumentException(
+                    $"Cannot post this record because the period {model.TransactionDate:MMM yyyy} is already closed.");
             }
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -595,7 +613,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                AuditTrail auditTrailBook = new(model.PostedBy!,
+                    $"Posted collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -607,7 +626,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to post collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to post collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -620,7 +640,8 @@ namespace IBSWeb.Areas.User.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Void(int id, CancellationToken cancellationToken)
         {
-            var model = await _unitOfWork.CollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
+            var model = await _unitOfWork.CollectionReceipt.GetAsync(cr => cr.CollectionReceiptId == id,
+                cancellationToken);
 
             if (model == null)
             {
@@ -637,22 +658,29 @@ namespace IBSWeb.Areas.User.Controllers
 
                 await _unitOfWork.GeneralLedger.ReverseEntries(model.CollectionReceiptNo, cancellationToken);
 
-                await _unitOfWork.CollectionReceipt.RemoveSVPayment(model.ServiceInvoiceId, model.Total, cancellationToken);
+                await _unitOfWork.CollectionReceipt.RemoveSVPayment(model.ServiceInvoiceId, model.Total,
+                    cancellationToken);
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                AuditTrail auditTrailBook = new(model.VoidedBy!,
+                    $"Voided collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Collection Receipt #{model.CollectionReceiptNo} has been voided successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Collection Receipt #{model.CollectionReceiptNo} has been voided successfully."
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to void collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to void collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return Json(new { success = false, message = ex.Message });
             }
@@ -661,7 +689,8 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
-        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
+        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(x => x.CollectionReceiptId == id, cancellationToken);
@@ -694,19 +723,25 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
+                AuditTrail auditTrailBook = new(model.CanceledBy!,
+                    $"Canceled collection receipt# {model.CollectionReceiptNo}", "Collection Receipt");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
 
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Collection Receipt #{model.CollectionReceiptNo} has been cancelled successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Collection Receipt #{model.CollectionReceiptNo} has been cancelled successfully."
+                });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to cancel collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to cancel collection receipt. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return Json(new { success = false, message = ex.Message });
             }
@@ -728,7 +763,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrail = new(GetUserFullName(), $"Printed original copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
+                AuditTrail auditTrail = new(GetUserFullName(),
+                    $"Printed original copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -737,7 +773,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrail = new(GetUserFullName(), $"Printed re-printed copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
+                AuditTrail auditTrail = new(GetUserFullName(),
+                    $"Printed re-printed copy of collection receipt# {cr.CollectionReceiptNo}", "Collection Receipt");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrail, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -764,7 +801,8 @@ namespace IBSWeb.Areas.User.Controllers
                 model.DepositedDate = null;
                 model.Status = nameof(CollectionReceiptStatus.Returned);
 
-                await _unitOfWork.CollectionReceipt.ReturnedCheck(model.CollectionReceiptNo, "", GetUserFullName(), cancellationToken);
+                await _unitOfWork.CollectionReceipt.ReturnedCheck(model.CollectionReceiptNo, "", GetUserFullName(),
+                    cancellationToken);
 
                 #region --Audit Trail Recording
 
@@ -783,7 +821,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to returned checks. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to returned checks. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
 
                 return RedirectToAction(nameof(Index));
@@ -827,7 +866,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to redeposit. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to redeposit. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(Index));
             }
@@ -835,7 +875,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
         [HttpGet]
-        public async Task<IActionResult> ApplyClearingDate(int id, DateOnly clearingDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> ApplyClearingDate(int id, DateOnly clearingDate,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.CollectionReceipt
                 .GetAsync(cr => cr.CollectionReceiptId == id, cancellationToken);
@@ -869,7 +910,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
-                _logger.LogError(ex, "Failed to apply clearing date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to apply clearing date. Error: {ErrorMessage}, Stack: {StackTrace}. Recorded by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return RedirectToAction(nameof(Index));
             }
@@ -995,34 +1037,34 @@ namespace IBSWeb.Areas.User.Controllers
             viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
             viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken);
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CollectionReceiptServiceViewModel viewModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CollectionReceiptServiceViewModel viewModel,
+            CancellationToken cancellationToken)
         {
             viewModel.Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken);
             viewModel.BankAccounts = await _unitOfWork.GetBankAccountListById(cancellationToken);
 
             viewModel.ServiceInvoices = (await _unitOfWork.ServiceInvoice
-                .GetAllAsync(si => si.Balance > 0
-                                   && si.CustomerId == viewModel.CustomerId
-                                   && si.PostedBy != null, cancellationToken))
+                    .GetAllAsync(si => si.Balance > 0
+                                       && si.CustomerId == viewModel.CustomerId
+                                       && si.PostedBy != null, cancellationToken))
                 .OrderBy(si => si.ServiceInvoiceId)
-                .Select(s => new SelectListItem
-                {
-                    Value = s.ServiceInvoiceId.ToString(),
-                    Text = s.ServiceInvoiceNo
-                })
+                .Select(s => new SelectListItem { Value = s.ServiceInvoiceId.ToString(), Text = s.ServiceInvoiceNo })
                 .ToList();
 
             viewModel.ChartOfAccounts = await _unitOfWork.GetChartOfAccountListAsyncByNo(cancellationToken);
-            viewModel.MinDate = await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
+            viewModel.MinDate =
+                await _unitOfWork.GetMinimumPeriodBasedOnThePostedPeriods(Module.CollectionReceipt, cancellationToken);
 
-            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT + viewModel.WVAT;
+            var total = viewModel.CashAmount + viewModel.CheckAmount + viewModel.ManagersCheckAmount + viewModel.EWT +
+                        viewModel.WVAT;
             if (total == 0)
             {
                 TempData["warning"] = "Please input at least one type form of payment";
@@ -1108,7 +1150,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 await _dbContext.CollectionReceiptDetails.AddAsync(details, cancellationToken);
 
-                await _unitOfWork.CollectionReceipt.UpdateSV(model.ServiceInvoice!.ServiceInvoiceId, model.Total, cancellationToken);
+                await _unitOfWork.CollectionReceipt.UpdateSV(model.ServiceInvoice!.ServiceInvoiceId, model.Total,
+                    cancellationToken);
 
                 #endregion --Saving default value
 

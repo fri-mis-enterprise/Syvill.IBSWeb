@@ -11,11 +11,9 @@ namespace IBS.Models.Books
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GeneralLedgerBookId { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateOnly Date { get; set; }
+        [Column(TypeName = "date")] public DateOnly Date { get; set; }
 
-        [Column(TypeName = "varchar(20)")]
-        public string Reference { get; set; } = string.Empty;
+        [Column(TypeName = "varchar(20)")] public string Reference { get; set; } = string.Empty;
 
         [Display(Name = "Account Number")]
         [Column(TypeName = "varchar(50)")]
@@ -46,15 +44,13 @@ namespace IBS.Models.Books
 
         public bool IsPosted { get; set; } = true;
 
-        [Column(TypeName = "varchar(50)")]
-        public string ModuleType { get; set; } = string.Empty;
+        [Column(TypeName = "varchar(50)")] public string ModuleType { get; set; } = string.Empty;
 
         #region Chart Of Account Properties
 
         public int AccountId { get; set; }
 
-        [ForeignKey(nameof(AccountId))]
-        public ChartOfAccount Account { get; set; } = null!;
+        [ForeignKey(nameof(AccountId))] public ChartOfAccount Account { get; set; } = null!;
 
         #endregion
 
@@ -64,8 +60,7 @@ namespace IBS.Models.Books
 
         public int? SubAccountId { get; set; }
 
-        [Column(TypeName = "varchar(200)")]
-        public string? SubAccountName { get; set; }
+        [Column(TypeName = "varchar(200)")] public string? SubAccountName { get; set; }
 
         #endregion
     }

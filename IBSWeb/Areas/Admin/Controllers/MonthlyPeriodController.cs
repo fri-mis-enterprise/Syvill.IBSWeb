@@ -11,7 +11,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class MonthlyPeriodController : Controller
+    public class MonthlyPeriodController: Controller
     {
         private readonly ILogger<MonthlyPeriodController> _logger;
 

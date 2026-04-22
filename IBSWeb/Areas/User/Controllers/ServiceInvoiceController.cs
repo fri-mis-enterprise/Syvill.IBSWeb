@@ -21,7 +21,7 @@ namespace IBSWeb.Areas.User.Controllers
 {
     [Area(nameof(User))]
     [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_Finance, SD.Department_RCD)]
-    public class ServiceInvoiceController : Controller
+    public class ServiceInvoiceController: Controller
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -31,7 +31,8 @@ namespace IBSWeb.Areas.User.Controllers
 
         private readonly ILogger<ServiceInvoiceController> _logger;
 
-        public ServiceInvoiceController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<ServiceInvoiceController> logger)
+        public ServiceInvoiceController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork, ILogger<ServiceInvoiceController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -51,7 +52,8 @@ namespace IBSWeb.Areas.User.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetServiceInvoices([FromForm] DataTablesParameters parameters, DateOnly filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetServiceInvoices([FromForm] DataTablesParameters parameters,
+            DateOnly filterDate, CancellationToken cancellationToken)
         {
             try
             {
@@ -75,8 +77,9 @@ namespace IBSWeb.Areas.User.Controllers
                             s.Total.ToString().Contains(searchValue) ||
                             s.Instructions.ToLower().Contains(searchValue) ||
                             s.CreatedBy!.ToLower().Contains(searchValue) == true
-                            );
+                        );
                 }
+
                 if (filterDate != DateOnly.MinValue && filterDate != default)
                 {
                     serviceInvoices = serviceInvoices.Where(s => s.Period == filterDate);
@@ -164,7 +167,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 var model = new ServiceInvoice
                 {
-                    ServiceInvoiceNo = await _unitOfWork.ServiceInvoice.GenerateCodeAsync(viewModel.Type, cancellationToken),
+                    ServiceInvoiceNo =
+                        await _unitOfWork.ServiceInvoice.GenerateCodeAsync(viewModel.Type, cancellationToken),
                     ServiceId = service.ServiceId,
                     ServiceName = service.Name,
                     ServicePercent = service.Percent,
@@ -190,7 +194,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CreatedBy!, $"Created new service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(model.CreatedBy!,
+                    $"Created new service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -202,7 +207,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to create service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Created by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -222,7 +228,8 @@ namespace IBSWeb.Areas.User.Controllers
 
             #region --Audit Trail Recording
 
-            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview service invoice#{sv.ServiceInvoiceNo}", "Service Invoice");
+            AuditTrail auditTrailBook = new(GetUserFullName(), $"Preview service invoice#{sv.ServiceInvoiceNo}",
+                "Service Invoice");
             await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
             #endregion --Audit Trail Recording
@@ -253,7 +260,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(model.PostedBy!, $"Posted service invoice# {model.ServiceInvoiceNo}",
+                    "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -265,7 +273,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to post service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to post service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Posted by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -276,7 +285,8 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DepartmentAuthorize(SD.Department_CreditAndCollection, SD.Department_RCD)]
-        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks, CancellationToken cancellationToken)
+        public async Task<IActionResult> Cancel(int id, string? cancellationRemarks,
+            CancellationToken cancellationToken)
         {
             var model = await _unitOfWork.ServiceInvoice.GetAsync(x => x.ServiceInvoiceId == id, cancellationToken);
 
@@ -296,7 +306,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.CanceledBy!, $"Canceled service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(model.CanceledBy!,
+                    $"Canceled service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -304,12 +315,17 @@ namespace IBSWeb.Areas.User.Controllers
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Service Invoice #{model.ServiceInvoiceNo} has been cancelled successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Service Invoice #{model.ServiceInvoiceNo} has been cancelled successfully."
+                });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to cancel service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to cancel service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Canceled by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 return Json(new { success = false, message = ex.Message });
             }
@@ -328,13 +344,20 @@ namespace IBSWeb.Areas.User.Controllers
             }
 
             var hasAlreadyBeenUsed =
-                await _dbContext.CollectionReceipts.AnyAsync(cr => cr.ServiceInvoiceId == model.ServiceInvoiceId && cr.Status != nameof(Status.Voided), cancellationToken) ||
-                await _dbContext.DebitMemos.AnyAsync(dm => dm.ServiceInvoiceId == model.ServiceInvoiceId && dm.Status != nameof(Status.Voided), cancellationToken) ||
-                await _dbContext.CreditMemos.AnyAsync(cm => cm.ServiceInvoiceId == model.ServiceInvoiceId && cm.Status != nameof(Status.Voided), cancellationToken);
+                await _dbContext.CollectionReceipts.AnyAsync(
+                    cr => cr.ServiceInvoiceId == model.ServiceInvoiceId && cr.Status != nameof(Status.Voided),
+                    cancellationToken) ||
+                await _dbContext.DebitMemos.AnyAsync(
+                    dm => dm.ServiceInvoiceId == model.ServiceInvoiceId && dm.Status != nameof(Status.Voided),
+                    cancellationToken) ||
+                await _dbContext.CreditMemos.AnyAsync(
+                    cm => cm.ServiceInvoiceId == model.ServiceInvoiceId && cm.Status != nameof(Status.Voided),
+                    cancellationToken);
 
             if (hasAlreadyBeenUsed)
             {
-                TempData["info"] = "Please note that this record has already been utilized in a collection receipts, debit or credit memo. As a result, voiding it is not permitted.";
+                TempData["info"] =
+                    "Please note that this record has already been utilized in a collection receipts, debit or credit memo. As a result, voiding it is not permitted.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -351,7 +374,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(model.VoidedBy!, $"Voided service invoice# {model.ServiceInvoiceNo}",
+                    "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -359,11 +383,16 @@ namespace IBSWeb.Areas.User.Controllers
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
-                return Json(new { success = true, message = $"Service Invoice #{model.ServiceInvoiceNo} has been voided successfully." });
+                return Json(new
+                {
+                    success = true,
+                    message = $"Service Invoice #{model.ServiceInvoiceNo} has been voided successfully."
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to void service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to void service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Voided by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 return Json(new { success = false, message = ex.Message });
@@ -461,7 +490,8 @@ namespace IBSWeb.Areas.User.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(existingModel.EditedBy!, $"Edited service invoice# {existingModel.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(existingModel.EditedBy!,
+                    $"Edited service invoice# {existingModel.ServiceInvoiceNo}", "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -473,7 +503,8 @@ namespace IBSWeb.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to edit service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
+                _logger.LogError(ex,
+                    "Failed to edit service invoice. Error: {ErrorMessage}, Stack: {StackTrace}. Edited by: {UserName}",
                     ex.Message, ex.StackTrace, _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
@@ -495,7 +526,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed original copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Printed original copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -507,7 +539,8 @@ namespace IBSWeb.Areas.User.Controllers
             {
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new(GetUserFullName(), $"Printed re-printed copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice");
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"Printed re-printed copy of service invoice# {sv.ServiceInvoiceNo}", "Service Invoice");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
 
                 #endregion --Audit Trail Recording
@@ -519,10 +552,10 @@ namespace IBSWeb.Areas.User.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetServiceInvoiceList(
-                [FromForm] DataTablesParameters parameters,
-                string? dateFrom,  // Format: "2024-01" (year-month)
-                string? dateTo,    // Format: "2024-12" (year-month)
-                CancellationToken cancellationToken)
+            [FromForm] DataTablesParameters parameters,
+            string? dateFrom, // Format: "2024-01" (year-month)
+            string? dateTo, // Format: "2024-12" (year-month)
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -534,7 +567,8 @@ namespace IBSWeb.Areas.User.Controllers
                 {
                     // Parse "2024-01" to first day of month
                     var parts = dateFrom.Split('-');
-                    if (parts.Length == 2 && int.TryParse(parts[0], out int year) && int.TryParse(parts[1], out int month))
+                    if (parts.Length == 2 && int.TryParse(parts[0], out int year) &&
+                        int.TryParse(parts[1], out int month))
                     {
                         var fromDate = new DateOnly(year, month, 1);
                         serviceInvoices = serviceInvoices
@@ -547,7 +581,8 @@ namespace IBSWeb.Areas.User.Controllers
                 {
                     // Parse "2024-12" to last day of month
                     var parts = dateTo.Split('-');
-                    if (parts.Length == 2 && int.TryParse(parts[0], out int year) && int.TryParse(parts[1], out int month))
+                    if (parts.Length == 2 && int.TryParse(parts[0], out int year) &&
+                        int.TryParse(parts[1], out int month))
                     {
                         var daysInMonth = DateTime.DaysInMonth(year, month);
                         var toDate = new DateOnly(year, month, daysInMonth);

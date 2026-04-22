@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,7 @@ using IBS.Models.MasterFile;
 namespace IBSWeb.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class RegisterConfirmationModel : PageModel
+    public class RegisterConfirmationModel: PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _sender;
@@ -50,6 +51,7 @@ namespace IBSWeb.Areas.Identity.Pages.Account
             {
                 return RedirectToPage("/Index");
             }
+
             returnUrl = returnUrl ?? Url.Content("~/");
 
             var user = await _userManager.FindByEmailAsync(email);

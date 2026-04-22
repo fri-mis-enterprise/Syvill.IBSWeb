@@ -9,11 +9,9 @@ namespace IBS.Models.MasterFile
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BankAccountId { get; set; }
 
-        [StringLength(10)]
-        public string Bank { get; set; } = string.Empty;
+        [StringLength(10)] public string Bank { get; set; } = string.Empty;
 
-        [StringLength(200)]
-        public string Branch { get; set; } = string.Empty;
+        [StringLength(200)] public string Branch { get; set; } = string.Empty;
 
         [StringLength(20)]
         [Display(Name = "Account No")]

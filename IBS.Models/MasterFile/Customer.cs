@@ -89,15 +89,12 @@ namespace IBS.Models.MasterFile
         [StringLength(10)]
         public string? ZipCode { get; set; }
 
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal? RetentionRate { get; set; }
+        [Column(TypeName = "numeric(18,4)")] public decimal? RetentionRate { get; set; }
 
         public bool HasMultipleTerms { get; set; }
 
-        [StringLength(13)]
-        public string Type { get; set; } = string.Empty;
+        [StringLength(13)] public string Type { get; set; } = string.Empty;
 
-        [NotMapped]
-        public List<SelectListItem>? PaymentTerms { get; set; }
+        [NotMapped] public List<SelectListItem>? PaymentTerms { get; set; }
     }
 }

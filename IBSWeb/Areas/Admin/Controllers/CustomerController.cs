@@ -13,7 +13,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 {
     [Area(nameof(Admin))]
     [Authorize(Roles = "Admin")]
-    public class CustomerController : Controller
+    public class CustomerController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -23,7 +23,8 @@ namespace IBSWeb.Areas.Admin.Controllers
 
         private readonly ApplicationDbContext _dbContext;
 
-        public CustomerController(IUnitOfWork unitOfWork, ILogger<CustomerController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public CustomerController(IUnitOfWork unitOfWork, ILogger<CustomerController> logger,
+            UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -50,7 +51,6 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             var model = new Customer()
             {
-
                 PaymentTerms = await _unitOfWork.Terms
                     .GetTermsListAsyncByCode(cancellationToken),
             };
@@ -102,7 +102,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create customer master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to create customer master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return View(model);
@@ -127,7 +128,6 @@ namespace IBSWeb.Areas.Admin.Controllers
             customer.PaymentTerms = await _unitOfWork.Terms
                 .GetTermsListAsyncByCode(cancellationToken);
             return View(customer);
-
         }
 
         [HttpPost]
@@ -151,7 +151,7 @@ namespace IBSWeb.Areas.Admin.Controllers
 
                 #region --Audit Trail Recording
 
-                AuditTrail auditTrailBook = new (model.EditedBy,
+                AuditTrail auditTrailBook = new(model.EditedBy,
                     $"Edited Customer #{model.CustomerCode}",
                     "Customer");
                 await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
@@ -165,14 +165,16 @@ namespace IBSWeb.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to edit customer master file. Created by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to edit customer master file. Created by: {UserName}",
+                    _userManager.GetUserName(User));
                 TempData["error"] = $"Error: '{ex.Message}'";
                 return View(model);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetCustomersList([FromForm] DataTablesParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCustomersList([FromForm] DataTablesParameters parameters,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -187,11 +189,11 @@ namespace IBSWeb.Areas.Admin.Controllers
                     var searchValue = parameters.Search.Value.ToLower();
 
                     query = query
-                    .Where(c =>
-                        c.CustomerCode!.ToLower().Contains(searchValue) ||
-                        c.CustomerName.ToLower().Contains(searchValue) ||
-                        c.CustomerTerms.ToLower().Contains(searchValue) ||
-                        c.VatType.ToLower().Contains(searchValue)
+                        .Where(c =>
+                            c.CustomerCode!.ToLower().Contains(searchValue) ||
+                            c.CustomerName.ToLower().Contains(searchValue) ||
+                            c.CustomerTerms.ToLower().Contains(searchValue) ||
+                            c.VatType.ToLower().Contains(searchValue)
                         );
                 }
 
@@ -294,7 +296,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to activate customer master file. Activated by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to activate customer master file. Activated by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Activate), new { id = id });
@@ -366,7 +369,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to deactivate customer master file. Deactivated by: {UserName}", _userManager.GetUserName(User));
+                _logger.LogError(ex, "Failed to deactivate customer master file. Deactivated by: {UserName}",
+                    _userManager.GetUserName(User));
                 await transaction.RollbackAsync(cancellationToken);
                 TempData["error"] = ex.Message;
                 return RedirectToAction(nameof(Deactivate), new { id = id });

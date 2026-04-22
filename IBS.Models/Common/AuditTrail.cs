@@ -12,13 +12,11 @@ namespace IBS.Models.Common
         [Column(TypeName = "timestamp without time zone")]
         public DateTime Date { get; set; }
 
-        [Display(Name = "Machine Name")]
-        public string MachineName { get; set; } = null!;
+        [Display(Name = "Machine Name")] public string MachineName { get; set; } = null!;
 
-        public string Activity { get; set; }  = null!;
+        public string Activity { get; set; } = null!;
 
-        [Display(Name = "Document Type")]
-        public string DocumentType { get; set; } = null!;
+        [Display(Name = "Document Type")] public string DocumentType { get; set; } = null!;
 
         public AuditTrail()
         {

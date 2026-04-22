@@ -10,22 +10,18 @@ namespace IBS.Models.ViewModels
 
         public string? DocumentType { get; set; }
 
-        [Display(Name = "Transaction Date")]
-        public DateOnly TransactionDate { get; set; }
+        [Display(Name = "Transaction Date")] public DateOnly TransactionDate { get; set; }
 
         [Required(ErrorMessage = "The employee is required.")]
         public int EmployeeId { get; set; }
 
         public List<SelectListItem>? Employees { get; set; }
 
-        [Display(Name = "Payee")]
-        public string Payee { get; set; } = null!;
+        [Display(Name = "Payee")] public string Payee { get; set; } = null!;
 
-        [Display(Name = "Payee's Address")]
-        public string PayeeAddress { get; set; } = null!;
+        [Display(Name = "Payee's Address")] public string PayeeAddress { get; set; } = null!;
 
-        [Display(Name = "Payee's Tin")]
-        public string PayeeTin { get; set; } = null!;
+        [Display(Name = "Payee's Tin")] public string PayeeTin { get; set; } = null!;
 
         public decimal Total { get; set; }
 
@@ -38,15 +34,12 @@ namespace IBS.Models.ViewModels
         [Display(Name = "Check No.")]
         public string CheckNo { get; set; } = null!;
 
-        [Display(Name = "Check Date")]
-        public DateOnly CheckDate { get; set; }
+        [Display(Name = "Check Date")] public DateOnly CheckDate { get; set; }
 
-        [StringLength(1000)]
-        public string Particulars { get; set; } = null!;
+        [StringLength(1000)] public string Particulars { get; set; } = null!;
 
         public IFormFile? SupportingFile { get; set; }
 
         public DateTime MinDate { get; set; }
-
     }
 }

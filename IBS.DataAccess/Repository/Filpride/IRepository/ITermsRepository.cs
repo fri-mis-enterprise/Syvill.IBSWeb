@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ITermsRepository : IRepository<Terms>
+    public interface ITermsRepository: IRepository<Terms>
     {
         Task UpdateAsync(Terms model, CancellationToken cancellationToken = default);
 

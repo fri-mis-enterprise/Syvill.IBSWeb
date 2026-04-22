@@ -62,8 +62,8 @@
                             id: id,
                             cancellationRemarks: $("#cancellationRemarks").val()
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -71,14 +71,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -109,8 +109,8 @@
                             id: id,
                             cancellationRemarks: $("#cancellationRemarks").val()
                         },
-                        headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                        success: function(response) {
+                        headers: {'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()},
+                        success: function (response) {
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -118,14 +118,14 @@
                                     text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
-                                }).then(function() {
+                                }).then(function () {
                                     window.location.reload();
                                 });
                             } else {
                                 Swal.fire('Error', response.message, 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Something went wrong.', 'error');
                         }
                     });
@@ -134,83 +134,83 @@
         }
     </script>
     <script>
-         $(document).ready(function() {
-             let filterValue = localStorage.getItem('filterDate') || "";
-             $('#inputDate').val(filterValue);
+        $(document).ready(function () {
+            let filterValue = localStorage.getItem('filterDate') || "";
+            $('#inputDate').val(filterValue);
 
-             let table = $('#paginatedTable').DataTable({
-                 "processing": true, // Enable processing indicator
-                 "serverSide": true, // Enable server-side processing
-                 "stateSave" : true,
-                 "stateDuration": 86400,
-                 "language": {
-                     "processing": `<div class="d-flex justify-content-center">
+            let table = $('#paginatedTable').DataTable({
+                "processing": true, // Enable processing indicator
+                "serverSide": true, // Enable server-side processing
+                "stateSave": true,
+                "stateDuration": 86400,
+                "language": {
+                    "processing": `<div class="d-flex justify-content-center">
                                     <div class="spinner-border text-primary" role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
                                  </div>`
-                 },
-                 "ajax": {
-                     "url": "@Url.Action("GetJournalVouchers", "JournalVoucher", new { area = "User" })",
-                     "type": "POST",
-                     "data": function (d) {
-                         return $.extend({}, d, {
-                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetJournalVouchers", "JournalVoucher", new { area = "User" })",
+                    "type": "POST",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
 
-                             // NEW PARAMETER FOR DATE — this goes to controller
-                             filterDate: filterValue
-                         });
-                     },
-                     "error": function (xhr, error, thrown) {
-                         console.error('DataTables error:', error);
-                         alert('An error occurred while loading the data');
-                     }
-                 },
-                 "preDrawCallback": function(settings) {
-                     $('#paginatedTable').addClass('table-loading');
-                 },
-                 "drawCallback": function(settings) {
-                     $('#paginatedTable').removeClass('table-loading');
+                            // NEW PARAMETER FOR DATE — this goes to controller
+                            filterDate: filterValue
+                        });
+                    },
+                    "error": function (xhr, error, thrown) {
+                        console.error('DataTables error:', error);
+                        alert('An error occurred while loading the data');
+                    }
+                },
+                "preDrawCallback": function (settings) {
+                    $('#paginatedTable').addClass('table-loading');
+                },
+                "drawCallback": function (settings) {
+                    $('#paginatedTable').removeClass('table-loading');
 
-                     // Initialize all tooltips
-                     $('[data-bs-toggle="tooltip"]').tooltip();
-                 },
-                 "columns": [
-                     { "data": "journalVoucherHeaderNo" },
-                     {
-                         "data": "date",
-                         "name": "date",
-                         "render": function (data, type, row) {
-                             // Assuming 'Date' is in ISO format like "2024-07-12T00:00:00"
-                             var date = new Date(data);
+                    // Initialize all tooltips
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                },
+                "columns": [
+                    {"data": "journalVoucherHeaderNo"},
+                    {
+                        "data": "date",
+                        "name": "date",
+                        "render": function (data, type, row) {
+                            // Assuming 'Date' is in ISO format like "2024-07-12T00:00:00"
+                            var date = new Date(data);
                             return date.toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'short',
                                 day: '2-digit'
                             });
-                         }
-                     },
-                     { "data": "checkVoucherHeader.checkVoucherHeaderNo" },
-                     { "data": "jvType" },
-                     { "data": "jvReason" },
-                     { "data": "createdBy" },
-                     {
+                        }
+                    },
+                    {"data": "checkVoucherHeader.checkVoucherHeaderNo"},
+                    {"data": "jvType"},
+                    {"data": "jvReason"},
+                    {"data": "createdBy"},
+                    {
                         "data": "status",
-                        "render": function(data, type, row) {
+                        "render": function (data, type, row) {
                             var statusClass = row.status === "@nameof(JvStatus.Posted)" ? "bg-info" :
-                                             row.status === "@nameof(JvStatus.Voided)"  ? "bg-danger" :
-                                             row.status === "@nameof(JvStatus.ForApproval)"  ? "bg-secondary" :
-                                             row.status === "@nameof(JvStatus.Canceled)" ? "bg-warning" : "";
+                                row.status === "@nameof(JvStatus.Voided)" ? "bg-danger" :
+                                    row.status === "@nameof(JvStatus.ForApproval)" ? "bg-secondary" :
+                                        row.status === "@nameof(JvStatus.Canceled)" ? "bg-warning" : "";
 
                             return `<span class="badge rounded-pill ${statusClass}">${row.status}</span>`;
                         }
-                     },
-                     {
-                         "data": "journalVoucherHeaderId",
-                         "orderable": false,
-                         "render": function (data, type, row) {
-                             const isAdmin = @User.IsInRole("Admin").ToString().ToLower();
-                             return `<div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
+                    },
+                    {
+                        "data": "journalVoucherHeaderId",
+                        "orderable": false,
+                        "render": function (data, type, row) {
+                            const isAdmin = @User.IsInRole("Admin").ToString().ToLower();
+                            return `<div class="dropdown actions-dropdown" style="${row.voidedBy != null || row.canceledBy != null ? 'display:none;' : ''}">
                                                  <button class="btn btn-light btn-sm dropdown-toggle w-100"
                                                         type="button"
                                                         data-bs-toggle="dropdown"
@@ -232,18 +232,18 @@
                                                      `}
                                                  </ul>
                                              </div>`;
-                         }
-                     }
-                 ],
-                 "order": [[0, "asc"]], // Default sort by TransactionDate
-                 "pageLength": 10 // Default number of rows per page
-             });
+                        }
+                    }
+                ],
+                "order": [[0, "asc"]], // Default sort by TransactionDate
+                "pageLength": 10 // Default number of rows per page
+            });
 
-             $('#inputDate').on('change', function() {
-                 filterValue = $(this).val();
-                 localStorage.setItem('filterDate', filterValue); // persist the date
-                 table.ajax.reload();
-             });
+            $('#inputDate').on('change', function () {
+                filterValue = $(this).val();
+                localStorage.setItem('filterDate', filterValue); // persist the date
+                table.ajax.reload();
+            });
 
             function getEditUrl(jvType, id) {
                 const routes = {
@@ -254,7 +254,7 @@
                 };
                 return `${routes[jvType] || routes['Liquidation']}/${id}`;
             }
-         });
+        });
     </script>
     <script>
         document.getElementById("newJournalBtn").addEventListener("click", function () {

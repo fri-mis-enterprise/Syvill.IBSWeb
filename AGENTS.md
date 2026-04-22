@@ -4,7 +4,8 @@
 
 This file defines how a coding agent should work in this repository.
 
-This repo is a layered ASP.NET Core MVC business and accounting system. It uses Razor Views, area-based controllers, EF Core with PostgreSQL, session state, Serilog, and cloud storage integrations.
+This repo is a layered ASP.NET Core MVC business and accounting system. It uses Razor Views, area-based controllers, EF
+Core with PostgreSQL, session state, Serilog, and cloud storage integrations.
 
 The agent should make the smallest clean change that matches the existing codebase and keeps the app easy to maintain.
 
@@ -23,7 +24,8 @@ The agent should make the smallest clean change that matches the existing codeba
 Use the current solution structure as the default:
 
 * `IBSWeb/` for the ASP.NET Core web app, `Program.cs`, SignalR hubs, Razor views, and area-based MVC controllers
-* `IBSWeb/Areas/` for module-specific MVC entry points and views such as `Admin`, `User`, `Bienes`, `Filpride`, and `Identity`
+* `IBSWeb/Areas/` for module-specific MVC entry points and views such as `Admin`, `User`, `Bienes`, `Filpride`, and
+  `Identity`
 * `IBS.Services/` for business logic, middleware, scheduling, and external integrations
 * `IBS.DataAccess/` for `ApplicationDbContext`, EF Core configuration, repositories, and migrations
 * `IBS.Models/` for domain models and entity types
@@ -58,7 +60,8 @@ Place changes in the project that already owns the behavior instead of collapsin
 
 * This repo is controller-and-view based. Default to extending existing controllers and Razor views.
 * Prefer the existing `Areas` structure and keep new endpoints, views, and related code in the appropriate module.
-* Keep controller actions focused on request handling, authorization decisions, model binding, and choosing the response.
+* Keep controller actions focused on request handling, authorization decisions, model binding, and choosing the
+  response.
 * Put non-trivial query logic, storage workflows, and access rules into services or existing repository classes.
 * Preserve existing route patterns unless the task requires a route change.
 * Return consistent HTTP results and avoid inventing custom response wrappers unless the repo already expects them.
@@ -66,7 +69,8 @@ Place changes in the project that already owns the behavior instead of collapsin
 ## Data and Persistence
 
 * Prefer EF Core patterns already present in the repo.
-* Reuse the existing repository and unit-of-work patterns already present in `IBS.DataAccess` where the surrounding code depends on them.
+* Reuse the existing repository and unit-of-work patterns already present in `IBS.DataAccess` where the surrounding code
+  depends on them.
 * Keep queries explicit and easy to reason about.
 * Add migrations only when schema changes are required for the task.
 * Keep each migration focused on one logical schema change.
@@ -78,7 +82,8 @@ Place changes in the project that already owns the behavior instead of collapsin
 * Validate and sanitize external input.
 * Do not log secrets, tokens, credentials, or connection strings.
 * Preserve authentication, authorization, session, and maintenance-mode behavior unless the task requires changing them.
-* Be careful with file handling and cloud storage paths. Prefer existing workflow services over duplicating storage logic.
+* Be careful with file handling and cloud storage paths. Prefer existing workflow services over duplicating storage
+  logic.
 * Preserve audit, accounting, and approval-related flows unless the task explicitly changes them.
 
 ## Dependencies
@@ -129,4 +134,5 @@ Do not introduce these unless clearly justified by the task:
 
 ## Final Rule
 
-Prefer the solution that is easiest for the next maintainer to read, test, and change while staying aligned with this repository's current MVC and EF Core structure.
+Prefer the solution that is easiest for the next maintainer to read, test, and change while staying aligned with this
+repository's current MVC and EF Core structure.

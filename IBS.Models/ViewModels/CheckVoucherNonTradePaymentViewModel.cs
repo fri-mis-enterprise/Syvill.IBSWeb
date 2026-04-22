@@ -12,17 +12,13 @@ namespace IBS.Models.ViewModels
         [Required(ErrorMessage = "The CV No is required.")]
         public int[]? MultipleCvId { get; set; }
 
-        [Display(Name = "Payee")]
-        public string Payee { get; set; } = null!;
+        [Display(Name = "Payee")] public string Payee { get; set; } = null!;
 
-        [Display(Name = "Payee's Address")]
-        public string PayeeAddress { get; set; } = null!;
+        [Display(Name = "Payee's Address")] public string PayeeAddress { get; set; } = null!;
 
-        [Display(Name = "Payee's Tin")]
-        public string PayeeTin { get; set; } = null!;
+        [Display(Name = "Payee's Tin")] public string PayeeTin { get; set; } = null!;
 
-        [Display(Name = "Transaction Date")]
-        public DateOnly TransactionDate { get; set; }
+        [Display(Name = "Transaction Date")] public DateOnly TransactionDate { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:#,##0.0000;(#,##0.0000)}", ApplyFormatInEditMode = true)]
         public decimal Total { get; set; }
@@ -36,14 +32,11 @@ namespace IBS.Models.ViewModels
         [Display(Name = "Check No.")]
         public string CheckNo { get; set; } = null!;
 
-        [Display(Name = "Check Date")]
-        public DateOnly CheckDate { get; set; }
+        [Display(Name = "Check Date")] public DateOnly CheckDate { get; set; }
 
-        [StringLength(1000)]
-        public string Particulars { get; set; } = null!;
+        [StringLength(1000)] public string Particulars { get; set; } = null!;
 
-        [StringLength(100)]
-        public string? OldCVNo { get; set; }
+        [StringLength(100)] public string? OldCVNo { get; set; }
 
         public List<SelectListItem>? ChartOfAccounts { get; set; }
 
@@ -68,7 +61,6 @@ namespace IBS.Models.ViewModels
         public List<PaymentDetail> PaymentDetails { get; set; } = [];
 
         public DateTime MinDate { get; set; }
-
     }
 
     public class PaymentDetail
@@ -77,5 +69,4 @@ namespace IBS.Models.ViewModels
 
         public decimal AmountPaid { get; set; }
     }
-
 }

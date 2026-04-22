@@ -14,11 +14,9 @@ namespace IBS.Models.ViewModels
 
         public DateOnly TransactionDate { get; set; }
 
-        [StringLength(50)]
-        public string ReferenceNo { get; set; } = string.Empty;
+        [StringLength(50)] public string ReferenceNo { get; set; } = string.Empty;
 
-        [StringLength(100)]
-        public string? Remarks { get; set; }
+        [StringLength(100)] public string? Remarks { get; set; }
 
         public int ServiceInvoiceId { get; set; }
 
@@ -28,25 +26,21 @@ namespace IBS.Models.ViewModels
 
         public DateOnly? CheckDate { get; set; }
 
-        [StringLength(50)]
-        public string? CheckNo { get; set; }
+        [StringLength(50)] public string? CheckNo { get; set; }
 
         public string? CheckBank { get; set; }
 
-        [StringLength(50)]
-        public string? CheckBranch { get; set; }
+        [StringLength(50)] public string? CheckBranch { get; set; }
 
         public decimal CheckAmount { get; set; }
 
         public DateOnly? ManagersCheckDate { get; set; }
 
-        [StringLength(50)]
-        public string? ManagersCheckNo { get; set; }
+        [StringLength(50)] public string? ManagersCheckNo { get; set; }
 
         public string? ManagersCheckBank { get; set; }
 
-        [StringLength(50)]
-        public string? ManagersCheckBranch { get; set; }
+        [StringLength(50)] public string? ManagersCheckBranch { get; set; }
 
         public decimal ManagersCheckAmount { get; set; }
 

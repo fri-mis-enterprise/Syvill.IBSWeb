@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IBS.DataAccess.Repository.Filpride.IRepository
 {
-    public interface ICustomerRepository : IRepository<Customer>
+    public interface ICustomerRepository: IRepository<Customer>
     {
         Task<bool> IsTinNoExistAsync(string tin, CancellationToken cancellationToken = default);
 
@@ -12,6 +12,7 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
 
         Task UpdateAsync(Customer model, CancellationToken cancellationToken = default);
 
-        Task<List<SelectListItem>> GetCustomerBranchesSelectListAsync(int customerId, CancellationToken cancellationToken = default);
+        Task<List<SelectListItem>> GetCustomerBranchesSelectListAsync(int customerId,
+            CancellationToken cancellationToken = default);
     }
 }

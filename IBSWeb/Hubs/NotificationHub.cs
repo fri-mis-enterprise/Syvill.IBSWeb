@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace IBSWeb.Hubs
 {
-    public class NotificationHub : Hub
+    public class NotificationHub: Hub
     {
         private readonly IHubConnectionRepository _hubConnectionRepository;
 

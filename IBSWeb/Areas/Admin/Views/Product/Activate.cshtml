@@ -14,7 +14,7 @@
     </div>
     <div class="card-body p-4">
         <form method="post" class="row">
-            <input asp-for="ProductId" hidden />
+            <input asp-for="ProductId" hidden/>
             <div class="border p-3">
                 <div class="form-floating py-2 col-12">
                     <input asp-for="ProductCode" class="form-control border-0 shadow" placeholder="" disabled/>
@@ -33,7 +33,8 @@
                         <button type="submit" class="btn btn-success form-control">Activate</button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                        <a asp-area="Admin" asp-controller="Product" asp-action="Index"
+                           class="btn btn-outline-primary border  form-control ">Back to List</a>
                     </div>
                 </div>
             </div>

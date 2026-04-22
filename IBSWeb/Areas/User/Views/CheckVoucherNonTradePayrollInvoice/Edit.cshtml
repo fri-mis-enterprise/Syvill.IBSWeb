@@ -34,24 +34,28 @@
                 </div>
                 <div class="form-group mb-3">
                     <label class="control-label">Supplier<span class="required">*</span></label>
-                    <select asp-for="SupplierId" asp-items="@Model.Suppliers" class="form-select js-select2 supplier" style="width:100%" required>
+                    <select asp-for="SupplierId" asp-items="@Model.Suppliers" class="form-select js-select2 supplier"
+                            style="width:100%" required>
                         <option></option>
                     </select>
                     <span asp-validation-for="SupplierId" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea asp-for="PoNo" class="form-control" placeholder="Input po no" style="height: 100px"></textarea>
+                    <textarea asp-for="PoNo" class="form-control" placeholder="Input po no"
+                              style="height: 100px"></textarea>
                     <label asp-for="PoNo" class="control-label ms-2">PO No</label>
                     <span asp-validation-for="PoNo" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea asp-for="SiNo" class="form-control" placeholder="Input si no" style="height: 100px"></textarea>
+                    <textarea asp-for="SiNo" class="form-control" placeholder="Input si no"
+                              style="height: 100px"></textarea>
                     <label asp-for="SiNo" class="control-label ms-2">Supplier Invoice No</label>
                     <span asp-validation-for="SiNo" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
                     <label asp-for="Total" class="control-label"></label><span class="required">*</span>
-                    <input asp-for="Total" id="totalAmount" class="form-control money inputAmount" placeholder="0.0000"/>
+                    <input asp-for="Total" id="totalAmount" class="form-control money inputAmount"
+                           placeholder="0.0000"/>
                     <span asp-validation-for="Total" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
@@ -59,8 +63,10 @@
                     <input name="file" type="file" class="form-control"/>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea asp-for="Particulars" class="form-control" placeholder="Leave a remarks here" style="height: 100px"></textarea>
-                    <label asp-for="Particulars" class="control-label ms-2">Particulars<span class="required">*</span></label>
+                    <textarea asp-for="Particulars" class="form-control" placeholder="Leave a remarks here"
+                              style="height: 100px"></textarea>
+                    <label asp-for="Particulars" class="control-label ms-2">Particulars<span
+                            class="required">*</span></label>
                     <span asp-validation-for="Particulars" class="text-danger"></span>
                 </div>
                 <input type="hidden" id="StartDate" name="StartDate"/>
@@ -82,34 +88,46 @@
                             </tr>
                             </thead>
                             <tbody id="accountingEntriesBody">
-                                @for (var i = 0; i < Model.PayrollAccountingEntries?.Count; i++)
-                                {
-                                    <tr data-index="@i">
-                                        <td>
-                                            <input type="text" name="PayrollAccountingEntries[@i].AccountNumber" value="@Model.PayrollAccountingEntries[i].AccountNumber" style="border:none" class="w-100" readonly/>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="PayrollAccountingEntries[@i].AccountTitle" value="@Model.PayrollAccountingEntries[i].AccountTitle" style="border:none" class="w-100" readonly />
-                                        </td>
-                                        <td>
-                                            <input name="PayrollAccountingEntries[@i].Debit" value="@Model.PayrollAccountingEntries[i].Debit.ToString("N4")" style="border:none" class="w-100 money editable-amount" oninput="updateTotalDebitAndCredit()" />
-                                        </td>
-                                        <td>
-                                            <input name="PayrollAccountingEntries[@i].Credit" value="@Model.PayrollAccountingEntries[i].Credit.ToString("N4")" style="border:none" class="w-100 money editable-amount" oninput="updateTotalDebitAndCredit()" />
-                                        </td>
-                                        <td>
-                                            <input name="PayrollAccountingEntries[@i].MultipleSupplierCodeName"
-                                                   value="@Model.PayrollAccountingEntries[i].MultipleSupplierCodeName"
-                                                   style="border:none" class="w-100" readonly />
-                                            <input name="PayrollAccountingEntries[@i].MultipleSupplierId"
-                                                   type="hidden"
-                                                   value="@Model.PayrollAccountingEntries[i].MultipleSupplierId"/>
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-                                        </td>
-                                    </tr>
-                                }
+                            @for (var i = 0; i < Model.PayrollAccountingEntries?.Count; i++)
+                            {
+                                <tr data-index="@i">
+                                    <td>
+                                        <input type="text" name="PayrollAccountingEntries[@i].AccountNumber"
+                                               value="@Model.PayrollAccountingEntries[i].AccountNumber"
+                                               style="border:none" class="w-100" readonly/>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="PayrollAccountingEntries[@i].AccountTitle"
+                                               value="@Model.PayrollAccountingEntries[i].AccountTitle"
+                                               style="border:none" class="w-100" readonly/>
+                                    </td>
+                                    <td>
+                                        <input name="PayrollAccountingEntries[@i].Debit"
+                                               value="@Model.PayrollAccountingEntries[i].Debit.ToString("N4")"
+                                               style="border:none" class="w-100 money editable-amount"
+                                               oninput="updateTotalDebitAndCredit()"/>
+                                    </td>
+                                    <td>
+                                        <input name="PayrollAccountingEntries[@i].Credit"
+                                               value="@Model.PayrollAccountingEntries[i].Credit.ToString("N4")"
+                                               style="border:none" class="w-100 money editable-amount"
+                                               oninput="updateTotalDebitAndCredit()"/>
+                                    </td>
+                                    <td>
+                                        <input name="PayrollAccountingEntries[@i].MultipleSupplierCodeName"
+                                               value="@Model.PayrollAccountingEntries[i].MultipleSupplierCodeName"
+                                               style="border:none" class="w-100" readonly/>
+                                        <input name="PayrollAccountingEntries[@i].MultipleSupplierId"
+                                               type="hidden"
+                                               value="@Model.PayrollAccountingEntries[i].MultipleSupplierId"/>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
                             </tbody>
                             <tfoot>
                             <tr>
@@ -129,7 +147,8 @@
                         <button type="submit" class="btn btn-primary form-control">Save</button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Index" class="btn btn-outline-primary border  form-control ">Back to List</a>
+                        <a asp-area="User" asp-controller="CheckVoucherNonTradePayrollInvoice" asp-action="Index"
+                           class="btn btn-outline-primary border  form-control ">Back to List</a>
                     </div>
                 </div>
             </div>
@@ -138,7 +157,8 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="AddAccEntry" data-bs-backdrop="static" tabindex="-1" aria-labelledby="AddAccEntryLabel" aria-hidden="true">
+<div class="modal fade" id="AddAccEntry" data-bs-backdrop="static" tabindex="-1" aria-labelledby="AddAccEntryLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -150,19 +170,20 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
                         <label class="control-label">Account No.</label>
-                        <select id="AccountNo" asp-items="@Model.ChartOfAccounts" class="form-select" style="width: 100%">
+                        <select id="AccountNo" asp-items="@Model.ChartOfAccounts" class="form-select"
+                                style="width: 100%">
                             <option></option>
                         </select>
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group pt-4">
                         <label class="control-label">Debit</label>
-                        <input id="debit" value="0.0000" class="form-control moneyInput" placeholder="0.0000" />
+                        <input id="debit" value="0.0000" class="form-control moneyInput" placeholder="0.0000"/>
                         <span class="text-danger"></span>
                     </div>
                     <div class="form-group pt-4">
                         <label class="control-label">Credit</label>
-                        <input id="credit" value="0.0000" class="form-control moneyInput" placeholder="0.0000" />
+                        <input id="credit" value="0.0000" class="form-control moneyInput" placeholder="0.0000"/>
                         <span class="text-danger"></span>
                     </div>
                     <div class="row">
@@ -174,7 +195,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="modalClose" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="calculateButton" onclick="saveAccountingEntry(event)">Create</button>
+                <button type="button" class="btn btn-primary" id="calculateButton" onclick="saveAccountingEntry(event)">
+                    Create
+                </button>
             </div>
         </div>
     </div>
@@ -201,7 +224,7 @@
     <script>
         let suppliers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Suppliers));
 
-        function seeIfNeedSupplier (event){
+        function seeIfNeedSupplier(event) {
             let accountNumber = $("#AccountNo").val();
             let debit = parseNumber($("#debit").val());
             let credit = parseNumber($("#credit").val());
@@ -214,19 +237,18 @@
                                 <span class="text-danger"></span>
                             </div>`;
 
-            if (accountNumber === "201030550" || accountNumber === "201030510" || accountNumber === "201030600" || accountNumber === "202010200" || accountNumber === "101020500" || accountNumber === "201030700"){
+            if (accountNumber === "201030550" || accountNumber === "201030510" || accountNumber === "201030600" || accountNumber === "202010200" || accountNumber === "101020500" || accountNumber === "201030700") {
                 if (selectionGroup.length === 0) {
                     showSupplierSelectList();
                 }
-            }
-            else {
+            } else {
                 if (selectionGroup.length !== 0) {
                     selectionGroup.remove();
                 }
             }
         }
 
-        function showSupplierSelectList (event){
+        function showSupplierSelectList(event) {
             let selectionGroup = $("#selectionGroup");
             let multipleSupplierSelect = $("#MultipleSupplierId");
 
@@ -286,7 +308,7 @@
                 return;
             }
 
-            if ($("#MultipleSupplierId").length !== undefined){
+            if ($("#MultipleSupplierId").length !== undefined) {
                 if ($("#MultipleSupplierId option:selected").val() === "") {
                     event.preventDefault();
                     alert('Please select a sub-account');
@@ -390,11 +412,11 @@
 
         // Function to reindex all rows after deletion
         function reindexRows() {
-            $("#accountingEntriesBody tr").each(function(index) {
+            $("#accountingEntriesBody tr").each(function (index) {
                 $(this).attr('data-index', index);
 
                 // Update all input names with the new index
-                $(this).find('input[name^="PayrollAccountingEntries"]').each(function() {
+                $(this).find('input[name^="PayrollAccountingEntries"]').each(function () {
                     var name = $(this).attr('name');
                     var fieldName = name.substring(name.indexOf('].') + 2);
                     $(this).attr('name', 'PayrollAccountingEntries[' + index + '].' + fieldName);
@@ -458,7 +480,7 @@
     <script>
         $("#AccountNo").on("change", seeIfNeedSupplier);
         $(document).on("input change", "#totalAmount", validateDebitAndCredit);
-        $(document).on("click", "#modalClose", function (){
+        $(document).on("click", "#modalClose", function () {
             $("#AccountNo").val("");
             $("#Category").val("");
             $("#MultipleSupplierId").val("");
@@ -472,14 +494,14 @@
     </script>
     <script>
         // Format number on blur (when user leaves the field)
-        $(document).on("blur", ".editable-amount", function() {
+        $(document).on("blur", ".editable-amount", function () {
             var value = parseNumber($(this).val());
             $(this).val(formatNumber(value));
             updateTotalDebitAndCredit();
         });
 
         // Recalculate on any input change
-        $(document).on("input", ".editable-amount", function() {
+        $(document).on("input", ".editable-amount", function () {
             updateTotalDebitAndCredit();
         });
     </script>

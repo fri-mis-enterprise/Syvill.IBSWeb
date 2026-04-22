@@ -14,23 +14,17 @@ namespace IBS.Models.ViewModels
 
         public string? SupplierName { get; set; }
 
-        [Display(Name = "Supplier Address")]
-        public string? SupplierAddress { get; set; }
+        [Display(Name = "Supplier Address")] public string? SupplierAddress { get; set; }
 
-        [Display(Name = "Supplier Tin")]
-        public string? SupplierTinNo { get; set; }
+        [Display(Name = "Supplier Tin")] public string? SupplierTinNo { get; set; }
 
-        [Display(Name = "PO No")]
-        public string? PoNo { get; set; }
+        [Display(Name = "PO No")] public string? PoNo { get; set; }
 
-        [Display(Name = "SI No")]
-        public string? SiNo { get; set; }
+        [Display(Name = "SI No")] public string? SiNo { get; set; }
 
-        [Display(Name = "Transaction Date")]
-        public DateOnly TransactionDate { get; set; }
+        [Display(Name = "Transaction Date")] public DateOnly TransactionDate { get; set; }
 
-        [StringLength(1000)]
-        public string Particulars { get; set; } = null!;
+        [StringLength(1000)] public string Particulars { get; set; } = null!;
 
         public decimal Total { get; set; }
 

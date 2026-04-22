@@ -3,7 +3,7 @@ using IBS.Models.MasterFile;
 
 namespace IBS.DataAccess.Repository.MasterFile.IRepository
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IProductRepository: IRepository<Product>
     {
         Task<bool> IsProductExist(string product, CancellationToken cancellationToken = default);
 

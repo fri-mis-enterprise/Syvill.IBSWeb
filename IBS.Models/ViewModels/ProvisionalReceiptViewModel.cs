@@ -20,17 +20,13 @@ namespace IBS.Models.ViewModels
         [Display(Name = "Reference No.")]
         public string ReferenceNo { get; set; } = string.Empty;
 
-        [StringLength(255)]
-        public string Remarks { get; set; } = string.Empty;
+        [StringLength(255)] public string Remarks { get; set; } = string.Empty;
 
-        [Display(Name = "Cash Amount")]
-        public decimal CashAmount { get; set; }
+        [Display(Name = "Cash Amount")] public decimal CashAmount { get; set; }
 
-        [Display(Name = "Check Amount")]
-        public decimal CheckAmount { get; set; }
+        [Display(Name = "Check Amount")] public decimal CheckAmount { get; set; }
 
-        [Display(Name = "Check Date")]
-        public DateOnly? CheckDate { get; set; }
+        [Display(Name = "Check Date")] public DateOnly? CheckDate { get; set; }
 
         [StringLength(50)]
         [Display(Name = "Check No.")]
@@ -70,7 +66,6 @@ namespace IBS.Models.ViewModels
 
         public DateTime MinDate { get; set; }
 
-        [Display(Name = "Batch#")]
-        public string? BatchNumber { get; set; }
+        [Display(Name = "Batch#")] public string? BatchNumber { get; set; }
     }
 }

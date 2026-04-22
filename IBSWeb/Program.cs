@@ -106,19 +106,19 @@ var app = builder.Build();
 await ApplicationDbSeeder.SeedAsync(app.Services);
 
 app.MapPost("/jobs/start-of-the-month-service",
-    async (StartOfTheMonthService service) =>
-    {
-        await service.Execute(null!);
-        return Results.Ok("StartOfTheMonthService job executed.");
-    })
+        async (StartOfTheMonthService service) =>
+        {
+            await service.Execute(null!);
+            return Results.Ok("StartOfTheMonthService job executed.");
+        })
     .AllowAnonymous();
 
 app.MapPost("/jobs/daily-service",
-    async (DailyService service) =>
-    {
-        await service.Execute(null!);
-        return Results.Ok("DailyService job executed.");
-    })
+        async (DailyService service) =>
+        {
+            await service.Execute(null!);
+            return Results.Ok("DailyService job executed.");
+        })
     .AllowAnonymous();
 
 app.MapGet("/health", () => Results.Ok("Healthy")).AllowAnonymous();

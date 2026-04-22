@@ -17,7 +17,7 @@
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
     border-radius: 0 0 8px 0;
-    box-shadow: 4px 4px 16px rgba(0,0,0,0.1);
+    box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
     width: 280px;
     height: calc(100vh - 72px);
     display: flex;
@@ -27,12 +27,12 @@
     transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-    #qa-panel.qa-hidden {
-        transform: translateX(-280px);
-        opacity: 0;
-        pointer-events: none;
-        transition: transform 0.25s ease, opacity 0.15s ease;
-    }
+#qa-panel.qa-hidden {
+    transform: translateX(-280px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease, opacity 0.15s ease;
+}
 
 /* Panel header */
 .qa-panel-header {
@@ -44,21 +44,21 @@
     flex-shrink: 0;
 }
 
-    .qa-panel-header span {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #fff;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-    }
+.qa-panel-header span {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
 
 /* Close button - sits inline in the header */
 #qa-close-btn {
     width: 20px;
     height: 20px;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     color: #fff;
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -70,9 +70,9 @@
     padding: 0;
 }
 
-    #qa-close-btn:hover {
-        background: rgba(255,255,255,0.3);
-    }
+#qa-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
 
 /* Search */
 .qa-search-wrap {
@@ -81,19 +81,19 @@
     flex-shrink: 0;
 }
 
-    .qa-search-wrap input {
-        width: 100%;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 4px 8px;
-        font-size: 0.82rem;
-        outline: none;
-    }
+.qa-search-wrap input {
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.82rem;
+    outline: none;
+}
 
-        .qa-search-wrap input:focus {
-            border-color: #3A595C;
-            box-shadow: 0 0 0 2px rgba(58,89,92,0.15);
-        }
+.qa-search-wrap input:focus {
+    border-color: #3A595C;
+    box-shadow: 0 0 0 2px rgba(58, 89, 92, 0.15);
+}
 
 /* Scrollable list area */
 .qa-list-area {
@@ -182,9 +182,9 @@
     transition: color 0.15s;
 }
 
-    .qa-clear-btn:hover {
-        color: #dc3545;
-    }
+.qa-clear-btn:hover {
+    color: #dc3545;
+}
 
 /* Empty state */
 .qa-empty {

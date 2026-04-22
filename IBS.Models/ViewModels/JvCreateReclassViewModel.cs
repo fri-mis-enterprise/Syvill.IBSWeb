@@ -5,11 +5,9 @@ namespace IBS.Models.ViewModels
 {
     public class JvCreateReclassViewModel
     {
-        [Required]
-        public string Type { get; set; } = string.Empty;
+        [Required] public string Type { get; set; } = string.Empty;
 
-        [Required]
-        public DateOnly TransactionDate { get; set; }
+        [Required] public DateOnly TransactionDate { get; set; }
 
         public DateTime MinDate { get; set; }
 
@@ -21,13 +19,9 @@ namespace IBS.Models.ViewModels
 
         public string? CrNo { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string Particulars { get; set; } = string.Empty;
+        [Required] [StringLength(200)] public string Particulars { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(200)]
-        public string Reason { get; set; } = string.Empty;
+        [Required] [StringLength(200)] public string Reason { get; set; } = string.Empty;
 
         public List<JvCreateReclassDetailViewModel> Details { get; set; } = [];
 
