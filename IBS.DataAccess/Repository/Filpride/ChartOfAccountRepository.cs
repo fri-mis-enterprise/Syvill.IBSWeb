@@ -183,5 +183,44 @@ namespace IBS.DataAccess.Repository.Filpride
 
             return query;
         }
+
+        public async Task<ChartOfAccount?> GetAsyncIgnoreQueryFilters(Expression<Func<ChartOfAccount, bool>> filter, CancellationToken cancellationToken = default)
+        {
+            return await dbSet
+                .IgnoreQueryFilters()
+                .Where(filter)
+                .Include(c => c.Children)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<ChartOfAccount>> GetAllAsyncIgnoreQueryFilters(Expression<Func<ChartOfAccount, bool>>? filter = null, CancellationToken cancellationToken = default)
+        {
+            IQueryable<ChartOfAccount> query = dbSet
+                .IgnoreQueryFilters()
+                .Include(c => c.Children);
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.ToListAsync(cancellationToken);
+        }
+
+        public IQueryable<ChartOfAccount> GetAllQueryIgnoreQueryFilters(Expression<Func<ChartOfAccount, bool>>? filter = null)
+        {
+            IQueryable<ChartOfAccount> query = dbSet
+                .IgnoreQueryFilters()
+                .Include(c => c.Children)
+                .AsSplitQuery()
+                .AsNoTracking();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return query;
+        }
     }
 }

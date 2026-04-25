@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.DTOs;
 using IBS.Models.MasterFile;
@@ -17,5 +18,11 @@ namespace IBS.DataAccess.Repository.Filpride.IRepository
         Task UpdateAsync(ChartOfAccount model, CancellationToken cancellationToken = default);
 
         IEnumerable<ChartOfAccountDto> GetSummaryReportView(CancellationToken cancellationToken = default);
+
+        Task<ChartOfAccount?> GetAsyncIgnoreQueryFilters(Expression<Func<ChartOfAccount, bool>> filter, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<ChartOfAccount>> GetAllAsyncIgnoreQueryFilters(Expression<Func<ChartOfAccount, bool>>? filter = null, CancellationToken cancellationToken = default);
+
+        IQueryable<ChartOfAccount> GetAllQueryIgnoreQueryFilters(Expression<Func<ChartOfAccount, bool>>? filter = null);
     }
 }

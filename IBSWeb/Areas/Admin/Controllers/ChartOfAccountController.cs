@@ -48,13 +48,9 @@ namespace IBSWeb.Areas.Admin.Controllers
         {
             ViewBag.ShowHidden = showHidden;
 
-            var accounts = await _unitOfWork.ChartOfAccount
-                .GetAllAsync(cancellationToken: cancellationToken);
-
-            if (!showHidden)
-            {
-                accounts = FilterHiddenAccounts(accounts);
-            }
+            var accounts = showHidden
+                ? await _unitOfWork.ChartOfAccount.GetAllAsyncIgnoreQueryFilters(cancellationToken: cancellationToken)
+                : await _unitOfWork.ChartOfAccount.GetAllAsync(cancellationToken: cancellationToken);
 
             return View(accounts.Where(c => c.Level == 1)
                 .ToList());
@@ -68,7 +64,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 var parentAccount = await _unitOfWork.ChartOfAccount
-                    .GetAsync(c => c.AccountId == parentId, cancellationToken);
+                    .GetAsyncIgnoreQueryFilters(c => c.AccountId == parentId, cancellationToken);
 
                 if (parentAccount == null)
                 {
@@ -144,7 +140,7 @@ namespace IBSWeb.Areas.Admin.Controllers
             try
             {
                 var chartOfAccounts = _unitOfWork.ChartOfAccount
-                    .GetAllQuery();
+                    .GetAllQueryIgnoreQueryFilters();
 
                 var totalRecords = await chartOfAccounts.CountAsync(cancellationToken);
 
@@ -246,7 +242,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int accountId, string accountName, CancellationToken cancellationToken)
         {
             var existingAccount = await _unitOfWork.ChartOfAccount
-                .GetAsync(x => x.AccountId == accountId, cancellationToken);
+                .GetAsyncIgnoreQueryFilters(x => x.AccountId == accountId, cancellationToken);
 
             if (existingAccount == null)
             {
@@ -289,7 +285,7 @@ namespace IBSWeb.Areas.Admin.Controllers
         public async Task<IActionResult> ToggleHidden(int accountId, bool showHidden = false, CancellationToken cancellationToken = default)
         {
             var existingAccount = await _unitOfWork.ChartOfAccount
-                .GetAsync(x => x.AccountId == accountId, cancellationToken);
+                .GetAsyncIgnoreQueryFilters(x => x.AccountId == accountId, cancellationToken);
 
             if (existingAccount == null)
             {
