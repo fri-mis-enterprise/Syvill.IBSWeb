@@ -12,6 +12,12 @@ namespace IBS.Models.Enums
         Undocumented
     }
 
+    public enum ServiceInvoiceCreationMode
+    {
+        Manual,
+        Automatic
+    }
+
     public enum Status
     {
         Pending,

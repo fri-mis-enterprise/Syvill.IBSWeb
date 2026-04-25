@@ -3,19 +3,18 @@ using System.Security.Claims;
 using IBS.DataAccess.Data;
 using IBS.DataAccess.Repository.IRepository;
 using IBS.Models.AccountsReceivable;
-using IBS.Models.Books;
 using IBS.Models.Common;
 using IBS.Models.Enums;
 using IBS.Models.MasterFile;
 using IBS.Models.ViewModels;
 using IBS.Services.Attributes;
+using IBS.Services;
 using IBS.Utility.Constants;
 using IBS.Utility.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 
 namespace IBSWeb.Areas.User.Controllers
 {
@@ -29,14 +28,18 @@ namespace IBSWeb.Areas.User.Controllers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly IServiceInvoiceGenerationService _serviceInvoiceGenerationService;
+
         private readonly ILogger<ServiceInvoiceController> _logger;
 
         public ServiceInvoiceController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
-            IUnitOfWork unitOfWork, ILogger<ServiceInvoiceController> logger)
+            IUnitOfWork unitOfWork, IServiceInvoiceGenerationService serviceInvoiceGenerationService,
+            ILogger<ServiceInvoiceController> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
+            _serviceInvoiceGenerationService = serviceInvoiceGenerationService;
             _logger = logger;
         }
 
@@ -126,6 +129,7 @@ namespace IBSWeb.Areas.User.Controllers
         {
             var viewModel = new ServiceInvoiceViewModel
             {
+                CreationMode = null,
                 Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken),
                 Services = await _unitOfWork.GetServiceListById(cancellationToken)
             };
@@ -150,57 +154,65 @@ namespace IBSWeb.Areas.User.Controllers
 
             try
             {
-                #region --Retrieval of Customer/Service
+                var currentUser = GetUserFullName();
+                ServiceInvoice model;
 
-                var customer = await _unitOfWork.Customer
-                    .GetAsync(c => c.CustomerId == viewModel.CustomerId, cancellationToken);
-
-                var service = await _unitOfWork.Service
-                    .GetAsync(c => c.ServiceId == viewModel.ServiceId, cancellationToken);
-
-                if (customer == null || service == null)
+                if (viewModel.CreationMode == ServiceInvoiceCreationMode.Automatic)
                 {
-                    return NotFound();
+                    var recurringSetup = BuildRecurringSetup(viewModel, currentUser);
+
+                    await _dbContext.RecurringServiceInvoices.AddAsync(recurringSetup, cancellationToken);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+
+                    model = await _serviceInvoiceGenerationService.CreateAsync(
+                        new ServiceInvoiceGenerationRequest
+                        {
+                            Type = viewModel.Type,
+                            CustomerId = viewModel.CustomerId,
+                            ServiceId = viewModel.ServiceId,
+                            Period = recurringSetup.StartPeriod,
+                            DueDate = GetPeriodEndDate(recurringSetup.StartPeriod),
+                            Instructions = viewModel.Instructions,
+                            Total = viewModel.AmountPerMonth,
+                            Discount = 0,
+                            CreatedBy = currentUser,
+                            RecurringServiceInvoiceId = recurringSetup.RecurringServiceInvoiceId
+                        }, cancellationToken);
+
+                    recurringSetup.GeneratedCount = 1;
+                    recurringSetup.IsActive = recurringSetup.GeneratedCount < recurringSetup.DurationInMonths;
+                    recurringSetup.NextRunPeriod = recurringSetup.IsActive
+                        ? recurringSetup.StartPeriod.AddMonths(recurringSetup.GeneratedCount)
+                        : null;
+
+                    await _unitOfWork.AuditTrail.AddAsync(new AuditTrail(currentUser,
+                        $"Created recurring service invoice setup# {recurringSetup.RecurringServiceInvoiceId}",
+                        "Service Invoice"), cancellationToken);
+                }
+                else
+                {
+                    model = await _serviceInvoiceGenerationService.CreateAsync(
+                        new ServiceInvoiceGenerationRequest
+                        {
+                            Type = viewModel.Type,
+                            CustomerId = viewModel.CustomerId,
+                            ServiceId = viewModel.ServiceId,
+                            Period = NormalizePeriod(viewModel.Period),
+                            DueDate = viewModel.DueDate,
+                            Instructions = viewModel.Instructions,
+                            Total = viewModel.Total,
+                            Discount = viewModel.Discount,
+                            CreatedBy = currentUser
+                        }, cancellationToken);
                 }
 
-                #endregion --Retrieval of Customer/Service
+                await _unitOfWork.AuditTrail.AddAsync(new AuditTrail(model.CreatedBy!,
+                    $"Created new service invoice# {model.ServiceInvoiceNo}", "Service Invoice"),
+                    cancellationToken);
 
-                var model = new ServiceInvoice
-                {
-                    ServiceInvoiceNo =
-                        await _unitOfWork.ServiceInvoice.GenerateCodeAsync(viewModel.Type, cancellationToken),
-                    ServiceId = service.ServiceId,
-                    ServiceName = service.Name,
-                    ServicePercent = service.Percent,
-                    CustomerId = customer.CustomerId,
-                    CustomerName = customer.CustomerName,
-                    CustomerAddress = customer.CustomerAddress,
-                    CustomerBusinessStyle = customer.BusinessStyle,
-                    CustomerTin = customer.CustomerTin,
-                    VatType = service.Name != "TRANSACTION FEE" ? customer.VatType : SD.VatType_Exempt,
-                    HasEwt = customer.WithHoldingTax && service.Name != "TRANSACTION FEE",
-                    HasWvat = customer.WithHoldingVat && service.Name != "TRANSACTION FEE",
-                    CreatedBy = GetUserFullName(),
-                    Total = viewModel.Total,
-                    Balance = viewModel.Total,
-                    Period = viewModel.Period,
-                    Instructions = viewModel.Instructions,
-                    DueDate = viewModel.DueDate,
-                    Discount = viewModel.Discount,
-                    Type = viewModel.Type,
-                };
-
-                await _unitOfWork.ServiceInvoice.AddAsync(model, cancellationToken);
-
-                #region --Audit Trail Recording
-
-                AuditTrail auditTrailBook = new(model.CreatedBy!,
-                    $"Created new service invoice# {model.ServiceInvoiceNo}", "Service Invoice");
-                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
-
-                #endregion --Audit Trail Recording
-
-                TempData["success"] = $"Service invoice #{model.ServiceInvoiceNo} created successfully.";
+                TempData["success"] = viewModel.CreationMode == ServiceInvoiceCreationMode.Automatic
+                    ? $"Recurring setup saved. Service invoice #{model.ServiceInvoiceNo} created successfully."
+                    : $"Service invoice #{model.ServiceInvoiceNo} created successfully.";
                 await _unitOfWork.SaveAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
                 return RedirectToAction(nameof(Index));
@@ -414,6 +426,8 @@ namespace IBSWeb.Areas.User.Controllers
             var viewModel = new ServiceInvoiceViewModel
             {
                 ServiceInvoiceId = existingModel.ServiceInvoiceId,
+                CreationMode = ServiceInvoiceCreationMode.Manual,
+                Type = existingModel.Type,
                 CustomerId = existingModel.CustomerId,
                 Customers = await _unitOfWork.GetCustomerListAsyncById(cancellationToken),
                 ServiceId = existingModel.ServiceId,
@@ -482,9 +496,11 @@ namespace IBSWeb.Areas.User.Controllers
                 existingModel.CustomerBusinessStyle = customer.BusinessStyle;
                 existingModel.CustomerAddress = customer.CustomerAddress;
                 existingModel.CustomerTin = customer.CustomerTin;
-                existingModel.VatType = service.Name != "TRANSACTION FEE" ? customer.VatType : SD.VatType_Exempt;
-                existingModel.HasEwt = customer.WithHoldingTax && service.Name != "TRANSACTION FEE";
-                existingModel.HasWvat = customer.WithHoldingVat && service.Name != "TRANSACTION FEE";
+                existingModel.VatType = existingModel.Type == nameof(DocumentType.Documented)
+                    ? customer.VatType
+                    : SD.VatType_Exempt;
+                existingModel.HasEwt = customer.WithHoldingTax && existingModel.Type == nameof(DocumentType.Documented);
+                existingModel.HasWvat = customer.WithHoldingVat && existingModel.Type == nameof(DocumentType.Documented) ;
 
                 #endregion --Saving the default properties
 
@@ -709,6 +725,41 @@ namespace IBSWeb.Areas.User.Controllers
                 await transaction.RollbackAsync(cancellationToken);
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        private static DateOnly NormalizePeriod(DateOnly period)
+        {
+            return new DateOnly(period.Year, period.Month, 1);
+        }
+
+        private static DateOnly GetPeriodEndDate(DateOnly period)
+        {
+            return NormalizePeriod(period).AddMonths(1).AddDays(-1);
+        }
+
+        private RecurringServiceInvoice BuildRecurringSetup(ServiceInvoiceViewModel viewModel, string currentUser)
+        {
+            var startPeriod = NormalizePeriod(viewModel.Period);
+            var generatedCount = 1;
+            DateOnly? nextRunPeriod = viewModel.DurationInMonths > generatedCount
+                ? startPeriod.AddMonths(generatedCount)
+                : null;
+
+            return new RecurringServiceInvoice
+            {
+                Type = viewModel.Type,
+                CustomerId = viewModel.CustomerId,
+                ServiceId = viewModel.ServiceId,
+                Instructions = viewModel.Instructions,
+                StartPeriod = startPeriod,
+                EndPeriod = startPeriod.AddMonths(viewModel.DurationInMonths - 1),
+                NextRunPeriod = nextRunPeriod,
+                DurationInMonths = viewModel.DurationInMonths,
+                GeneratedCount = 0,
+                AmountPerMonth = viewModel.AmountPerMonth,
+                IsActive = viewModel.DurationInMonths > generatedCount,
+                CreatedBy = currentUser
+            };
         }
     }
 }

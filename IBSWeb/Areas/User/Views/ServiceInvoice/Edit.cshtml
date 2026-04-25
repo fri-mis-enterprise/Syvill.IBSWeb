@@ -23,6 +23,8 @@
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ServiceInvoiceId"/>
+            <input type="hidden" asp-for="CreationMode"/>
+            <input type="hidden" asp-for="Type"/>
             <div class="form-group mb-3">
                 <label asp-for="CustomerId" class="control-label">Customer<span class="required">*</span></label>
                 <select asp-for="CustomerId" class="form-control js-select2" asp-items="@Model.Customers" required

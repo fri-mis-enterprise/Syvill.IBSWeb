@@ -70,6 +70,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<GCSConfigOptions>(builder.Configuration);
 builder.Services.AddScoped<IHubConnectionRepository, HubConnectionRepository>();
 builder.Services.AddScoped<IMonthlyClosureService, MonthlyClosureService>();
+builder.Services.AddScoped<IServiceInvoiceGenerationService, ServiceInvoiceGenerationService>();
 builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 builder.Services.AddSingleton<ICloudStorageService, CloudStorageService>();
 builder.Services.AddScoped<ISubAccountResolver, SubAccountResolver>();

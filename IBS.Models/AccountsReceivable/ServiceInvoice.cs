@@ -39,6 +39,11 @@ namespace IBS.Models.AccountsReceivable
 
         [ForeignKey(nameof(ServiceId))] public Service? Service { get; set; }
 
+        public int? RecurringServiceInvoiceId { get; set; }
+
+        [ForeignKey(nameof(RecurringServiceInvoiceId))]
+        public RecurringServiceInvoice? RecurringServiceInvoice { get; set; }
+
         [StringLength(100)] public string ServiceName { get; set; } = string.Empty;
 
         [Column(TypeName = "numeric(18,4)")] public decimal ServicePercent { get; set; }

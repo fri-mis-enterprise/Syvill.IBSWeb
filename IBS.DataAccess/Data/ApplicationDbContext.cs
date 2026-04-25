@@ -65,6 +65,7 @@ namespace IBS.DataAccess.Data
         public DbSet<CollectionReceipt> CollectionReceipts { get; set; }
         public DbSet<CreditMemo> CreditMemos { get; set; }
         public DbSet<DebitMemo> DebitMemos { get; set; }
+        public DbSet<RecurringServiceInvoice> RecurringServiceInvoices { get; set; }
         public DbSet<ServiceInvoice> ServiceInvoices { get; set; }
         public DbSet<CollectionReceiptDetail> CollectionReceiptDetails { get; set; }
 
@@ -193,6 +194,11 @@ namespace IBS.DataAccess.Data
 
             builder.Entity<ServiceInvoice>(sv =>
             {
+                sv.HasOne(sv => sv.RecurringServiceInvoice)
+                    .WithMany()
+                    .HasForeignKey(sv => sv.RecurringServiceInvoiceId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 sv.HasOne(sv => sv.Customer)
                     .WithMany()
                     .HasForeignKey(sv => sv.CustomerId)
@@ -208,6 +214,25 @@ namespace IBS.DataAccess.Data
             });
 
             #endregion -- Service Invoice --
+
+            #region -- Recurring Service Invoice --
+
+            builder.Entity<RecurringServiceInvoice>(rsi =>
+            {
+                rsi.HasOne(rsi => rsi.Customer)
+                    .WithMany()
+                    .HasForeignKey(rsi => rsi.CustomerId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                rsi.HasOne(rsi => rsi.Service)
+                    .WithMany()
+                    .HasForeignKey(rsi => rsi.ServiceId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                rsi.HasIndex(rsi => rsi.NextRunPeriod);
+            });
+
+            #endregion -- Recurring Service Invoice --
 
             #region -- Collection Receipt --
 
