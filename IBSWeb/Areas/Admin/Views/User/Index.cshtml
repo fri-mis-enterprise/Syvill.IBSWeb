@@ -72,7 +72,6 @@
                         <th class="text-start">Full Name</th>
                         <th class="text-start">Department</th>
                         <th class="text-start">Role</th>
-                        <th class="text-start">Station</th>
                         <th class="text-start">Status</th>
                         <th class="text-start">Created</th>
                         <th class="text-start">Modified</th>
@@ -131,7 +130,6 @@
                                 <option value="Retail Admin">Retail Admin</option>
                                 <option value="Retail Audit">Retail Audit</option>
                                 <option value="Site Dev and Site Acquisition">Site Dev and Site Acquisition</option>
-                                <option value="Station Cashier">Station Cashier</option>
                                 <option value="Trade and Supply">Trade and Supply</option>
                                 <option value="Training and Compliance">Training and Compliance</option>
                             </select>
@@ -146,14 +144,6 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3" id="stationDiv" style="display: none;">
-                            <label for="stationAccess" class="form-label">Station <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select js-select2" id="stationAccess">
-                                <option value="">Select station</option>
-                            </select>
-                        </div>
-
                         <div class="col-md-6 mb-3">
                             <label for="isActive" class="form-label">Status</label>
                             <div class="form-check form-switch">
@@ -255,9 +245,9 @@
             initializeSelect2();
 
             userTable = $('#userTable').DataTable({
-                "order": [[6, 'desc']],
+                "order": [[5, 'desc']],
                 "columnDefs": [
-                    {"orderable": false, "targets": [8]}
+                    {"orderable": false, "targets": [7]}
                 ],
                 "processing": true,
                 "stateDuration": 86400,
@@ -293,7 +283,6 @@
                     {data: 'name', render: data => escapeHtml(data)},
                     {data: 'department', render: data => escapeHtml(data)},
                     {data: 'role', render: data => escapeHtml(data)},
-                    {data: 'stationAccess', render: data => escapeHtml(data)},
                     {
                         data: 'isActive',
                         render: function (data) {
@@ -335,7 +324,7 @@
                         }
                     }
                 ],
-                order: [[6, 'desc']],
+                order: [[5, 'desc']],
                 pageLength: 25,
                 responsive: true,
                 language: {
@@ -438,42 +427,6 @@
                 });
         }
 
-        function loadStations() {
-            $.get('/Admin/User/GetStations')
-                .done(function (data) {
-                    const stationSelect = $('#stationAccess');
-                    stationSelect.empty().append('<option value="">Select station</option>');
-                    data.forEach(station => {
-                        stationSelect.append(`<option value="${escapeHtml(station.value)}">${escapeHtml(station.text)}</option>`);
-                    });
-                    if (stationSelect.hasClass('select2-hidden-accessible')) {
-                        stationSelect.select2('destroy');
-                        initializeSelect2();
-                    }
-                })
-                .fail(function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to load stations'
-                    });
-                });
-        }
-
-        function toggleStationField() {
-            const department = $('#department').val();
-            const role = $('#role').val();
-            const stationDiv = $('#stationDiv');
-
-            if (department === 'Station Cashier' && role === 'Cashier') {
-                stationDiv.show();
-                $('#stationAccess').prop('required', true);
-            } else {
-                stationDiv.hide();
-                $('#stationAccess').prop('required', false).val('').trigger('change');
-            }
-        }
-
         function openUpsertModal(userId = null) {
             $('#userForm')[0].reset();
             $('#userId').val('');
@@ -538,7 +491,6 @@
             const name = $('#name').val().trim();
             const department = $('#department').val();
             const role = $('#role').val();
-            const stationAccess = $('#stationAccess').val();
             const password = $('#password').val();
             const confirmPassword = $('#confirmPassword').val();
             const isActive = $('#isActive').is(':checked');
@@ -548,15 +500,6 @@
                     icon: 'warning',
                     title: 'Validation Error',
                     text: 'Please fill in all required fields'
-                });
-                return;
-            }
-
-            if (department === 'Station Cashier' && role === 'Cashier' && !stationAccess) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Validation Error',
-                    text: 'Please select a station for cashier role'
                 });
                 return;
             }
