@@ -111,7 +111,22 @@ namespace IBSWeb.Areas.User.Controllers
                     draw = parameters.Draw,
                     recordsTotal = totalRecords,
                     recordsFiltered = totalFilteredRecords,
-                    data = pagedData
+                    data = pagedData.Select(s => new
+                    {
+                        s.ServiceInvoiceId,
+                        s.ServiceInvoiceNo,
+                        s.Customer,
+                        s.Service,
+                        s.Period,
+                        s.Total,
+                        s.CreatedBy,
+                        s.Status,
+                        s.PostedBy,
+                        s.VoidedBy,
+                        s.CanceledBy,
+                        s.AmountPaid,
+                        hasRecurringSetup = s.RecurringServiceInvoiceId != null
+                    })
                 });
             }
             catch (Exception ex)
@@ -315,6 +330,27 @@ namespace IBSWeb.Areas.User.Controllers
                 model.CanceledDate = DateTimeHelper.GetCurrentPhilippineTime();
                 model.Status = nameof(Status.Canceled);
                 model.CancellationRemarks = cancellationRemarks;
+
+                if (model.RecurringServiceInvoiceId.HasValue)
+                {
+                    var recurringSetup = await _dbContext.RecurringServiceInvoices
+                        .FirstOrDefaultAsync(r =>
+                                r.RecurringServiceInvoiceId == model.RecurringServiceInvoiceId.Value,
+                            cancellationToken);
+
+                    if (recurringSetup != null && recurringSetup.IsActive)
+                    {
+                        recurringSetup.IsActive = false;
+                        recurringSetup.NextRunPeriod = null;
+                        recurringSetup.CanceledBy = model.CanceledBy;
+                        recurringSetup.CanceledDate = model.CanceledDate;
+                        recurringSetup.CancellationRemarks = cancellationRemarks;
+
+                        await _unitOfWork.AuditTrail.AddAsync(new AuditTrail(model.CanceledBy!,
+                            $"Canceled recurring service invoice setup# {recurringSetup.RecurringServiceInvoiceId}",
+                            "Service Invoice"), cancellationToken);
+                    }
+                }
 
                 #region --Audit Trail Recording
 
