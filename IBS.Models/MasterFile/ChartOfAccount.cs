@@ -57,6 +57,8 @@ namespace IBS.Models.MasterFile
 
         [StringLength(20)] public string FinancialStatementType { get; set; } = string.Empty;
 
+        public bool IsHidden { get; set; }
+
         // Select List
 
         #region Select List

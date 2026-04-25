@@ -44,12 +44,19 @@ namespace IBSWeb.Areas.Admin.Controllers
                    ?? User.Identity?.Name!;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(bool showHidden = false, CancellationToken cancellationToken  = default)
         {
-            var level1 = await _unitOfWork.ChartOfAccount
+            ViewBag.ShowHidden = showHidden;
+
+            var accounts = await _unitOfWork.ChartOfAccount
                 .GetAllAsync(cancellationToken: cancellationToken);
 
-            return View(level1.Where(c => c.Level == 1)
+            if (!showHidden)
+            {
+                accounts = FilterHiddenAccounts(accounts);
+            }
+
+            return View(accounts.Where(c => c.Level == 1)
                 .ToList());
         }
 
@@ -131,7 +138,8 @@ namespace IBSWeb.Areas.Admin.Controllers
             [FromForm] DataTablesParameters parameters,
             DateTime? dateFrom,
             DateTime? dateTo,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool showHidden = false)
         {
             try
             {
@@ -167,6 +175,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                             (s.AccountName != null && s.AccountName.ToLower().Contains(searchValue)) ||
                             (s.AccountType != null && s.AccountType.ToLower().Contains(searchValue)) ||
                             (s.NormalBalance != null && s.NormalBalance.ToLower().Contains(searchValue)) ||
+                            (s.IsHidden ? "hidden" : "visible").Contains(searchValue) ||
                             s.Level.ToString().Contains(searchValue) ||
                             (hasCreatedDate && DateOnly.FromDateTime(s.CreatedDate) ==
                                 DateOnly.FromDateTime(createdDate))
@@ -210,6 +219,7 @@ namespace IBSWeb.Areas.Admin.Controllers
                         x.AccountName,
                         x.AccountType,
                         x.NormalBalance,
+                        x.IsHidden,
                         x.Level,
                         x.CreatedDate
                     })
@@ -272,6 +282,63 @@ namespace IBSWeb.Areas.Admin.Controllers
                 TempData["Error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleHidden(int accountId, bool showHidden = false, CancellationToken cancellationToken = default)
+        {
+            var existingAccount = await _unitOfWork.ChartOfAccount
+                .GetAsync(x => x.AccountId == accountId, cancellationToken);
+
+            if (existingAccount == null)
+            {
+                return NotFound();
+            }
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+            try
+            {
+                existingAccount.IsHidden = !existingAccount.IsHidden;
+                existingAccount.EditedBy = GetUserFullName();
+                existingAccount.EditedDate = DateTimeHelper.GetCurrentPhilippineTime();
+                await _unitOfWork.SaveAsync(cancellationToken);
+
+                var action = existingAccount.IsHidden ? "Hidden" : "Unhidden";
+
+                AuditTrail auditTrailBook = new(GetUserFullName(),
+                    $"{action} Account #{existingAccount.AccountNumber}", "Chart of Accounts");
+                await _unitOfWork.AuditTrail.AddAsync(auditTrailBook, cancellationToken);
+
+                await transaction.CommitAsync(cancellationToken);
+                TempData["success"] = $"Account {existingAccount.AccountNumber} {action.ToLowerInvariant()} successfully";
+                return Json(new
+                {
+                    redirectUrl = Url.Action("Index", "ChartOfAccount", new { area = "Admin", showHidden })
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to toggle chart of account visibility. Updated by: {UserName}", _userManager.GetUserName(User));
+                await transaction.RollbackAsync(cancellationToken);
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index), new { showHidden });
+            }
+        }
+
+        private static List<ChartOfAccount> FilterHiddenAccounts(IEnumerable<ChartOfAccount> accounts)
+        {
+            var visibleAccounts = accounts
+                .Where(account => !account.IsHidden)
+                .ToList();
+
+            foreach (var account in visibleAccounts)
+            {
+                account.Children = FilterHiddenAccounts(account.Children);
+            }
+
+            return visibleAccounts;
         }
     }
 }
